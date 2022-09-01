@@ -195,13 +195,12 @@ class Class: #Lol
       class_string += "***********************"
       return class_string
 
-    def __eq__(self, class_name):
+    def __eq__(self, other_class):
       """
-      Determines if the given class name can describe the class
-      (i.e. it's either the class' primary name or one of its
-      other names), and returns  the appropriate bool
+      Determines if the given classes are the same, 
+      and returns the appropriate bool
       """
-      name_to_compare = parse_name(class_name)
+      name_to_compare = parse_name(other_class.primary_name)
       return( (self.primary_name==name_to_compare) or (name_to_compare in self.other_names))
 
     # Here, we define the comparison operators to check the course number
@@ -216,6 +215,15 @@ class Class: #Lol
 
     def __ge__(self, class_level):
       return (int(self.course_number) >= class_level)
+
+    def same_name(self, other_name):
+      """
+      Determines if the given class name can describe the class
+      (i.e. it's either the class' primary name or one of its
+      other names), and returns the appropriate bool
+      """
+      name_to_compare = parse_name(other_name)
+      return( (self.primary_name==name_to_compare) or (name_to_compare in self.other_names))
 
 class Schedule:
     """

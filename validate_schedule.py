@@ -63,7 +63,8 @@ class ScheduleChecker:
 if __name__ == '__main__':
 
     list_of_checks = [
-        has_ececore
+        has_ececore,
+        has_ecefoundations
     ]
 
     #USER: Change this if your text file is contained somewhere else
