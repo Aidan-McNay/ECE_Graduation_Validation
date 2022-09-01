@@ -55,7 +55,7 @@ class ScheduleChecker:
         if num_errors==0:
             print("Congratulations! It looks like your class list satisfies all of our requirements!")
         else:
-            print("Whoops - looks like you had some errors, please review these!")
+            print("Whoops - looks like you had "+str(num_errors)+" errors, please review these!")
 
 
 #################################################
