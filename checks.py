@@ -72,7 +72,7 @@ def has_commoncore(schedule_checker):
     if(not found_chem2090):
         print("ERROR: Didn't find CHEM 2090")
         num_errors += 1
-    for cornell_class in classes_to_remove:
+    for class_to_remove in classes_to_remove:
         schedule_checker.class_list.remove(class_to_remove)
 
     # Now we look for the FWS's
@@ -90,8 +90,25 @@ def has_commoncore(schedule_checker):
         print("ERROR: Fewer than 2 FWS's")
         num_errors += 1
     
-    for cornell_class in classes_to_remove:
+    for class_to_remove in classes_to_remove:
         schedule_checker.class_list.remove(class_to_remove)
+
+    # Next up is a intro programming class
+    intro_comp_found = False
+    for cornell_class in schedule_checker.class_list:
+        if(cornell_class.same_name("CS 1110")):
+            print("Using CS 1110 as your intro computing course")
+            schedule_checker.class_list.remove(cornell_class)
+            intro_comp_found = True
+            break
+        elif(cornell_class.same_name("CS 1112")):
+            print("Using CS 1112 as your intro computing course")
+            schedule_checker.class_list.remove(cornell_class)
+            intro_comp_found = True
+            break
+    if(not intro_comp_found):
+        print("ERROR: Didn't find an introductory computing course")
+        num_errors += 1
     
     return num_errors
 
