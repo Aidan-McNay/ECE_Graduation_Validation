@@ -10,6 +10,8 @@
 # and should return the number of errors
 # found during the check
 
+from schedule import term_index
+
 ###################
 # has_commoncore
 # Checks whether the schedule has the
@@ -93,7 +95,7 @@ def has_commoncore(schedule_checker):
     for class_to_remove in classes_to_remove:
         schedule_checker.class_list.remove(class_to_remove)
 
-    # Next up is a intro programming class
+    # Next up is an intro programming class
     intro_comp_found = False
     for cornell_class in schedule_checker.class_list:
         if(cornell_class.same_name("CS 1110")):
@@ -109,6 +111,79 @@ def has_commoncore(schedule_checker):
     if(not intro_comp_found):
         print("ERROR: Didn't find an introductory computing course")
         num_errors += 1
+
+    # Alright now we're handling physics
+    classes_to_remove = []
+    found_1112_1116 = False
+    used_1116 = False
+    used_1112 = False
+    found_1110 = True
+    term_1112 = False
+    found_2213_2217 = False
+    found_2214_2218 = False
+    for cornell_class in schedule_checker.class_list:
+        if(cornell_class.same_name("PHYS 1116")):
+            # Prefer 1116 to avoid checking for 1110
+            # We'll check for 1112/1110 in future passes
+            print("Using PHYS 1116 for introductory physics")
+            classes_to_remove.append(cornell_class)
+            found_1112_1116 = True
+            used_1116 = True
+        elif(cornell_class.same_name("PHYS 2213") and not found_2213_2217):
+            print("Using PHYS 2213 as secondary physics")
+            classes_to_remove.append(cornell_class)
+            found_2213_2217 = True
+        elif(cornell_class.same_name("PHYS 2217") and not found_2213_2217):
+            print("Using PHYS 2217 as secondary physics")
+            classes_to_remove.append(cornell_class)
+            found_2213_2217 = True
+        elif(cornell_class.same_name("PHYS 2214") and not found_2214_2218):
+            print("Using PHYS 2214 as tertiary physics")
+            classes_to_remove.append(cornell_class)
+            found_2214_2218 = True
+        elif(cornell_class.same_name("PHYS 2214") and not found_2214_2218):
+            print("Using PHYS 2214 as tertiary physics")
+            classes_to_remove.append(cornell_class)
+            found_2214_2218 = True
+    
+    if(not used_1116):
+        #We need to check for 1112
+        for cornell_class in schedule_checker.class_list:
+            if(cornell_cless.same_name("PHYS 1112")):
+                print("Using PHYS 1112 for introductory physics")
+                classes_to_remove.append(cornell_class)
+                found_1112_1116 = True
+                used_1112 = True
+                term_1112 = cornell_class.term_taken
+                break
+    # If FA21 or after, need to check for 1110 too
+    if(used_1112):
+        if(term_index(term_1112)>=term_index("FA21")):
+            #Need to search for 1110
+            found_1110 = False
+            for cornell_class in schedule_checker.class_list:
+                if(cornell_class.same_name("PHYS 1110")):
+                    print("Found PHYS 1110 to supplement PHYS 1112")
+                    classes_to_remove.append(cornell_class)
+                    found_1110 = True
+                    break
+    #Finalize errors from physics section
+    if(not found_1112_1116):
+        print("ERROR: Didn't find PHYS 1112 or PHYS 1116")
+        num_errors += 1
+    elif(not found_1110):
+        print("ERROR: Took PHYS 1112 FA21 or later, but didn't find PHYS 1110")
+        num_errors += 1
+    if(not found_2213_2217):
+        print("ERROR: Didn't find PHYS 2213 or PHYS 2217")
+        num_errors += 1
+    if(not found_2214_2218):
+        print("ERROR: Didn't find PHYS 2214 or PHYS 2218")
+    for class_to_remove in classes_to_remove:
+        schedule_checker.class_list.remove(class_to_remove)
+
+
+
     
     return num_errors
 

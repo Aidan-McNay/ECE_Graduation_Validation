@@ -96,8 +96,8 @@ class Class: #Lol
      - credits: The number of credits you can take the class for (int)
        - Will prompt for input if number is variable
      - is_FWS: Whether the class is a FWS or not (bool)
-     - term_taken: Term that the student reports the class was taken
-     - source_term: Term that the class data was sourced from
+     - term_taken: Term that the student reports the class was taken (str)
+     - source_term: Term that the class data was sourced from (str)
         - If possible, this will match term_taken
      - section: The section of the course selected. If there is
        only one section, this is set to None
