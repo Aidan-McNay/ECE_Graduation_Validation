@@ -280,6 +280,14 @@ class Class: #Lol
       name_to_compare = parse_name(other_name)
       return( (self.primary_name==name_to_compare) or (name_to_compare in self.other_names))
 
+    def same_dept(self, dept):
+      """
+      Determines if the given department can describe the class,
+      and returns the appropriate bool
+      """
+      dept_to_compare = (dept.strip()).upper()
+      return( (self.department==dept_to_compare) or (dept_to_compare in self.other_departments))
+
 class Schedule:
     """
     This class is meant to represent an entire student schedule.

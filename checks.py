@@ -182,6 +182,18 @@ def has_commoncore(schedule_checker):
     for class_to_remove in classes_to_remove:
         schedule_checker.class_list.remove(class_to_remove)
 
+    # Check for ENGRI
+    found_engri = False
+    for cornell_class in schedule_checker.class_list:
+        if(cornell_class.same_dept("ENGRI")):
+            print("Found "+cornell_class.primary_name+" as an ENGRI")
+            found_engri = True
+            schedule_checker.class_list.remove(cornell_class)
+            break #Only need one
+    if(not found_engri):
+        print("ERROR: Didn't find an ENGRI class")
+        num_errors += 1
+
 
 
     
