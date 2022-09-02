@@ -96,7 +96,9 @@ class Class: #Lol
      - credits: The number of credits you can take the class for (int)
        - Will prompt for input if number is variable
      - is_FWS: Whether the class is a FWS or not (bool)
+     - term_taken: Term that the student reports the class was taken
      - source_term: Term that the class data was sourced from
+        - If possible, this will match term_taken
      - section: The section of the course selected. If there is
        only one section, this is set to None
     """
@@ -122,6 +124,7 @@ class Class: #Lol
         assert False, "Uh oh - was unable to connect to the API"
 
       user_term = parse_term(term)
+      self.term_taken = user_term
       if user_term in list_of_rosters:
         # Just use the correct term
         list_of_rosters = [user_term]
@@ -327,14 +330,14 @@ class Schedule:
       else:
         # Term wasn't given
         class_name = class_bit
-        termID = "NAY"
+        termID = "NULL"
       
       # Account for wacky inputs
       class_name = parse_name(class_name) # Reduntant, but nice for print statements
       termID = parse_term(termID)
 
       print("Adding "+class_name+" to schedule...")
-      class_to_add = Class(class_name)
+      class_to_add = Class(class_name, termID)
       if termID in self.schedDict:
         (self.schedDict[termID]).append(class_to_add)
       else:
@@ -344,7 +347,7 @@ class Schedule:
       """
       Returns a list of the classes corresponding to the given term.
       If the argument "ALL" is given, will return a list of 
-      all classes stored in the schedule with no term information
+      all classes stored in the schedule.
       """
       term = parse_term(user_term)
       assert (term=="ALL" or term in list(self.schedDict.keys())), (term+" is not a valid term")
