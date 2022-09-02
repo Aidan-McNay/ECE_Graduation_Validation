@@ -10,6 +10,92 @@
 # and should return the number of errors
 # found during the check
 
+###################
+# has_commoncore
+# Checks whether the schedule has the
+# common Core Engineering classes, 
+# although those specific to ECE
+###################
+
+def has_commoncore(schedule_checker):
+    # First, we'll just take out 
+    # - MATH 1910
+    # - MATH 1920
+    # - MATH 2930
+    # - MATH 2940
+    # - CHEM 2090
+    found_math1910 = False
+    found_math1920 = False
+    found_math2930 = False
+    found_math2940 = False
+    found_chem2090 = False
+    classes_to_remove = []
+    num_errors = 0
+    for cornell_class in schedule_checker.class_list:
+        if(cornell_class.same_name("MATH 1910")):
+            if(not found_math1910):
+                print("Found MATH 1910!")
+                found_math1910 = True
+                classes_to_remove.append(cornell_class)
+        elif(cornell_class.same_name("MATH 1920")):
+            if(not found_math1920):
+                print("Found MATH 1920!")
+                found_math1920 = True
+                classes_to_remove.append(cornell_class)
+        elif(cornell_class.same_name("MATH 2930")):
+            if(not found_math2930):
+                print("Found MATH 2930!")
+                found_math2930 = True
+                classes_to_remove.append(cornell_class)
+        elif(cornell_class.same_name("MATH 2940")):
+            if(not found_math2940):
+                print("Found MATH 2940!")
+                found_math2940 = True
+                classes_to_remove.append(cornell_class)
+        elif(cornell_class.same_name("CHEM 2090")):
+            if(not found_chem2090):
+                print("Found CHEM 2090!")
+                found_chem2090 = True
+                classes_to_remove.append(cornell_class)
+    if(not found_math1910):
+        print("ERROR: Didn't find MATH 1910")
+        num_errors += 1
+    if(not found_math1920):
+        print("ERROR: Didn't find MATH 1920")
+        num_errors += 1
+    if(not found_math2930):
+        print("ERROR: Didn't find MATH 2930")
+        num_errors += 1
+    if(not found_math2940):
+        print("ERROR: Didn't find MATH 2940")
+        num_errors += 1
+    if(not found_chem2090):
+        print("ERROR: Didn't find CHEM 2090")
+        num_errors += 1
+    for cornell_class in classes_to_remove:
+        schedule_checker.class_list.remove(class_to_remove)
+
+    # Now we look for the FWS's
+    num_fws_found = 0
+    classes_to_remove = []
+    for cornell_class in schedule_checker.class_list:
+        if (cornell_class.is_FWS):
+            print("Found "+cornell_class.primary_name+" as a FWS")
+            if(num_fws_found < 2):
+                classes_to_remove.append(cornell_class)
+                num_fws_found += 1
+        if(num_fws_found >= 2):
+            break # Found two FWS's
+    if(num_fws_found < 2):
+        print("ERROR: Fewer than 2 FWS's")
+        num_errors += 1
+    
+    for cornell_class in classes_to_remove:
+        schedule_checker.class_list.remove(class_to_remove)
+    
+    return num_errors
+
+
 
 ###################
 # has_ececore

@@ -86,6 +86,8 @@ class Class: #Lol
      - course_number: The course number of the course (str)
          ex. "2720"
      - other_names: Other names that the class goes by (list of str)
+     - other_departments: Other departments that the class is listed in
+       (list of str)
      - catalogDistr: Distribution categories of the class
        (if they exist) (list of str or None)
          ex. ["SBA-AS", "SSC-AS"]
@@ -93,9 +95,13 @@ class Class: #Lol
          ex. "EN" (for Engineering)
      - credits: The number of credits you can take the class for (int)
        - Will prompt for input if number is variable
+     - is_FWS: Whether the class is a FWS or not (bool)
+     - source_term: Term that the class data was sourced from
+     - section: The section of the course selected. If there is
+       only one section, this is set to None
     """
 
-    def __init__(self, course_name):
+    def __init__(self, course_name, term = "NULL"):
       """
       Finds the class with the given name in the database, and creates an instance of it.
       Unfortunately, we can't get a global definition of the class. To get around this,
@@ -107,19 +113,28 @@ class Class: #Lol
       self.department = pretty_name[:pretty_name.index(" ")]
       self.course_number = pretty_name[pretty_name.index(" ")+1:]
       self.other_names = []
+      self.other_departments = []
 
       # Alright here's where it gets ugly - loop over all rosters, checking if the class is in them
       list_of_rosters = get_rosters() 
       list_of_rosters.reverse() # Iterate from most recent all the way back
       if(list_of_rosters==-1):
         assert False, "Uh oh - was unable to connect to the API"
+
+      user_term = parse_term(term)
+      if user_term in list_of_rosters:
+        # Just use the correct term
+        list_of_rosters = [user_term]
       
       roster_index = 0
       found_class = False
       while not found_class:
         # Check to see if we've gone over
         if(roster_index >= len(list_of_rosters)):
-          assert False, "Sorry - can't find any record of a class named "+self.primary_name
+          error_message = "Sorry - can't find any record of a class named "+self.primary_name
+          if (term!="NULL"):
+            error_message = error_message + " in term "+user_term
+          assert False, error_message
         roster_id = list_of_rosters[roster_index]
         roster_index += 1
 
@@ -139,17 +154,42 @@ class Class: #Lol
             if(cornell_class["subject"]==self.department and cornell_class["catalogNbr"]==self.course_number):
               # We found the class!
               found_class = True
+              self.source_term = roster_id
+
+              # Handle multiple classes listed under this
+              if (len(cornell_class["enrollGroups"])>1):
+                valid_input = False
+                while not valid_input:
+                  print("Which section did you enroll in for "+self.primary_name+" in "+user_term+"?")
+                  index = 0
+                  sections = {}
+                  for section in cornell_class["enrollGroups"]:
+                    # Stores section number as key for the section's index
+                    sections[((section["classSections"])[0])["section"]] = index
+                  print("Options are "+", ".join(list(sections.keys())))
+                  user_input = input()
+                  if user_input in list(sections.keys()):
+                    section_index = sections[user_input]
+                    valid_input = True
+                    self.section = user_input
+                  else:
+                    print("Whoops - invalid section, try again")
+              else:
+                section_index = 0
+                self.section = None
+
 
               # Get other names of the class
-              other_names = ((cornell_class["enrollGroups"])[0])["simpleCombinations"]
+              other_names = ((cornell_class["enrollGroups"])[section_index])["simpleCombinations"]
               for other_name in other_names:
                 # Form the name, then append
                 name = other_name["subject"]+" "+other_name["catalogNbr"]
                 self.other_names.append(name)
+                self.other_departments.append(other_name["subject"])
               
               self.acadGroup = cornell_class["acadGroup"]
-              min_credits = ((cornell_class["enrollGroups"])[0])["unitsMinimum"]
-              max_credits = ((cornell_class["enrollGroups"])[0])["unitsMaximum"]
+              min_credits = ((cornell_class["enrollGroups"])[section_index])["unitsMinimum"]
+              max_credits = ((cornell_class["enrollGroups"])[section_index])["unitsMaximum"]
               if min_credits==max_credits:
                 self.credits = min_credits
               else:
@@ -169,6 +209,14 @@ class Class: #Lol
                 self.catalogDistr = None
               else:
                 self.catalogDistr = (distribution_string.strip("()")).split(", ")
+
+              # See if it's a FWS or not
+              if( ((cornell_class["enrollGroups"])[section_index])["sessionCode"]=="FWS" ):
+                self.is_FWS = True
+              else:
+                self.is_FWS = False
+
+              
               
               break # Don't need to search the other classes for the correct class
     def __str__(self):
@@ -179,9 +227,13 @@ class Class: #Lol
       class_string = ""
       class_string += "***********************\n"
       class_string += ("Class Name: "+self.primary_name+"\n")
+      if(self.section!=None):
+        class_string += "Section "+self.section+"\n"
       for other_name in self.other_names:
         class_string += (" - "+other_name+"\n")
       class_string += (str(self.credits)+" credit(s)\n")
+      if (self.is_FWS):
+        class_string += "Is a FWS\n"
       if(self.catalogDistr==None):
         pass
       else:

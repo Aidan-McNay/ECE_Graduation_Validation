@@ -63,6 +63,7 @@ class ScheduleChecker:
 if __name__ == '__main__':
 
     list_of_checks = [
+        has_commoncore,
         has_ececore,
         has_ecefoundations
     ]
