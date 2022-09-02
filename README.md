@@ -7,7 +7,7 @@ This code validates a course schedule and ensures it follows Cornell ECE's requi
 * **schedule.py**: Helper implementations for the Class and Schedule classes
 * **checks.py**: This is where all of the functions are that check a schedule to see whether it meets the ECE Department's requirements
 * **my_classes.txt**: This is a user's defined class schedule from all of there semesters _(Users should edit this by adding/removing classes)_
-  * Entries should be of the format <class_name>(<term>) or simply <class_name>
+  * Entries should be of the format <class_name>(<class_term>) or simply <class_name>
   * Ex. "ECE2720", "MATH1920(SP20)"
   * Formatting is fairly forgiving
 
