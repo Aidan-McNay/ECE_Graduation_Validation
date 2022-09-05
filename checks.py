@@ -179,6 +179,7 @@ def has_commoncore(schedule_checker):
         num_errors += 1
     if(not found_2214_2218):
         print("ERROR: Didn't find PHYS 2214 or PHYS 2218")
+        num_errors += 1
     for class_to_remove in classes_to_remove:
         schedule_checker.class_list.remove(class_to_remove)
 
@@ -194,12 +195,7 @@ def has_commoncore(schedule_checker):
         print("ERROR: Didn't find an ENGRI class")
         num_errors += 1
 
-
-
-    
     return num_errors
-
-
 
 ###################
 # has_ececore
@@ -247,6 +243,28 @@ def has_ececore(schedule_checker):
         print("ERROR: Didn't find ECE 2200 or ECE 2720")
         num_errors += 1
     return num_errors
+
+###################
+# has_secondengrd
+# Checks whether the schedule has a second ENGRD class
+# Note that we run this after has_ececore, otherwise it
+# could accidentally find matches in ECE Core classes
+###################
+
+def has_secondengrd(schedule_checker):
+    found_secondengrd = False
+    num_errors = 0
+    for cornell_class in schedule_checker.class_list:
+        if(cornell_class.same_dept("ENGRD")):
+            print("Found "+cornell_class.primary_name+" as a second ENGRD")
+            found_secondengrd = True
+            schedule_checker.class_list.remove(cornell_class)
+            break #Only need one
+    if(not found_secondengrd):
+        print("ERROR: Didn't find a second ENGRD class")
+        num_errors += 1
+    return num_errors
+
 
 ###################
 # has_ecefoundational
