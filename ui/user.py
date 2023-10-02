@@ -6,7 +6,7 @@
 # Author: Aidan McNay
 # Date: October 2nd, 2023
 
-import ui
+import ui, api
 
 #---------------------------------------------------------------------
 # General prompting functions
@@ -96,16 +96,23 @@ def prompt_term( course_name ):
     Assumes that the course name (str) is already in the desired format
     '''
 
-    valid_response = True
+    valid_response = False
 
     while( not valid_response ):
         prompt_msg = "Looks like {} doesn't have an associated term. ".format( course_name ) + \
                      "What term did/will you take this course?"
     
         response = prompt_usr( prompt_msg )
+        response = ui.parser.parse_class_term( response )
         valid_response = ui.parser.validate_class_term( response )
 
         if( not valid_response ):
             print( "Oops! That doesn't look like a valid term - please try again" )
+
+        # Make sure that the class was actually offered during that term
+        api_response = api.class_api.get_class( course_name, response )
+        if( api_response[ "status" ] != "success" ):
+            valid_response = False
+            print( "Oops! It doesn't look like {} was offered during {} - please try again".format( course_name, response ) )
 
     return response
