@@ -51,3 +51,20 @@ class ClassNotFoundError( Exception ):
 
         err_msg = "The class {} wasn't offered in {}".format( course_name, term )
         super().__init__( err_msg )
+
+class NoClassInfoError( Exception ):
+    """
+    Indicates that the requested class had a term specified in the future, but
+    no previous offerings were found
+
+    Attributes:
+     - course_name: Name of the course not found (str)
+     - term: The future term that was specified (str)
+    """
+
+    def __init__( self, course_name, term ):
+        self.course_name = course_name
+        self.term        = term
+
+        err_msg = "Intending to take {} in {}, but no previous iterations found".format( course_name, term )
+        super().__init__( err_msg )

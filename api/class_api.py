@@ -8,7 +8,7 @@
 # Author: Aidan McNay
 # Date: October 2nd, 2023
 
-import api
+import ui, api
 import requests, json, copy
 
 #---------------------------------------------------------------------
@@ -107,5 +107,42 @@ def get_class( course_name, term, dump = False, file_name = None ):
 
     return class_entry
 
+#---------------------------------------------------------------------
+# Derived Functions
+#---------------------------------------------------------------------
 
+def in_future( term ):
+    """
+    Determines if a term is offered in the future (based on our available rosters)
+    Returns the corresponding bool
 
+    Args:
+     - term (str): The relevant term we want to check
+    """
+    for avail_roster in get_rosters():
+        if ui.parser.term_is_later( avail_roster, term ): # The given roster occurs later than the given term
+            return False
+    return True
+
+def most_recent_term( course_name, future_term ):
+    """
+    Assumes that the user is trying to take the course in the future, and grabs
+    data from the most recent offering
+
+    This will check every roster available, going back from most to least recent, and
+    is therefore very API-intensive; calls to this should be sparse, even with JSON caching
+    """
+
+    # Get the rosters, in order from most to least recent
+    rosters = get_rosters()
+    rosters.sort( key = ui.parser.term_index, reverse = True )
+    
+    # Go through them until we get a match
+    for term in rosters:
+        try:
+            json_object = get_class( course_name, term )
+        except:
+            continue # Didn't find it, so just move on to the next roster
+
+    # If we got here, we didn't find it in any rosters
+    raise api.api_exceptions.NoClassInfoError( course_name, future_term )

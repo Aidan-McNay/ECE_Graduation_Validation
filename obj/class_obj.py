@@ -6,7 +6,7 @@
 # Author: Aidan McNay
 # Date: October 2nd, 2023
 
-import ui
+import ui, api
 
 class Class:
     """
@@ -45,7 +45,10 @@ class Class:
 
      - is_FWS: Whether the class is a FWS or not (bool)
 
-     - term_taken: Term that the class was source from
+     - term_taken: Term that the class was taken in
+
+     - term_sourced: The term from which information was sourced (if
+                     possible, the same as term_taken)
 
      - section: The section of the course selected. If there is
        only one section, this is set to None
@@ -68,3 +71,17 @@ class Class:
             term = ui.user.prompt_term( course_name )
         else:
             term = ui.parser.parse_term_name( term )
+
+        self.primary_name = course_name
+        self.term_taken   = term
+
+        # Grab the data for the course
+        try:
+          json_object = api.class_api.get_class( course_name, term )
+
+        except api.api_exceptions.TermNotFoundError as e:
+          if api.class_api.is_future( term ): # Find the next best term
+            json_object = api.class_api.most_recent_term( course_name, term )
+          else: # Not in the future, we just don't have info on it
+            raise e
+        
