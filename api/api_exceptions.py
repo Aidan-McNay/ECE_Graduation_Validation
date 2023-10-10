@@ -17,7 +17,7 @@ class TermNotFoundError( Exception ):
     def __init__( self, term ):
         self.term = term
 
-        err_msg = "Information for {} wasn't found by the API".format( term )
+        err_msg = f"Information for {term} wasn't found by the API"
         super().__init__( err_msg )
 
 class DeptNotFoundError( Exception ):
@@ -33,7 +33,7 @@ class DeptNotFoundError( Exception ):
         self.dept = dept
         self.term = term
 
-        err_msg = "Information on the {} department wasn't found by the API for {}".format( dept, term )
+        err_msg = f"Information on the {dept} department wasn't found by the API for {term}"
         super().__init__( err_msg )
 
 class ClassNotFoundError( Exception ):
@@ -49,7 +49,7 @@ class ClassNotFoundError( Exception ):
         self.course_name = course_name
         self.term        = term
 
-        err_msg = "The class {} wasn't offered in {}".format( course_name, term )
+        err_msg = f"The class {course_name} wasn't offered in {term}"
         super().__init__( err_msg )
 
 class NoClassInfoError( Exception ):
@@ -66,5 +66,5 @@ class NoClassInfoError( Exception ):
         self.course_name = course_name
         self.term        = term
 
-        err_msg = "Intending to take {} in {}, but no previous iterations found".format( course_name, term )
+        err_msg = f"Intending to take {course_name} in {term}, but no previous iterations found"
         super().__init__( err_msg )

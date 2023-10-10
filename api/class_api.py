@@ -127,7 +127,7 @@ def in_future( term ):
 def most_recent_term( course_name, future_term ):
     """
     Assumes that the user is trying to take the course in the future, and grabs
-    data from the most recent offering
+    data from the most recent offering, returning the JSON data and term sourced
 
     This will check every roster available, going back from most to least recent, and
     is therefore very API-intensive; calls to this should be sparse, even with JSON caching
@@ -141,7 +141,8 @@ def most_recent_term( course_name, future_term ):
     for term in rosters:
         try:
             json_object = get_class( course_name, term )
-        except:
+            return json_object, term
+        except Exception:
             continue # Didn't find it, so just move on to the next roster
 
     # If we got here, we didn't find it in any rosters

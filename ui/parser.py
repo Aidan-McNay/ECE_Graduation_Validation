@@ -8,6 +8,10 @@
 
 import ui
 
+#---------------------------------------------------------------------
+# Parsing for Class Names
+#---------------------------------------------------------------------
+
 def parse_class_name( ugly_name ):
     """
     Parses non-optimal user input into a usable class name for making
@@ -21,6 +25,26 @@ def parse_class_name( ugly_name ):
     digits  = [ x for x in stripped_name if x.isdigit() ]
 
     return ( "".join(letters) ).upper() + " " + "".join(digits)
+
+def get_dept_from_name( class_name ):
+    """
+    Gets the department name from a class name
+
+    Assumes that class_name is in the correct format
+    """
+    return class_name.split( " " )[0]
+
+def get_nbr_from_name( class_name ):
+    """
+    Gets the class number from a class name
+
+    Assumes that class_name is in the correct format
+    """
+    return class_name.split( " " )[1]
+
+#---------------------------------------------------------------------
+# Parsing for Class Terms
+#---------------------------------------------------------------------
 
 def parse_class_term( ugly_term ):
     """

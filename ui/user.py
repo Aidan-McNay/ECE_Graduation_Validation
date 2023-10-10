@@ -58,7 +58,7 @@ def prompt_usr_list( msg, options, default_idx ):
 
     option_string = "Options: "
     option_string += "".join( [ ( "\n " + str( idx+1 ) + ". " + option ) for idx, option in enumerate( options ) ] )
-    option_string += "\nDefault: [" + options[ default_idx ] + "]"
+    option_string += f"\nDefault: [{options[ default_idx ]}]"
     option_string += "\nSelection: "
 
     response = input( option_string )
@@ -99,8 +99,8 @@ def prompt_term( course_name ):
     valid_response = False
 
     while( not valid_response ):
-        prompt_msg = "Looks like {} doesn't have an associated term. ".format( course_name ) + \
-                     "What term did/will you take this course?"
+        prompt_msg = f"Looks like {course_name} doesn't have an associated term. " + \
+                      "What term did/will you take this course?"
     
         response = prompt_usr( prompt_msg )
         response = ui.parser.parse_class_term( response )
@@ -113,6 +113,6 @@ def prompt_term( course_name ):
         api_response = api.class_api.get_class( course_name, response )
         if( api_response[ "status" ] != "success" ):
             valid_response = False
-            print( "Oops! It doesn't look like {} was offered during {} - please try again".format( course_name, response ) )
+            print( f"Oops! It doesn't look like {course_name} was offered during {response} - please try again" )
 
     return response
