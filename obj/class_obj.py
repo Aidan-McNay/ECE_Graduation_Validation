@@ -24,6 +24,10 @@ class Class:
      * course_number: The course number of the course (str)
          ex. "2720"
 
+     - title: The title of the class (short version) (str)
+
+     - titleLong: The title of the class (long version) (str)
+
      - all_names: All names that the class goes by (set of str)
 
      * all_departments: Other departments that the class is listed in
@@ -92,11 +96,13 @@ class Class:
         self.set__enrl_idx   ( json_object )
 
         self.set_all_names   ( json_object )
+        self.set_title       ( json_object )
+        self.set_titleLong   ( json_object )
         self.set_catalogDistr( json_object )
         self.set_acadGroup   ( json_object )
         self.set_acadCareer  ( json_object )
         self.set_credits     ( json_object )
-        # self.set_is_FWS      ( json_object )
+        self.set_is_FWS      ( json_object )
 
     #---------------------------------------------------------------------
     # Attribute setters
@@ -119,6 +125,12 @@ class Class:
             all_names.add( other_name )
         self.all_names = all_names
 
+    def set_title( self, json_obj ):
+        self.title = json_obj[ "titleShort" ]
+
+    def set_titleLong( self, json_obj ):
+        self.titleLong = json_obj[ "titleLong" ]
+
     def set_catalogDistr( self, json_obj ):
         distr_string = json_obj[ "catalogDistr" ]
         distr_string = distr_string.strip( "()" ) # Strip off parenthesis
@@ -130,6 +142,17 @@ class Class:
     def set_acadCareer( self, json_obj ):
         self.acadGroup = json_obj[ "acadCareer" ]
 
+    def set_is_FWS( self, json_obj ):
+        if( "FWS: " in json_obj[ "titleLong" ] ):
+            self.is_FWS = True
+            return
+        
+        if( ( "ENGL 2880" in self.all_names ) or ( "ENGL 2890" in self.all_names ) ):
+            self.is_FWS = True # Counts for FWS credit
+            return
+        
+        self.is_FWS = False
+
     def set_credits( self, json_obj ):
         max_cred = json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMaximum" ]
         min_cred = json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMinimum" ]
@@ -140,4 +163,52 @@ class Class:
         prompt_msg = f"Looks like {self.course_name} has variable numbers of credits - how many did you take?"
         options = [ str( i ) for i in range( min_cred, max_cred + 1 ) ]
         self.credits = int( ui.user.prompt_usr_list( prompt_msg, options, 0 ) )
+    
+    #---------------------------------------------------------------------
+    # Dynamic Properties
+    #---------------------------------------------------------------------
+
+    @property
+    def department( self ):
+        return ui.parser.get_dept_from_name( self.primary_name )
+    
+    @property
+    def course_number( self ):
+        return ui.parser.get_nbr_from_name( self.primary_name )
+    
+    @property
+    def all_departments( self ):
+        return { ui.parser.get_dept_from_name( i ) for i in self.all_names }
+    
+    @property
+    def other_names( self ):
+        cpy_to_return = self.all_names.copy()
+        cpy_to_return.remove( self.primary_name )
+        return cpy_to_return
+    
+    @property
+    def other_departments( self ):
+        return { ui.parser.get_dept_from_name( i ) for i in self.other_names }
+    
+    #---------------------------------------------------------------------
+    # Member Functions
+    #---------------------------------------------------------------------
+
+    #---------------------------------------------------------------------
+    # Overloaded Operators
+    #---------------------------------------------------------------------
+
+    def __str__( self ):
+        return self.primary_name + ": " + self.title
+
+    def __eq__( self, other ):
+        if not isinstance( other, Class ):
+            return False
+        return ( ( self.all_names == other.all_names ) and ( self.term_taken == other.term_taken ) )
+    
+    def __ne__( self, other ):
+        return not ( self == other )
+    
+    def __len__( self ): # We'll use this for the number of credits
+        return self.credits
        

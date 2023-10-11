@@ -109,10 +109,4 @@ def prompt_term( course_name ):
         if( not valid_response ):
             print( "Oops! That doesn't look like a valid term - please try again" )
 
-        # Make sure that the class was actually offered during that term
-        api_response = api.class_api.get_class( course_name, response )
-        if( api_response[ "status" ] != "success" ):
-            valid_response = False
-            print( f"Oops! It doesn't look like {course_name} was offered during {response} - please try again" )
-
     return response
