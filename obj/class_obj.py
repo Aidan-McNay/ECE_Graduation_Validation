@@ -199,7 +199,10 @@ class Class:
     #---------------------------------------------------------------------
 
     def __str__( self ):
-        return self.primary_name + ": " + self.title
+        str_repr  = self.primary_name + ": " + self.title
+        str_repr += f" ({self.term_taken})"
+        
+        return str_repr
 
     def __eq__( self, other ):
         if not isinstance( other, Class ):
