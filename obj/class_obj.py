@@ -7,6 +7,7 @@
 # Date: October 2nd, 2023
 
 import ui, api
+import exceptions as excp
 
 class Class:
     """
@@ -87,7 +88,7 @@ class Class:
           json_object = api.class_api.get_class( course_name, term )
           self.term_sourced = term
 
-        except api.api_exceptions.TermNotFoundError as e:
+        except excp.api_exceptions.TermNotFoundError as e:
           if api.class_api.in_future( term ): # Find the next best term
             json_object, self.term_sourced = api.class_api.most_recent_term( course_name, term )
           else: # Not in the future, we just don't have info on it

@@ -9,6 +9,7 @@
 # Date: October 2nd, 2023
 
 import ui, api
+import exceptions as excp
 import requests, json, copy
 
 #---------------------------------------------------------------------
@@ -58,7 +59,7 @@ def get_class( course_name, term, dump = False, file_name = None ):
      - dump: Whether to dump the information or not (bool)
      - file_name: The file to dump to, if dumping information (str)
 
-    Possible Exceptions (defined in api.api_exceptions)
+    Possible Exceptions (defined in exceptions.api_exceptions)
      - TermNotFoundError: We don't have information on the given term
      - DeptNotFoundError: Either the department doesn't exist, or it didn't
                           offer any classes that term
@@ -71,7 +72,7 @@ def get_class( course_name, term, dump = False, file_name = None ):
     data_key = ( dept, term )
 
     if( term not in get_rosters() ): # The requested term isn't one we have data for
-        raise api.api_exceptions.TermNotFoundError( term )
+        raise excp.api_exceptions.TermNotFoundError( term )
 
     if( data_key not in _cached_classes.keys() ): # Need to populate with the relevant information
         req_url = "https://classes.cornell.edu/api/2.0/search/classes.json?roster={}&subject={}".format( \
@@ -82,7 +83,7 @@ def get_class( course_name, term, dump = False, file_name = None ):
         json_object = json.loads( json_data )
 
         if( json_object[ "status" ] != "success" ): # The department wasn't found for this term
-            raise api.api_exceptions.DeptNotFoundError( dept, term )
+            raise excp.api_exceptions.DeptNotFoundError( dept, term )
         
         # Store the data for that department and term
         _cached_classes[ data_key ] = json_object[ "data" ][ "classes" ]
@@ -96,7 +97,7 @@ def get_class( course_name, term, dump = False, file_name = None ):
             break
     
     if( class_entry == None ): # The class wasn't found
-        raise api.api_exceptions.ClassNotFoundError( course_name, term )
+        raise excp.api_exceptions.ClassNotFoundError( course_name, term )
         
     # Dumpt the data, if requested
     if( dump ):
@@ -146,4 +147,4 @@ def most_recent_term( course_name, future_term ):
             continue # Didn't find it, so just move on to the next roster
 
     # If we got here, we didn't find it in any rosters
-    raise api.api_exceptions.NoClassInfoError( course_name, future_term )
+    raise excp.api_exceptions.NoClassInfoError( course_name, future_term )
