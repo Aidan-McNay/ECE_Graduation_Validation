@@ -222,8 +222,8 @@ class Grades:
         new_grades = Grades()
         for old_grades in [ self, other ]:
             for netid in old_grades._grades.keys():
-                for term in self._grades[ netid ].keys():
-                    for class_str in self._grades[ netid ][ term ].keys():
+                for term in old_grades._grades[ netid ].keys():
+                    for class_str in old_grades._grades[ netid ][ term ].keys():
                         data = old_grades.get_data( netid, term, class_str )
                         num_cred = data[ "num_credits" ]
                         grade    = data[ "grade" ]
