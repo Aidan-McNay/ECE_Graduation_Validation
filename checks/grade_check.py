@@ -6,7 +6,7 @@
 # Author: Aidan McNay
 # Date: December 3rd, 2023
 
-def grade_check( roster, grades, log_path ):
+def grade_check( roster, grades, log_path, verbose = False ):
     """
     Validates all of the grades reported in a Roster, verifying
     against the given Grades. The results are outputted to the given
@@ -15,7 +15,7 @@ def grade_check( roster, grades, log_path ):
     """
 
     netid  = roster.netid
-    log    = []
+    log    = [ f"Grade Check for {netid}:\n" ]
     errors = 0
 
     for entry in roster.entries:
@@ -23,13 +23,26 @@ def grade_check( roster, grades, log_path ):
         course         = entry.course_used
         proposed_grade = entry.grade
 
-        real_grade     = grades.get_grade( netid, term, course )
+        try:
+            real_grade = grades.get_grade( netid, term, course )
+        except:
+            real_grade = "No Entry"
 
-        if( real_grade != proposed grade ): #The student lied :(
-            log.append( f"ERROR: Proposed grade for {course} ({proposed_grade}) doesn't match our records ({real_grade})\n" )
+        if( real_grade != proposed_grade ): #The student lied :(
+            message = f" - [ERROR] Proposed grade for {course} ({proposed_grade}) doesn't match our records ({real_grade})\n"
             errors += 1
         else:
-            log.append( f"SUCCESS: Grade match for {course}\n" )
+            message = f" - Grade match for {course}\n"
+         
+        log.append( message )
+        if( verbose ):
+            print( message )
+
+    if( errors == 0 ):
+        message = " - [SUCCESS] All grades match"
+        log.append( message )
+        if( verbose ):
+            print( message )
 
     with open( log_path, 'w') as file:
         file.writelines( log )
