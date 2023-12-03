@@ -15,7 +15,7 @@ def grade_check( roster, grades, log_path, verbose = False ):
     """
 
     netid  = roster.netid
-    log    = [ f"Grade Check for {netid}:\n" ]
+    log    = [ f"Grade Check for {netid}:" ]
     errors = 0
 
     for entry in roster.entries:
@@ -29,10 +29,10 @@ def grade_check( roster, grades, log_path, verbose = False ):
             real_grade = "No Entry"
 
         if( real_grade != proposed_grade ): #The student lied :(
-            message = f" - [ERROR] Proposed grade for {course} ({proposed_grade}) doesn't match our records ({real_grade})\n"
+            message = f" - [ERROR] Proposed grade for {course} ({proposed_grade}) doesn't match our records ({real_grade})"
             errors += 1
         else:
-            message = f" - Grade match for {course}\n"
+            message = f" - Grade match for {course}"
          
         log.append( message )
         if( verbose ):
@@ -45,6 +45,6 @@ def grade_check( roster, grades, log_path, verbose = False ):
             print( message )
 
     with open( log_path, 'w') as file:
-        file.writelines( log )
+        file.write( "\n".join( log ) )
 
     return errors

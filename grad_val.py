@@ -18,7 +18,7 @@ import obj, checks
 parser = argparse.ArgumentParser( description = "Validates an ECE student's checklist for graduation" )
 
 # Mandatory arguments
-parser.add_argument( "checklist", help = "The checklist to validate", metavar = "<checklist>" )
+parser.add_argument( "checklists", help = "The checklist(s) to validate", metavar = "<checklists>", action = "append" )
 
 # Optional arguments
 parser.add_argument( "-g", "--grades", 
@@ -59,14 +59,19 @@ errors = {}
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    print( args )
 
-    # Obtain the checklist
-    checklist = obj.checklist_obj.Checklist( args.checklist )
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Obtain the rosters from the checklists
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    # Populate the roster based on the checklist
-    roster = obj.roster_obj.Roster( checklist.netid )
-    roster.populate_entries( checklist.entries )
+    rosters = []
+
+    for checklist_path in args.checklists:
+        checklist = obj.checklist_obj.Checklist( checklist_path )
+        roster = obj.roster_obj.Roster( checklist.netid )
+        roster.populate_entries( checklist.entries )
+
+        rosters.append( roster )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Grade Validation
@@ -92,16 +97,24 @@ if __name__ == "__main__":
         log_dir = makelogdir()
 
         for check_name, check_func in checks_to_run.items():
-            print( f"Running {check_name}..." )
+            errors[ check_name ] = {}
             result_dir = os.path.join( log_dir, check_name )
             os.makedirs( result_dir, exist_ok = True )
-            log_file = os.path.join( result_dir, f"{roster.netid}.log" )
 
-            errors[ check_name ] = check_func( roster, log_file )
+            for roster in rosters:
+                netid = roster.netid
+                log_file = os.path.join( result_dir, f"{netid}.log" )
+
+                print( f"Running {check_name} for {netid}..." )
+                errors[ check_name ][ netid ] = check_func( roster, log_file )
 
             print( f" - Log in { os.path.relpath( log_file ) }\n")
         
         print( "Summary:" )
 
-        for check_name, error_count in errors.items():
-            print( f"{check_name}: {error_count} errors" )
+        for check_name, error_logs in errors.items():
+            total_errors = sum( error_logs.values() )
+            print( f" - {check_name}: {total_errors} errors" )
+
+            for netid, num_errors in error_logs.items():
+                print( f"    - {netid}: {num_errors} errors")
