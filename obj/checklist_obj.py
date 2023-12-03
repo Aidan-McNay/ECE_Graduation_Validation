@@ -10,6 +10,8 @@
 # Date: December 2nd, 2023
 
 import pandas as pd
+from dateutil import parser
+from obj.roster_entry_obj import RosterEntry
 
 #---------------------------------------------------------------------
 # Coordinates Object
@@ -81,8 +83,19 @@ class Checklist:
 
      - advisor: Student's advisor (str)
 
-     - reqs: List of Requirement objects listed in the checklist
-             (list of Requirements)
+     - entries: List of RosterEntry objects listed in the checklist
+                for the satisfied requirements and checkoffs
+                (list of RosterEntrys)
+
+     - exp_grad_term: The student's expected graduation term (str)
+
+     - agreement_initials: Initials of student agreeing to 
+                           validity (str)
+
+     - agreement_date: Date of initials for agreement (datetime.datetime)
+
+    Note that any subsequent parsers for different formats should additionally
+    support these properties for access by other code, to ensure compatibility
     """
 
     def __init__( self, file_path ):
@@ -118,10 +131,10 @@ class Checklist:
     
     def get_cell( self, coord ):
         """
-        Returns the value of the cell at the given coordinates
+        Returns the value of the cell (str) at the given coordinates
         """
 
-        return self._data[ coord.y ][ coord.x ]
+        return str( self._data[ coord.y ][ coord.x ] )
     
     #---------------------------------------------------------------------
     # Dynamic Properties - Student Attributes
@@ -152,5 +165,83 @@ class Checklist:
     
     @property
     def advisor( self ):
-        return self.get_student_attr( "Advisor:", False )
-        
+        return self.get_student_attr( "Advisor:" )
+    
+    # The remaining properties aren't directly next to the label, so
+    # we must treat them separately
+
+    @property
+    def agreement_initials( self ):
+        initials_label = self.find_cell( "Student Initials" )
+        assert len( initials_label ) == 1, f"Error: Multiple Student Initials found"
+
+        coordinates = initials_label[ 0 ]
+        # The initials two cells to the right
+        return self.get_cell( coordinates.right().right() )
+    
+    @property
+    def agreement_date( self ):
+        initials_label = self.find_cell( "Student Initials" )
+        assert len( initials_label ) == 1, f"Error: Multiple Student Initials found"
+
+        coordinates = initials_label[ 0 ]
+        # The date is four cells to the right
+        return parser.parse( self.get_cell( coordinates.right().right().right().right() ) )
+    
+    @property
+    def exp_grad_term( self ):
+        term_label = self.find_cell( "Expected Graduation Term" )
+        assert len( term_label ) == 1, f"Error: Multiple Expected Graduation Term found"
+
+        coordinates = term_label[ 0 ]
+        # The date is three cells to the right
+        return self.get_cell( coordinates.right().right().right() )
+    
+    #---------------------------------------------------------------------
+    # Dynamic Properties - Roster Entries
+    #---------------------------------------------------------------------
+
+    @property
+    def entries( self ):
+
+        roster_entries = []
+
+        # Get requirements
+        entry_coords = self.find_cell( "REQ-" )
+
+        for coord in entry_coords:
+            req    = self.get_cell( coord )
+            course = self.get_cell( coord.right() )
+            cred   = self.get_cell( coord.right().right() )
+            term   = self.get_cell( coord.right().right().right() )
+            grade  = self.get_cell( coord.right().right().right().right() )
+
+            if( req.lower() == "REQ-LS".lower() ):
+                cat = self.get_cell( coord.right().right().right().right().right() )
+            else:
+                cat = None
+
+            roster_entries.append( RosterEntry( req, course, cred, term, grade, cat ) )
+
+        # Get checkoffs
+        roster_entries.append( RosterEntry( "CKOFF-ADVPROG",  self.get_student_attr( "Adv. Programming" ) ) )
+        roster_entries.append( RosterEntry( "CKOFF-TECHWRIT", self.get_student_attr( "Tech. Writing"    ) ) )
+
+        return roster_entries
+
+    #---------------------------------------------------------------------
+    # Overloaded Operators
+    #---------------------------------------------------------------------
+
+    def __str__( self ):
+        """
+        String representation (for debugging)
+        """
+
+        str_repr = ""
+        str_repr += f"Checklist for {self.first_name} {self.last_name} ({self.netid})\n"
+
+        for entry in self.entries:
+            str_repr +=  ( " - " + str( entry ) + "\n" )
+
+        return str_repr[:-1]

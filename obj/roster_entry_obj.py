@@ -67,19 +67,33 @@ class RosterEntry:
      - course_used: Name of the course used to satisfy the requirement
                     (str)
 
-     - cred_applied: Credits applied to satisfy the requirement (int)
+     - cred_applied: Credits applied to satisfy the requirement (int or None)
 
-     - term: Term that the class was taken (str)
+     - term: Term that the class was taken (str or None)
 
-     - grade: Grade reported for the class (str)
+     - grade: Grade reported for the class (str or None)
+
+     - cat: Category for liberal study; if the entry isn't "REQ-LS", this 
+            should be set to None (str or None)
+
+    Note that the primary attributes are meant for requirements; checkoffs will
+    have only `req` and `course_used`, with the rest set to None
+           
     """
 
-    def __init__( self, req, course, cred, term, grade ):
+    def __init__( self, req, course = None, cred = None, term = None, grade = None, cat = None ):
         self.req          = req
         self.course_used  = course
         self.cred_applied = cred
         self.term         = term
         self.grade        = grade
+        self.cat          = cat
 
         assert ( ( self.req in req_types ) or (self.req in checkoff_types ) ), \
                f"Error: Listed requirement {self.req} not recognized"
+        
+    def __str__( self ):
+        """
+        String representation (for debugging)
+        """
+        return f"{self.req} satisfied by {self.course_used} ({self.term})"
