@@ -17,9 +17,10 @@ import datetime
 import pandas as pd
 from dateutil import parser
 
-from obj.roster_entry_obj import RosterEntry
+from obj.roster_entry_obj import RosterEntry, ReqEntry, CheckoffEntry
 from ui.parser import parse_class_name as pclass
 from ui.parser import parse_class_term as pterm
+import exceptions as excp
 
 #---------------------------------------------------------------------
 # Coordinates Object
@@ -100,6 +101,12 @@ class Checklist:
                 for the satisfied requirements and checkoffs
                 (list of RosterEntrys)
 
+     - req_entries: List of ReqEntry objects listed in the checklist
+                    for the satisfied requirements (list of ReqEntrys)
+
+     - checkoff_entries: List of ReqEntry objects listed in the checklist
+                         for the satisfied checkoffs (list of CheckoffEntrys)
+
      - exp_grad_term: The student's expected graduation term (str)
 
      - agreement_initials: Initials of student agreeing to 
@@ -123,8 +130,7 @@ class Checklist:
             dataframe = pd.read_csv( file_path )
 
         else:
-            assert False, ( "Error: Not a supported checklist file type. " + \
-                            "Please use a .xlsx or .csv file." )
+            raise excp.checklist_exceptions.UnsupportedFileTypeError( file_path )
 
         self._data = ( dataframe.to_numpy() ).tolist()
 
@@ -156,90 +162,76 @@ class Checklist:
     # Dynamic Properties - Student Attributes
     #---------------------------------------------------------------------
 
-    def get_student_attr( self, val: str, case_insensitive: bool = True ) -> str:
-        """Gets an attribute next to the given label (val)"""
+    def get_student_attr( self, val: str, num_right: int, case_insensitive: bool = True ) -> str:
+        """Gets an attribute next to the given label (val) a given number of spaces away"""
 
         val_label = self.find_cell( val, case_insensitive )
-        assert len( val_label ) == 1, f"Error: Multiple {val} found"
+        if len( val_label ) != 1:
+            raise excp.checklist_exceptions.MultipleAttributeError( val )
 
         coordinates = val_label[ 0 ]
-        return self.get_cell( coordinates.right() )
+        for _ in range( num_right ):
+            coordinates = coordinates.right()
+
+        return self.get_cell( coordinates )
 
     @property
     def first_name( self ) -> str:
         """Gets the first name of the student"""
 
-        return self.get_student_attr( "First Name:" )
+        return self.get_student_attr( "First Name:", 1 )
 
     @property
     def last_name( self ) -> str:
         """Gets the last name of the student"""
 
-        return self.get_student_attr( "Last Name:" )
+        return self.get_student_attr( "Last Name:", 1 )
 
     @property
     def netid( self ) -> str:
         """Gets the NetID of the student"""
 
-        return self.get_student_attr( "NetID:" )
+        return self.get_student_attr( "NetID:", 1 )
 
     @property
     def cuid( self ) -> str:
         """Gets the CUID of the student"""
 
-        return self.get_student_attr( "CUID:" )
+        return self.get_student_attr( "CUID:", 1 )
 
     @property
     def advisor( self ) -> str:
         """Gets the advisor of the student"""
 
-        return self.get_student_attr( "Advisor:" )
-
-    # The remaining properties aren't directly next to the label, so
-    # we must treat them separately
+        return self.get_student_attr( "Advisor:", 1 )
 
     @property
     def agreement_initials( self ) -> str:
         """Gets the agreement initials of the student"""
 
-        initials_label = self.find_cell( "Student Initials" )
-        assert len( initials_label ) == 1, "Error: Multiple Student Initials found"
-
-        coordinates = initials_label[ 0 ]
-        # The initials two cells to the right
-        return self.get_cell( coordinates.right().right() )
+        return self.get_student_attr( "Student Initials", 2 )
 
     @property
     def agreement_date( self ) -> datetime.datetime:
         """Gets the agreement date of the student"""
 
-        initials_label = self.find_cell( "Student Initials" )
-        assert len( initials_label ) == 1, "Error: Multiple Student Initials found"
-
-        coordinates = initials_label[ 0 ]
-        # The date is four cells to the right
-        return parser.parse( self.get_cell( coordinates.right().right().right().right() ) )
+        return parser.parse( self.get_student_attr( "Student Initials", 4 ) )
 
     @property
     def exp_grad_term( self ) -> str:
         """Gets the expected graduation date of the student"""
 
-        term_label = self.find_cell( "Expected Graduation Term" )
-        assert len( term_label ) == 1, "Error: Multiple Expected Graduation Term found"
-
-        coordinates = term_label[ 0 ]
-        # The date is three cells to the right
-        return self.get_cell( coordinates.right().right().right() )
+        return self.get_student_attr( "Expected Graduation Term", 3 )
 
     #---------------------------------------------------------------------
     # Dynamic Properties - Roster Entries
     #---------------------------------------------------------------------
 
     @property
-    def entries( self ) -> List[RosterEntry]:
-        """Gets the entries in the checklist"""
+    def req_entries( self ) -> List[ReqEntry]:
+        """Gets the requirement entries in the checklist"""
 
-        roster_entries = []
+        req_entries: List[ReqEntry] = []
 
         # Get requirements
         entry_coords = self.find_cell( "REQ-" )
@@ -260,14 +252,32 @@ class Checklist:
             else:
                 cat = None
 
-            roster_entries.append( RosterEntry( req, course, cred_num, term, grade, cat ) )
+            req_entries.append( ReqEntry( req, course, cred_num, term, grade, cat ) )
+
+        return req_entries
+
+    @property
+    def checkoff_entries( self ) -> List[CheckoffEntry]:
+        """Gets the checkoff entries in the checklist"""
+
+        checkoff_entries: List[CheckoffEntry] = []
 
         # Get checkoffs
-        roster_entries.append( RosterEntry( "CKOFF-ADVPROG",
-                                            self.get_student_attr( "Adv. Programming" ) ) )
+        checkoff_entries.append( CheckoffEntry( "CKOFF-ADVPROG",
+                                                self.get_student_attr( "Adv. Programming", 1 ) ) )
 
-        roster_entries.append( RosterEntry( "CKOFF-TECHWRIT",
-                                            self.get_student_attr( "Tech. Writing"    ) ) )
+        checkoff_entries.append( CheckoffEntry( "CKOFF-TECHWRIT",
+                                                self.get_student_attr( "Tech. Writing"   , 1 ) ) )
+
+        return checkoff_entries
+
+    @property
+    def entries( self ) -> List[RosterEntry]:
+        """Gets all entries in the checklist"""
+        roster_entries: List[RosterEntry] = []
+
+        roster_entries += self.req_entries
+        roster_entries += self.checkoff_entries
 
         return roster_entries
 

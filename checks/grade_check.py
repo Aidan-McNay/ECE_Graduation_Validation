@@ -8,8 +8,6 @@
 # Date: December 3rd, 2023
 """
 
-from typing import cast
-
 from ui.logger import printl
 import exceptions as excp
 
@@ -28,14 +26,11 @@ def grade_check( roster: Roster, grades: Grades, log_path: str, verbose: bool = 
     errors = 0
 
     with open( log_path, 'w', encoding = "utf-8" ) as file:
-        file.write( f"Grade Check for {netid}:" )
+        file.write( f"Grade Check for {netid}:\n" )
 
-        for entry in roster.entries:
-            # Only consider requirements, not checkoffs
-            if not entry.req.startswith( "REQ-" ):
-                continue
+        for entry in roster.req_entries:
 
-            term           = cast( str, entry.term ) # Assume it's a string, not None
+            term           = entry.term
             course         = entry.course_used
             proposed_grade = entry.grade
 

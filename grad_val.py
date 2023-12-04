@@ -76,7 +76,7 @@ if __name__ == "__main__":
     for checklist_path in args.checklists:
         checklist = obj.checklist_obj.Checklist( checklist_path )
         roster = obj.roster_obj.Roster( checklist.netid )
-        roster.populate_entries( checklist.entries )
+        roster.populate_entries( checklist.req_entries, checklist.checkoff_entries )
 
         rosters.append( roster )
 

@@ -11,7 +11,7 @@
 
 from typing import List
 
-from obj.roster_entry_obj import RosterEntry
+from obj.roster_entry_obj import ReqEntry, CheckoffEntry
 from obj.class_obj import Class
 
 class Roster():
@@ -33,13 +33,16 @@ class Roster():
     """
 
     def __init__( self, netid: str ):
-        self.netid   = netid
-        self.entries: List[RosterEntry] = []
-        self.classes: List[Class]       = []
+        self.netid                                 = netid
+        self.req_entries:      List[ReqEntry]      = []
+        self.checkoff_entries: List[CheckoffEntry] = []
+        self.classes:          List[Class]         = []
 
-    def populate_entries( self, entries: List[RosterEntry] ) -> None:
+    def populate_entries( self, req_entries: List[ReqEntry],
+                                checkoff_entries: List[CheckoffEntry] ) -> None:
         """
         Populates the checklist entries from a given list of 
         RosterEntrys
         """
-        self.entries = entries
+        self.req_entries      = req_entries
+        self.checkoff_entries = checkoff_entries
