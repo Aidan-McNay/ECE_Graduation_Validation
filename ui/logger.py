@@ -8,7 +8,9 @@
 # Date: December 3rd, 2023
 """
 
-def printl( string_to_log, file, verbose = True ):
+from io import TextIOWrapper
+
+def printl( string_to_log: str, file: TextIOWrapper, verbose: bool = True ):
     """
     Logs a given statement to the file
 

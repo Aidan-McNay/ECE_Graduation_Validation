@@ -8,13 +8,15 @@
 # Date: October 2nd, 2023
 """
 
+from typing import List
+
 import ui.parser
 
 #---------------------------------------------------------------------
 # General prompting functions
 #---------------------------------------------------------------------
 
-def get_idx( str_to_convert ):
+def get_idx( str_to_convert: str ) -> int:
     '''
     Attempts to convert a string into a number
     Returns -1 if not possible
@@ -25,7 +27,7 @@ def get_idx( str_to_convert ):
     except ValueError:
         return -1
 
-def prompt_usr( msg ):
+def prompt_usr( msg: str ) -> str:
     '''
     Prompts the user for input, using the given message
     '''
@@ -35,7 +37,7 @@ def prompt_usr( msg ):
     print( "" ) # New line for further prompting
     return response
 
-def prompt_usr_list( msg, options, default_idx ):
+def prompt_usr_list( msg: str, options: List[str], default_idx: int ) -> str:
     '''
     Prompts the user to pick one of the options listed.
 
@@ -91,7 +93,7 @@ def prompt_usr_list( msg, options, default_idx ):
 # Class-Specific Prompts
 #---------------------------------------------------------------------
 
-def prompt_term( course_name ):
+def prompt_term( course_name: str ) -> str:
     '''
     Prompts the user for the term that should be associated with the 
     given course name

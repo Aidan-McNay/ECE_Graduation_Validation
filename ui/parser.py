@@ -14,7 +14,7 @@ import exceptions as excp
 # Parsing for Class Names
 #---------------------------------------------------------------------
 
-def parse_class_name( ugly_name ):
+def parse_class_name( ugly_name: str ) -> str:
     """
     Parses non-optimal user input into a usable class name for making
     API requests.
@@ -28,7 +28,7 @@ def parse_class_name( ugly_name ):
 
     return ( "".join(letters) ).upper() + " " + "".join(digits)
 
-def get_dept_from_name( class_name ):
+def get_dept_from_name( class_name: str ) -> str:
     """
     Gets the department name from a class name
 
@@ -36,7 +36,7 @@ def get_dept_from_name( class_name ):
     """
     return class_name.split( " " )[0]
 
-def get_nbr_from_name( class_name ):
+def get_nbr_from_name( class_name: str ) -> str:
     """
     Gets the class number from a class name
 
@@ -48,7 +48,7 @@ def get_nbr_from_name( class_name ):
 # Parsing for Class Terms
 #---------------------------------------------------------------------
 
-def parse_class_term( ugly_term ):
+def parse_class_term( ugly_term: str ) -> str:
     """
     Parses non-optimal user input into a usable term ID
 
@@ -61,7 +61,7 @@ def parse_class_term( ugly_term ):
 
     return ( "".join(letters) ).upper() + "".join(digits)
 
-def validate_class_term( term ):
+def validate_class_term( term: str ) -> bool:
     """
     Validates that the given string represents an actual term, and
     returns the corresponding boolean
@@ -77,7 +77,7 @@ def validate_class_term( term ):
     result = result and ( term[0:2] in [ "SP", "SU", "FA", "WI" ] )
     return result
 
-def term_index( term ):
+def term_index( term: str ) -> float:
     """
     Returns a value for each term such that chronologically later
     terms will have higher values than terms that come before
@@ -100,7 +100,7 @@ def term_index( term ):
 
     return term_year + seasons[term_season]
 
-def term_is_later( term1, term2 ):
+def term_is_later( term1: str, term2: str ) -> bool:
     """
     Returns a bool representing whether the first term occurs
     later than the second term
