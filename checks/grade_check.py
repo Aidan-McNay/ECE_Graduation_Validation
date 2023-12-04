@@ -8,6 +8,8 @@
 # Date: December 3rd, 2023
 """
 
+from typing import cast
+
 from ui.logger import printl
 import exceptions as excp
 
@@ -33,7 +35,7 @@ def grade_check( roster: Roster, grades: Grades, log_path: str, verbose: bool = 
             if not entry.req.startswith( "REQ-" ):
                 continue
 
-            term           = entry.term
+            term           = cast( str, entry.term ) # Assume it's a string, not None
             course         = entry.course_used
             proposed_grade = entry.grade
 

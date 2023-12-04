@@ -11,8 +11,12 @@
 # Date: December 2nd, 2023
 """
 
+from typing import List
+import datetime
+
 import pandas as pd
 from dateutil import parser
+
 from obj.roster_entry_obj import RosterEntry
 from ui.parser import parse_class_name as pclass
 from ui.parser import parse_class_term as pterm
@@ -41,7 +45,7 @@ class Coordinates:
        y
     """
 
-    def __init__( self, y, x ):
+    def __init__( self, y: int, x: int ):
         """Initializes the values"""
         self.y = y
         self.x = x
@@ -107,7 +111,7 @@ class Checklist:
     support these properties for access by other code, to ensure compatibility
     """
 
-    def __init__( self, file_path ):
+    def __init__( self, file_path: str ):
         """
         Initializes the Checklist data, based off of the given file path
         """
@@ -124,7 +128,7 @@ class Checklist:
 
         self._data = ( dataframe.to_numpy() ).tolist()
 
-    def find_cell( self, val, case_insensitive = True ):
+    def find_cell( self, val: str, case_insensitive: bool = True ) -> List[Coordinates]:
         """
         Returns a list of Coordinates of cells with val (str) as a substring
         (returns a list of Coordinates)
@@ -141,7 +145,7 @@ class Checklist:
 
         return result
 
-    def get_cell( self, coord ):
+    def get_cell( self, coord: Coordinates ) -> str:
         """
         Returns the value of the cell (str) at the given coordinates
         """
@@ -152,7 +156,7 @@ class Checklist:
     # Dynamic Properties - Student Attributes
     #---------------------------------------------------------------------
 
-    def get_student_attr( self, val, case_insensitive = True ):
+    def get_student_attr( self, val: str, case_insensitive: bool = True ) -> str:
         """Gets an attribute next to the given label (val)"""
 
         val_label = self.find_cell( val, case_insensitive )
@@ -162,31 +166,31 @@ class Checklist:
         return self.get_cell( coordinates.right() )
 
     @property
-    def first_name( self ):
+    def first_name( self ) -> str:
         """Gets the first name of the student"""
 
         return self.get_student_attr( "First Name:" )
 
     @property
-    def last_name( self ):
+    def last_name( self ) -> str:
         """Gets the last name of the student"""
 
         return self.get_student_attr( "Last Name:" )
 
     @property
-    def netid( self ):
+    def netid( self ) -> str:
         """Gets the NetID of the student"""
 
         return self.get_student_attr( "NetID:" )
 
     @property
-    def cuid( self ):
+    def cuid( self ) -> str:
         """Gets the CUID of the student"""
 
         return self.get_student_attr( "CUID:" )
 
     @property
-    def advisor( self ):
+    def advisor( self ) -> str:
         """Gets the advisor of the student"""
 
         return self.get_student_attr( "Advisor:" )
@@ -195,7 +199,7 @@ class Checklist:
     # we must treat them separately
 
     @property
-    def agreement_initials( self ):
+    def agreement_initials( self ) -> str:
         """Gets the agreement initials of the student"""
 
         initials_label = self.find_cell( "Student Initials" )
@@ -206,7 +210,7 @@ class Checklist:
         return self.get_cell( coordinates.right().right() )
 
     @property
-    def agreement_date( self ):
+    def agreement_date( self ) -> datetime.datetime:
         """Gets the agreement date of the student"""
 
         initials_label = self.find_cell( "Student Initials" )
@@ -217,7 +221,7 @@ class Checklist:
         return parser.parse( self.get_cell( coordinates.right().right().right().right() ) )
 
     @property
-    def exp_grad_term( self ):
+    def exp_grad_term( self ) -> str:
         """Gets the expected graduation date of the student"""
 
         term_label = self.find_cell( "Expected Graduation Term" )
@@ -232,7 +236,7 @@ class Checklist:
     #---------------------------------------------------------------------
 
     @property
-    def entries( self ):
+    def entries( self ) -> List[RosterEntry]:
         """Gets the entries in the checklist"""
 
         roster_entries = []
@@ -247,16 +251,16 @@ class Checklist:
             term   = self.get_cell( coord.right().right().right() )
             grade  = self.get_cell( coord.right().right().right().right() )
 
-            course = pclass( course )
-            term   = pterm( term )
-            cred   = int( cred )
+            course   = pclass( course )
+            term     = pterm( term )
+            cred_num = int( cred )
 
             if req.lower() == "REQ-LS".lower():
                 cat = self.get_cell( coord.right().right().right().right().right() )
             else:
                 cat = None
 
-            roster_entries.append( RosterEntry( req, course, cred, term, grade, cat ) )
+            roster_entries.append( RosterEntry( req, course, cred_num, term, grade, cat ) )
 
         # Get checkoffs
         roster_entries.append( RosterEntry( "CKOFF-ADVPROG",
@@ -271,7 +275,7 @@ class Checklist:
     # Overloaded Operators
     #---------------------------------------------------------------------
 
-    def __str__( self ):
+    def __str__( self ) -> str:
         """String representation (for debugging)"""
 
         str_repr = ""

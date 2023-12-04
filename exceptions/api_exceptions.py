@@ -16,7 +16,7 @@ class TermNotFoundError( Exception ):
      - term: Term that wasn't found (str)
     """
 
-    def __init__( self, term ):
+    def __init__( self, term: str ):
         self.term = term
 
         err_msg = f"Information for {term} wasn't found by the API"
@@ -31,7 +31,7 @@ class DeptNotFoundError( Exception ):
      - term: Term that the given department wasn't found in
     """
 
-    def __init__( self, dept, term ):
+    def __init__( self, dept: str, term: str ):
         self.dept = dept
         self.term = term
 
@@ -47,7 +47,7 @@ class ClassNotFoundError( Exception ):
      - term: Term that the course wasn't found in (str)
     """
 
-    def __init__( self, course_name, term ):
+    def __init__( self, course_name: str, term: str ):
         self.course_name = course_name
         self.term        = term
 
@@ -64,7 +64,7 @@ class NoClassInfoError( Exception ):
      - term: The future term that was specified (str)
     """
 
-    def __init__( self, course_name, term ):
+    def __init__( self, course_name: str, term: str ):
         self.course_name = course_name
         self.term        = term
 

@@ -8,6 +8,8 @@
 # Date: October 2nd, 2023
 """
 
+from typing import Optional, Set, Any
+
 import api
 import ui
 import exceptions as excp
@@ -65,7 +67,7 @@ class Class:
      - _enrl_idx: The index of the enrolled section (if only 1, set to 0)
     """
 
-    def __init__( self, course_name, term = None ):
+    def __init__( self, course_name: str, term_opt: Optional[str] = None ):
         """
         Sources the initial information for the class
 
@@ -78,7 +80,7 @@ class Class:
 
         course_name = ui.parser.parse_class_name( course_name )
 
-        if term is None:
+        if term_opt is None:
             term = ui.user.prompt_term( course_name )
         else:
             term = ui.parser.parse_class_term( term )
@@ -112,7 +114,7 @@ class Class:
     # Attribute setters
     #---------------------------------------------------------------------
 
-    def set__enrl_idx( self, json_obj ):
+    def set__enrl_idx( self, json_obj: dict ) -> None:
         """Sets the section that we're looking at"""
 
         if len( json_obj[ "enrollGroups" ] ) == 1:
@@ -127,7 +129,7 @@ class Class:
         sel_option = ui.user.prompt_usr_list( prompt_msg, options, 0 )
         self._enrl_idx = options.index( sel_option )
 
-    def set_all_names( self, json_obj ):
+    def set_all_names( self, json_obj: dict ) -> None:
         """Gets the crosslisted names for the class"""
 
         all_names = { self.primary_name }
@@ -136,34 +138,34 @@ class Class:
             all_names.add( other_name )
         self.all_names = all_names
 
-    def set_title( self, json_obj ):
+    def set_title( self, json_obj: dict ) -> None:
         """Sets the title of the class"""
 
         self.title = json_obj[ "titleShort" ]
 
-    def set_titleLong( self, json_obj ):
+    def set_titleLong( self, json_obj: dict ) -> None:
         """Sets the long title of the class"""
 
         self.titleLong = json_obj[ "titleLong" ]
 
-    def set_catalogDistr( self, json_obj ):
+    def set_catalogDistr( self, json_obj: dict ) -> None:
         """Sets the distribution of the class"""
 
         distr_string = json_obj[ "catalogDistr" ]
         distr_string = distr_string.strip( "()" ) # Strip off parenthesis
         self.catalogDistr = distr_string.split( ", " )
 
-    def set_acadGroup( self, json_obj ):
+    def set_acadGroup( self, json_obj: dict ) -> None:
         """Sets the academic group of the class"""
 
         self.acadGroup = json_obj[ "acadGroup" ]
 
-    def set_acadCareer( self, json_obj ):
+    def set_acadCareer( self, json_obj: dict ) -> None:
         """Sets the class' affiliation"""
 
         self.acadGroup = json_obj[ "acadCareer" ]
 
-    def set_is_FWS( self, json_obj ):
+    def set_is_FWS( self, json_obj: dict ) -> None:
         """Sets whether the class is an FWS or not"""
 
         if "FWS: " in json_obj[ "titleLong" ]:
@@ -176,7 +178,7 @@ class Class:
 
         self.is_FWS = False
 
-    def set_credits( self, json_obj ):
+    def set_credits( self, json_obj: dict ) -> None:
         """Sets the number of credits the class was taken for"""
 
         max_cred = json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMaximum" ]
@@ -196,25 +198,25 @@ class Class:
     #---------------------------------------------------------------------
 
     @property
-    def department( self ):
+    def department( self ) -> str:
         """Returns the class' department"""
 
         return ui.parser.get_dept_from_name( self.primary_name )
 
     @property
-    def course_number( self ):
+    def course_number( self ) -> str:
         """Returns the class' course number"""
 
         return ui.parser.get_nbr_from_name( self.primary_name )
 
     @property
-    def all_departments( self ):
+    def all_departments( self ) -> Set[str]:
         """Returns all of the class' crosslisted departments"""
 
         return { ui.parser.get_dept_from_name( i ) for i in self.all_names }
 
     @property
-    def other_names( self ):
+    def other_names( self ) -> Set[str]:
         """Returns all other names the class goes by (not including primary)"""
 
         cpy_to_return = self.all_names.copy()
@@ -222,7 +224,7 @@ class Class:
         return cpy_to_return
 
     @property
-    def other_departments( self ):
+    def other_departments( self ) -> Set[str]:
         """Returns all other departments the class is crosslisted in (not including primary)"""
         return { ui.parser.get_dept_from_name( i ) for i in self.other_names }
 
@@ -234,19 +236,19 @@ class Class:
     # Overloaded Operators
     #---------------------------------------------------------------------
 
-    def __str__( self ):
+    def __str__( self ) -> str:
         str_repr  = self.primary_name + ": " + self.title
         str_repr += f" ({self.term_taken})"
 
         return str_repr
 
-    def __eq__( self, other ):
+    def __eq__( self, other: Any ) -> bool:
         if not isinstance( other, Class ):
             return False
         return ( ( self.all_names == other.all_names ) and ( self.term_taken == other.term_taken ) )
 
-    def __ne__( self, other ):
+    def __ne__( self, other: Any ) -> bool:
         return not self == other
 
-    def __len__( self ): # We'll use this for the number of credits
+    def __len__( self ) -> int: # We'll use this for the number of credits
         return self.credits

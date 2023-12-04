@@ -9,13 +9,15 @@
 """
 
 import csv
+from typing import Optional, List, Dict, Union
+
 import exceptions as excp
 
 #---------------------------------------------------------------------
 # Grade Mapping
 #---------------------------------------------------------------------
 
-GRADE_MAPPING = {
+GRADE_MAPPING: Dict[str, float] = {
     "A+": 4.3,
     "A" : 4,
     "A-": 3.7,
@@ -31,7 +33,7 @@ GRADE_MAPPING = {
     "F" : 0
 }
 
-def grd_to_val( grd_str ):
+def grd_to_val( grd_str: str ) -> float:
     """Maps grades to values"""
     return GRADE_MAPPING[ grd_str ]
 
@@ -39,14 +41,14 @@ def grd_to_val( grd_str ):
 # Term Mapping
 #---------------------------------------------------------------------
 
-TERM_MAPPING = {
+TERM_MAPPING: Dict[str, str] = {
     "spring" : "SP",
     "summer" : "SU",
     "fall"   : "FA",
     "winter" : "WI"
 }
 
-def term_str_convert( term_str ):
+def term_str_convert( term_str: str ) -> str:
     """
     Converts a verbose term string to the simplified version
     Ex. 'Spring 2023' => 'SP23'
@@ -71,7 +73,7 @@ class Grades:
     Python representation of a student's grades
 
     Attributes:
-     - _fields (list of str or None): A list corresponding to 
+     - _fields (list of str): A list corresponding to 
          the titles/headers of the columns in the CSV, if any
 
      - _grades (dict): A dictionary or the following format:
@@ -104,9 +106,8 @@ class Grades:
     # These are only meant to be called on initialization, NOT from
     # outside the object
 
-    def __init__( self, src_file = None ):
-        self._grades = {}
-        self._fields = None
+    def __init__( self, src_file: Optional[str] = None ):
+        self._grades: Dict[str,Dict[str,Dict[str,Dict[str,Union[ str, int ]]]]] = {}
 
         if src_file is not None: # Load data
             with open( src_file, "r", encoding = "utf-8" ) as data:
@@ -117,30 +118,30 @@ class Grades:
                 for line in contents:
                     self.add_grade( line )
 
-    def set_fields( self, line ):
+    def set_fields( self, line: List[str] ) -> None:
         """Sets the fields, for later slicing into the CSV"""
 
         self._fields = line
 
-    def get_field( self, line, field ):
+    def get_field( self, line: List[str], field: str ) -> str:
         """Returns the item from the column specified by the given field"""
 
         index = self._fields.index( field )
         return line[ index ]
 
-    def add_grade( self, line ):
+    def add_grade( self, line: List[str] ) -> None:
         """Adds the grade from the given line"""
 
         netid      = self.get_field( line, "Netid"                )
         term_str   = self.get_field( line, "Academic Term Ldescr" )
         class_subj = self.get_field( line, "Subject"              )
         class_num  = self.get_field( line, "Catalog Nbr"          )
-        num_cred   = self.get_field( line, "Unt Taken"            )
+        cred       = self.get_field( line, "Unt Taken"            )
         grade_str  = self.get_field( line, "Official Grade"       )
 
         term  = term_str_convert( term_str )
         class_str = f"{class_subj} {class_num}"
-        num_cred = int( num_cred )
+        num_cred = int( cred )
 
         if not netid in self._grades:
             self._grades[ netid ] = {}
@@ -153,7 +154,8 @@ class Grades:
             "grade"       : grade_str
         }
 
-    def add_grade_manual( self, netid, term, class_str, num_cred, grade ):
+    def add_grade_manual( self, netid: str, term: str, class_str: str,
+                          num_cred: int, grade: str ) -> None:
         """
         Adds the grade data manually, using all the necessary values
 
@@ -177,7 +179,7 @@ class Grades:
     # These are meant to be used to access the stored data, and should be
     # used from other modules
 
-    def get_data( self, netid, term, class_str ):
+    def get_data( self, netid: str, term: str, class_str: str ) -> Dict[ str, Union[ str, int ] ]:
         """
         Returns data from when the student took the class
 
@@ -186,8 +188,8 @@ class Grades:
          - term:      (str) Ex. 'SP23'
          - class_str: (str) Ex. 'ECE 2720'
 
-        Returns a dictionary with the attributes "num_credits" and
-        "grade", both storing ints as defined above
+        Returns a dictionary with the attributes "num_credits" (int) 
+        and "grade" (str)
         """
 
         if not netid in self._grades:
@@ -201,17 +203,19 @@ class Grades:
 
         return self._grades[ netid ][ term ][ class_str ]
 
-    def get_credits( self, netid, term, class_str ):
+    def get_credits( self, netid: str, term: str, class_str: str ) -> int:
         """Returns the number of credits a student took a class for"""
 
-        return self.get_data( netid, term, class_str )[ "num_credits" ]
+        # Ensure that we return an int for type safety
+        return int( self.get_data( netid, term, class_str )[ "num_credits" ] )
 
-    def get_grade( self, netid, term, class_str ):
+    def get_grade( self, netid: str, term: str, class_str: str ) -> str:
         """Returns the grade a student got in a class"""
 
-        return self.get_data( netid, term, class_str )[ "grade" ]
+        # Ensure that we return a string for type safety
+        return str( self.get_data( netid, term, class_str )[ "grade" ] )
 
-    def when_taken( self, netid, class_str ):
+    def when_taken( self, netid: str, class_str: str ) -> List[str]:
         """
         Determines when a student took a class (returning multiple terms
         if taken multiple times)
@@ -235,7 +239,7 @@ class Grades:
     # Operator Overloading
     #---------------------------------------------------------------------
 
-    def __add__( self, other ):
+    def __add__( self, other: 'Grades' ) -> 'Grades':
         # Returns a new Grades object with all of the grades from the
         # two sources
 
@@ -245,8 +249,9 @@ class Grades:
                 for term in old_grades._grades[ netid ].keys():
                     for class_str in old_grades._grades[ netid ][ term ].keys():
                         data = old_grades.get_data( netid, term, class_str )
-                        num_cred = data[ "num_credits" ]
-                        grade    = data[ "grade" ]
+                        # Redundant casting to ensure type safety
+                        num_cred = int( data[ "num_credits" ] )
+                        grade    = str( data[ "grade" ] )
 
                         new_grades.add_grade_manual( netid,     \
                                                      term,      \
@@ -256,13 +261,13 @@ class Grades:
 
         return new_grades
 
-    def __str__( self ):
+    def __str__( self ) -> str:
         # Returns a string representation of the Grades, for debugging
         str_repr = ""
 
         for netid, terms in self._grades.items():
             str_repr += f"{netid}:\n"
-            for term, classes in terms:
+            for term, classes in terms.items():
                 for class_str in classes:
                     grade = self.get_grade( netid, term, class_str )
 

@@ -12,7 +12,7 @@
 
 import json
 import copy
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import requests
 
@@ -136,7 +136,7 @@ def in_future( term: str ) -> bool:
             return False
     return True
 
-def most_recent_term( course_name: str, future_term: str ) -> Optional[Tuple[dict, str]]:
+def most_recent_term( course_name: str, future_term: str ) -> Tuple[dict, str]:
     """
     Assumes that the user is trying to take the course in the future, and grabs
     data from the most recent offering, returning the JSON data and term sourced

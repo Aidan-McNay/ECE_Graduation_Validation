@@ -16,7 +16,7 @@ class StudentNotFoundError( Exception ):
      - netid: NetID of the student that wasn't found (str)
     """
 
-    def __init__( self, netid ):
+    def __init__( self, netid: str ):
         self.netid = netid
 
         err_msg = f"Information on grades for {netid} wasn't found"
@@ -32,7 +32,7 @@ class TermNotFoundError( Exception ):
      - term: Term that wasn't found (str)
     """
 
-    def __init__( self, netid, term ):
+    def __init__( self, netid: str, term: str ):
         self.netid = netid
         self.term  = term
 
@@ -50,7 +50,7 @@ class ClassNotFoundError( Exception ):
      - class: Class that wasn't found (str)
     """
 
-    def __init__( self, netid, term, class_str ):
+    def __init__( self, netid: str, term: str, class_str: str ):
         self.netid     = netid
         self.term      = term
         self.class_str = class_str

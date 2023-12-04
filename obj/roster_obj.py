@@ -9,6 +9,11 @@
 # Date: December 3rd, 2023
 """
 
+from typing import List
+
+from obj.roster_entry_obj import RosterEntry
+from obj.class_obj import Class
+
 class Roster():
     """
     A Python representation of a student's roster; the classes they
@@ -27,12 +32,12 @@ class Roster():
     initialized to None
     """
 
-    def __init__( self, netid ):
+    def __init__( self, netid: str ):
         self.netid   = netid
-        self.entries = None
-        self.classes = None
+        self.entries: List[RosterEntry] = []
+        self.classes: List[Class]       = []
 
-    def populate_entries( self, entries ):
+    def populate_entries( self, entries: List[RosterEntry] ):
         """
         Populates the checklist entries from a given list of 
         RosterEntrys

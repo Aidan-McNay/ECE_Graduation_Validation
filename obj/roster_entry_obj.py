@@ -13,11 +13,13 @@
 # Date: December 2nd, 2023
 """
 
+from typing import Set, Optional
+
 #---------------------------------------------------------------------
 # Requirement/Checkoff Types
 #---------------------------------------------------------------------
 
-req_types = {
+req_types: Set[str] = {
     "REQ-MATH 1910",
     "REQ-MATH 1920",
     "REQ-MATH 2930",
@@ -49,7 +51,7 @@ req_types = {
     "REQ-EXTRA",
 }
 
-checkoff_types = {
+checkoff_types: Set[str] = {
     "CKOFF-ADVPROG",
     "CKOFF-TECHWRIT"
 }
@@ -84,7 +86,11 @@ class RosterEntry:
            
     """
 
-    def __init__( self, req, course = None, cred = None, term = None, grade = None, cat = None ):
+    def __init__( self, req: str, course: str,
+                                  cred: Optional[int] = None,
+                                  term: Optional[str] = None,
+                                  grade: Optional[str] = None,
+                                  cat: Optional[str] = None ):
         self.req          = req
         self.course_used  = course
         self.cred_applied = cred
@@ -95,7 +101,7 @@ class RosterEntry:
         assert ( ( self.req.upper() in req_types ) or (self.req.upper() in checkoff_types ) ), \
                f"Error: Listed requirement {self.req} not recognized"
 
-    def __str__( self ):
+    def __str__( self ) -> str:
         """
         String representation (for debugging)
         """

@@ -16,7 +16,7 @@ class InvalidTermError( Exception ):
      - term: Term that isn't valid (str)
     """
 
-    def __init__( self, term ):
+    def __init__( self, term: str ):
         self.term = term
 
         err_msg = f"{term} is not a valid term"

@@ -9,6 +9,8 @@
 # Date: December 3rd, 2023
 """
 
+from typing import cast
+
 from ui.logger import printl
 import exceptions as excp
 
@@ -34,7 +36,7 @@ def credits_check( roster: Roster, grades: Grades, log_path: str, verbose: bool 
             if not entry.req.startswith( "REQ-" ):
                 continue
 
-            term             = entry.term
+            term             = cast( str, entry.term ) # Assume it's a string, not None
             course           = entry.course_used
             proposed_credits = entry.cred_applied
 
@@ -42,7 +44,7 @@ def credits_check( roster: Roster, grades: Grades, log_path: str, verbose: bool 
                 real_credits = grades.get_credits( netid, term, course )
             except (excp.grade_exceptions.TermNotFoundError,
                     excp.grade_exceptions.ClassNotFoundError):
-                real_credits = "No Entry"
+                real_credits = -1
 
             if real_credits != proposed_credits: #The student lied :(
                 message = f" - [ERROR] Proposed credits for {course} ({proposed_credits}) + "\
