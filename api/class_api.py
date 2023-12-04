@@ -1,3 +1,4 @@
+"""
 #=====================================================================
 # class_api.py
 #=====================================================================
@@ -7,17 +8,21 @@
 #
 # Author: Aidan McNay
 # Date: October 2nd, 2023
+"""
 
-import ui, api
+import json
+import copy
+import requests
+
 import exceptions as excp
-import requests, json, copy
+import ui
 
 #---------------------------------------------------------------------
 # Primary API functions
 #---------------------------------------------------------------------
 
 # Cache get_rosters response in an external variable
-_cached_rosters = None
+_CACHED_ROSTERS = None
 
 def get_rosters():
     """
@@ -25,24 +30,40 @@ def get_rosters():
 
     Returns a list of strings for each term
     """
-    global _cached_rosters
+    global _CACHED_ROSTERS
 
-    if( _cached_rosters != None ): # Use cached result
-        return _cached_rosters.copy()
-    
+    if _CACHED_ROSTERS is not None: # Use cached result
+        return _CACHED_ROSTERS.copy()
+
     url = "https://classes.cornell.edu/api/2.0/config/rosters.json"
-    json_data   = requests.get( url ).text
+    json_data   = requests.get( url, timeout = 10 ).text
     json_object = json.loads( json_data )
-    
+
     rosters      = ( json_object["data"] )[ "rosters" ]
     roster_names = [ roster["slug"] for roster in rosters ]
 
-    _cached_rosters = roster_names # Cache the names for later
+    _CACHED_ROSTERS = roster_names # Cache the names for later
 
     return roster_names.copy()
 
 # Cache get_class responses in an external variable
 _cached_classes = {}
+
+def populate_data( term, dept ):
+    """
+    Populates the cached classes with the requested data
+    """
+    req_url =  "https://classes.cornell.edu/api/2.0/search/classes.json?" + \
+              f"roster={ term }&subject={ dept }"
+
+    json_data   = requests.get( req_url, timeout = 10 ).text
+    json_object = json.loads( json_data )
+
+    if json_object[ "status" ] != "success": # The department wasn't found for this term
+        raise excp.api_exceptions.DeptNotFoundError( dept, term )
+
+    # Store the data for that department and term
+    _cached_classes[ ( dept, term ) ] = json_object[ "data" ][ "classes" ]
 
 def get_class( course_name, term, dump = False, file_name = None ):
     """
@@ -71,40 +92,26 @@ def get_class( course_name, term, dump = False, file_name = None ):
     number = course_name_components[1]
     data_key = ( dept, term )
 
-    if( term not in get_rosters() ): # The requested term isn't one we have data for
+    if term not in get_rosters(): # The requested term isn't one we have data for
         raise excp.api_exceptions.TermNotFoundError( term )
 
-    if( data_key not in _cached_classes.keys() ): # Need to populate with the relevant information
-        req_url = "https://classes.cornell.edu/api/2.0/search/classes.json?roster={}&subject={}".format( \
-            term,  \
-            dept
-        )
-        json_data   = requests.get( req_url ).text
-        json_object = json.loads( json_data )
-
-        if( json_object[ "status" ] != "success" ): # The department wasn't found for this term
-            raise excp.api_exceptions.DeptNotFoundError( dept, term )
-        
-        # Store the data for that department and term
-        _cached_classes[ data_key ] = json_object[ "data" ][ "classes" ]
+    if data_key not in _cached_classes: # Need to populate with the relevant information
+        populate_data( term, dept )
 
     # Find the data for our given class in the term
     class_entry = None
-    correct_entry = lambda x : ( x[ "catalogNbr" ] == number )
     for entry in _cached_classes[ data_key ]:
-        if correct_entry( entry ):
+        if entry[ "catalogNbr" ] == number:
             class_entry = copy.deepcopy( entry )
             break
-    
-    if( class_entry == None ): # The class wasn't found
+
+    if class_entry is None: # The class wasn't found
         raise excp.api_exceptions.ClassNotFoundError( course_name, term )
-        
+
     # Dumpt the data, if requested
-    if( dump ):
-        formatted_str = json.dumps( class_entry, indent = 2 )
-        f = open( file_name, "w" )
-        f.write( formatted_str )
-        f.close()
+    if dump:
+        with open( file_name, "w", encoding = "utf-8" ) as file:
+            file.write( json.dumps( class_entry, indent = 2 ) )
 
     return class_entry
 
@@ -121,7 +128,8 @@ def in_future( term ):
      - term (str): The relevant term we want to check
     """
     for avail_roster in get_rosters():
-        if ui.parser.term_is_later( avail_roster, term ): # The given roster occurs later than the given term
+        if ui.parser.term_is_later( avail_roster, term ):
+            # The avail_roster occurs later than the given term
             return False
     return True
 
@@ -137,13 +145,13 @@ def most_recent_term( course_name, future_term ):
     # Get the rosters, in order from most to least recent
     rosters = get_rosters()
     rosters.sort( key = ui.parser.term_index, reverse = True )
-    
+
     # Go through them until we get a match
     for term in rosters:
         try:
             json_object = get_class( course_name, term )
             return json_object, term
-        except Exception:
+        except ( excp.api_exceptions.ClassNotFoundError, excp.api_exceptions.DeptNotFoundError ):
             continue # Didn't find it, so just move on to the next roster
 
     # If we got here, we didn't find it in any rosters
