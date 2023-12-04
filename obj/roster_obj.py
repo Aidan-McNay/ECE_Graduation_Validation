@@ -37,7 +37,7 @@ class Roster():
         self.entries: List[RosterEntry] = []
         self.classes: List[Class]       = []
 
-    def populate_entries( self, entries: List[RosterEntry] ):
+    def populate_entries( self, entries: List[RosterEntry] ) -> None:
         """
         Populates the checklist entries from a given list of 
         RosterEntrys

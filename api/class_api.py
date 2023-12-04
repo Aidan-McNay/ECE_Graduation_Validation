@@ -12,7 +12,7 @@
 
 import json
 import copy
-from typing import List, Tuple
+from typing import List, Tuple, cast
 
 import requests
 
@@ -102,13 +102,14 @@ def get_class( course_name: str, term: str,
         populate_data( term, dept )
 
     # Find the data for our given class in the term
-    class_entry = None
+    class_entry_found = None
     for entry in _cached_classes[ data_key ]:
         if entry[ "catalogNbr" ] == number:
-            class_entry = copy.deepcopy( entry )
+            class_entry = cast( dict, copy.deepcopy( entry ) ) # Hint that it's a dictionary
+            class_entry_found =  True
             break
 
-    if class_entry is None: # The class wasn't found
+    if not class_entry_found:
         raise excp.api_exceptions.ClassNotFoundError( course_name, term )
 
     # Dumpt the data, if requested

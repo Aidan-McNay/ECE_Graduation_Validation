@@ -181,8 +181,8 @@ class Class:
     def set_credits( self, json_obj: dict ) -> None:
         """Sets the number of credits the class was taken for"""
 
-        max_cred = json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMaximum" ]
-        min_cred = json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMinimum" ]
+        max_cred = int( json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMaximum" ] )
+        min_cred = int( json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMinimum" ] )
         if max_cred == min_cred:
             self.credits = max_cred
             return
@@ -237,10 +237,7 @@ class Class:
     #---------------------------------------------------------------------
 
     def __str__( self ) -> str:
-        str_repr  = self.primary_name + ": " + self.title
-        str_repr += f" ({self.term_taken})"
-
-        return str_repr
+        return f"{self.primary_name}: {self.title} ({self.term_taken})"
 
     def __eq__( self, other: Any ) -> bool:
         if not isinstance( other, Class ):

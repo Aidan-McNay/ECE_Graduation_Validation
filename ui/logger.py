@@ -10,7 +10,7 @@
 
 from io import TextIOWrapper
 
-def printl( string_to_log: str, file: TextIOWrapper, verbose: bool = True ):
+def printl( string_to_log: str, file: TextIOWrapper, verbose: bool = True ) -> None:
     """
     Logs a given statement to the file
 

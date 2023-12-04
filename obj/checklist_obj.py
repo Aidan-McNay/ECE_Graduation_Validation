@@ -50,19 +50,19 @@ class Coordinates:
         self.y = y
         self.x = x
 
-    def up( self ):
+    def up( self ) -> 'Coordinates':
         """Returns the coordinates of the cell above"""
         return Coordinates( self.y - 1, self.x )
 
-    def down( self ):
+    def down( self ) -> 'Coordinates':
         """Returns the coordinates of the cell below"""
         return Coordinates( self.y + 1, self.x )
 
-    def left( self ):
+    def left( self ) -> 'Coordinates':
         """Returns the coordinates of the cell to the left"""
         return Coordinates( self.y, self.x - 1 )
 
-    def right( self ):
+    def right( self ) -> 'Coordinates':
         """Returns the coordinates of the cell to the right"""
         return Coordinates( self.y, self.x + 1 )
 
