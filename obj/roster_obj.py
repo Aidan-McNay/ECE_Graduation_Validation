@@ -23,10 +23,10 @@ class Roster():
 
      - netid: The student's NetID (str)
 
-     - entries: A list of RosterEntrys (list of RosterEntrys or None)
+     - entries: A list of RosterEntrys (list of RosterEntrys)
 
      - classes: A list of the classes that the student has taken
-                (list of Classes or None)
+                (list of Classes)
 
     Note: entries and classes may or may not be populated, and are
     initialized to None
