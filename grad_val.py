@@ -40,7 +40,7 @@ parser.add_argument( "-v", "--verbose", action="store_true",
 # Logging
 #---------------------------------------------------------------------
 
-def makelogdir():
+def makelogdir() -> str:
     """
     Creates a logs directory if one doesn't exist, returning the
     logging directory
@@ -59,10 +59,10 @@ def makelogdir():
 #  - functions should take in 2 arguments; the roster to operate on,
 #    and where to store the logs. The output should be the number of
 #    errors encountered
-checks_to_run = {}
+checks_to_run: dict = {}
 
 # Errors for each check run
-errors = {}
+errors: dict = {}
 
 if __name__ == "__main__":
     args = parser.parse_args()
