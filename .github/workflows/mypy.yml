@@ -1,10 +1,6 @@
 name: Type check code with Mypy
 
-on: 
-  workflow_run:
-    workflows: ['Lint code with PyLint']
-    types:
-      - completed
+on: [push]
 
 jobs:
   build:
