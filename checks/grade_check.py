@@ -11,7 +11,10 @@
 from ui.logger import printl
 import exceptions as excp
 
-def grade_check( roster, grades, log_path, verbose = False ):
+from obj.roster_obj import Roster
+from obj.grades_obj import Grades
+
+def grade_check( roster: Roster, grades: Grades, log_path: str, verbose: bool = False ) -> int:
     """
     Validates all of the grades reported in a Roster, verifying
     against the given Grades. The results are outputted to the given
