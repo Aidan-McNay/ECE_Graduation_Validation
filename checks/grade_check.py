@@ -1,3 +1,4 @@
+"""
 #=====================================================================
 # grade_check.py
 #=====================================================================
@@ -5,8 +6,10 @@
 #
 # Author: Aidan McNay
 # Date: December 3rd, 2023
+"""
 
-from ui.logger import printl as printl
+from ui.logger import printl
+import exceptions as excp
 
 def grade_check( roster, grades, log_path, verbose = False ):
     """
@@ -17,15 +20,14 @@ def grade_check( roster, grades, log_path, verbose = False ):
     """
 
     netid  = roster.netid
-    log    = [ f"Grade Check for {netid}:" ]
     errors = 0
 
-    with open( log_path, 'w') as file:
+    with open( log_path, 'w', encoding = "utf-8" ) as file:
         file.write( f"Grade Check for {netid}:" )
 
         for entry in roster.entries:
             # Only consider requirements, not checkoffs
-            if( not entry.req.startswith( "REQ-" ) ):
+            if not entry.req.startswith( "REQ-" ):
                 continue
 
             term           = entry.term
@@ -34,18 +36,20 @@ def grade_check( roster, grades, log_path, verbose = False ):
 
             try:
                 real_grade = grades.get_grade( netid, term, course )
-            except:
+            except (excp.grade_exceptions.TermNotFoundError,
+                    excp.grade_exceptions.ClassNotFoundError):
                 real_grade = "No Entry"
 
-            if( real_grade != proposed_grade ): #The student lied :(
-                message = f" - [ERROR] Proposed grade for {course} ({proposed_grade}) doesn't match our records ({real_grade})"
+            if real_grade != proposed_grade: #The student lied :(
+                message = f" - [ERROR] Proposed grade for {course} ({proposed_grade}) + "\
+                                    f" doesn't match our records ({real_grade})"
                 errors += 1
             else:
                 message = f" - Grade match for {course}"
-         
+
             printl( message, file, verbose )
 
-        if( errors == 0 ):
+        if errors == 0:
             printl( " - [SUCCESS] All grades match", file, verbose )
 
     return errors
