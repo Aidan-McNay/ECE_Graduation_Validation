@@ -112,10 +112,10 @@ class Grades:
             with open( src_file, "r", encoding = "utf-8" ) as data:
                 contents = csv.reader( data )
 
-            self.set_fields( next( contents ) ) # First line
+                self.set_fields( next( contents ) ) # First line
 
-            for line in contents:
-                self.add_grade( line )
+                for line in contents:
+                    self.add_grade( line )
 
     def set_fields( self, line ):
         """Sets the fields, for later slicing into the CSV"""
