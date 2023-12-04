@@ -85,7 +85,7 @@ class Grades:
         - term: The term name (ex. 'FA23') (str)
         - class: The class name (ex. 'ECE 2720') (str)
         - num_credits: The number of credits taken (int)
-        - grade: The grade received, as a value (int)
+        - grade: The grade received (str)
 
     This main attritube is not meant to be accessed from the
     outside; rather, several member functions are provided to
@@ -127,7 +127,6 @@ class Grades:
         grade_str  = self.get_field( line, "Official Grade"       )
 
         term  = term_str_convert( term_str )
-        grade = grd_to_val( grade_str )
         class_str = f"{class_subj} {class_num}"
 
         if( not( netid in self._grades.keys() ) ):
@@ -138,7 +137,7 @@ class Grades:
 
         self._grades[ netid ][ term ][ class_str ] = {
             "num_credits" : num_cred,
-            "grade"       : grade
+            "grade"       : grade_str
         }
 
     def add_grade_manual( self, netid, term, class_str, num_cred, grade ):

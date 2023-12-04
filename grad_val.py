@@ -10,6 +10,7 @@
 
 import argparse, os
 import obj, checks
+from ui.logger import printl as printl
 
 #---------------------------------------------------------------------
 # Argument Parsing
@@ -22,7 +23,7 @@ parser.add_argument( "checklists", help = "The checklist(s) to validate", metava
 
 # Optional arguments
 parser.add_argument( "-g", "--grades", 
-                     help = "Verify the checklist against the given grades",
+                     help = "Verify the checklist against the given grades/credits",
                      action = "append",
                      metavar = "<grades-csv>" )
 
@@ -74,7 +75,7 @@ if __name__ == "__main__":
         rosters.append( roster )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Grade Validation
+    # Grade/Credits Validation
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     if( args.grades ):
@@ -85,6 +86,11 @@ if __name__ == "__main__":
             grades += obj.grades_obj.Grades( grade_file )
 
         checks_to_run[ "grade-validation" ] = lambda x, y : checks.grade_check.grade_check( x, 
+                                                                                     grades,
+                                                                                     y,
+                                                                                     args.verbose )
+
+        checks_to_run[ "credits-validation" ] = lambda x, y : checks.credits_check.credits_check( x, 
                                                                                      grades,
                                                                                      y,
                                                                                      args.verbose )
@@ -110,11 +116,14 @@ if __name__ == "__main__":
 
             print( f" - Log in { os.path.relpath( log_file ) }\n")
         
-        print( "Summary:" )
+        summary_file = os.path.join( log_dir, "summary.log" )
+        with open( summary_file, 'w') as file:
+        
+            printl( "Summary:", file )
 
-        for check_name, error_logs in errors.items():
-            total_errors = sum( error_logs.values() )
-            print( f" - {check_name}: {total_errors} errors" )
+            for check_name, error_logs in errors.items():
+                total_errors = sum( error_logs.values() )
+                printl( f" - {check_name}: {total_errors} errors", file )
 
-            for netid, num_errors in error_logs.items():
-                print( f"    - {netid}: {num_errors} errors")
+                for netid, num_errors in error_logs.items():
+                    printl( f"    - {netid}: {num_errors} errors", file )

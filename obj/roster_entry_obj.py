@@ -40,6 +40,7 @@ req_types = {
     "REQ-3000+",
     "REQ-FWS",
     "REQ-LS",
+    "REQ-OTE",
     "REQ-AAE",
     "REQ-ENGRD",
     "REQ-ENGRI",
@@ -89,7 +90,7 @@ class RosterEntry:
         self.grade        = grade
         self.cat          = cat
 
-        assert ( ( self.req in req_types ) or (self.req in checkoff_types ) ), \
+        assert ( ( self.req.upper() in req_types ) or (self.req.upper() in checkoff_types ) ), \
                f"Error: Listed requirement {self.req} not recognized"
         
     def __str__( self ):
