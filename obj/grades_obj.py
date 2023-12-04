@@ -128,6 +128,7 @@ class Grades:
 
         term  = term_str_convert( term_str )
         class_str = f"{class_subj} {class_num}"
+        num_cred = int( num_cred )
 
         if( not( netid in self._grades.keys() ) ):
             self._grades[ netid ] = {}

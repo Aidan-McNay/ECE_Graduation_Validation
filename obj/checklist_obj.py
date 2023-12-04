@@ -12,6 +12,8 @@
 import pandas as pd
 from dateutil import parser
 from obj.roster_entry_obj import RosterEntry
+from ui.parser import parse_class_name as pclass
+from ui.parser import parse_class_term as pterm
 
 #---------------------------------------------------------------------
 # Coordinates Object
@@ -215,6 +217,10 @@ class Checklist:
             cred   = self.get_cell( coord.right().right() )
             term   = self.get_cell( coord.right().right().right() )
             grade  = self.get_cell( coord.right().right().right().right() )
+
+            course = pclass( course )
+            term   = pterm( term )
+            cred   = int( cred )
 
             if( req.lower() == "REQ-LS".lower() ):
                 cat = self.get_cell( coord.right().right().right().right().right() )
