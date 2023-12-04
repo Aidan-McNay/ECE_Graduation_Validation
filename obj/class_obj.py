@@ -1,3 +1,4 @@
+"""
 #=====================================================================
 # class_obj.py
 #=====================================================================
@@ -5,8 +6,10 @@
 #
 # Author: Aidan McNay
 # Date: October 2nd, 2023
+"""
 
-import ui, api
+import api
+import ui
 import exceptions as excp
 
 class Class:
@@ -75,7 +78,7 @@ class Class:
 
         course_name = ui.parser.parse_class_name( course_name )
 
-        if( term == None ):
+        if term is None:
             term = ui.user.prompt_term( course_name )
         else:
             term = ui.parser.parse_class_term( term )
@@ -85,15 +88,15 @@ class Class:
 
         # Grab the data for the course
         try:
-          json_object = api.class_api.get_class( course_name, term )
-          self.term_sourced = term
+            json_object = api.class_api.get_class( course_name, term )
+            self.term_sourced = term
 
         except excp.api_exceptions.TermNotFoundError as e:
-          if api.class_api.in_future( term ): # Find the next best term
-            json_object, self.term_sourced = api.class_api.most_recent_term( course_name, term )
-          else: # Not in the future, we just don't have info on it
-            raise e
-          
+            if api.class_api.in_future( term ): # Find the next best term
+                json_object, self.term_sourced = api.class_api.most_recent_term( course_name, term )
+            else: # Not in the future, we just don't have info on it
+                raise e
+
         self.set__enrl_idx   ( json_object )
 
         self.set_all_names   ( json_object )
@@ -110,16 +113,23 @@ class Class:
     #---------------------------------------------------------------------
 
     def set__enrl_idx( self, json_obj ):
-        if ( len( json_obj[ "enrollGroups" ] ) == 1 ):
+        """Sets the section that we're looking at"""
+
+        if len( json_obj[ "enrollGroups" ] ) == 1:
             self._enrl_idx = 0
             return
         # Otherwise, we need to prompt the user to choose
-        prompt_msg = f"Looks like {self.course_name} has multiple sections - which one did you take?"
-        options = [ x["classSections"][0]["section"] for x in json_obj[ "enrollGroups" ] ] # Use first section to identify enroll group
+        prompt_msg = f"Looks like {self.primary_name} has multiple sections" + \
+                      " - which one did you take?"
+
+        # Use first section to identify enroll group
+        options = [ x["classSections"][0]["section"] for x in json_obj[ "enrollGroups" ] ]
         sel_option = ui.user.prompt_usr_list( prompt_msg, options, 0 )
         self._enrl_idx = options.index( sel_option )
 
     def set_all_names( self, json_obj ):
+        """Gets the crosslisted names for the class"""
+
         all_names = { self.primary_name }
         for crosslist in json_obj[ "enrollGroups" ][ self._enrl_idx ][ "simpleCombinations" ]:
             other_name = f"{crosslist[ 'subject' ]} {crosslist[ 'catalogNbr' ]}"
@@ -127,70 +137,95 @@ class Class:
         self.all_names = all_names
 
     def set_title( self, json_obj ):
+        """Sets the title of the class"""
+
         self.title = json_obj[ "titleShort" ]
 
     def set_titleLong( self, json_obj ):
+        """Sets the long title of the class"""
+
         self.titleLong = json_obj[ "titleLong" ]
 
     def set_catalogDistr( self, json_obj ):
+        """Sets the distribution of the class"""
+
         distr_string = json_obj[ "catalogDistr" ]
         distr_string = distr_string.strip( "()" ) # Strip off parenthesis
         self.catalogDistr = distr_string.split( ", " )
 
     def set_acadGroup( self, json_obj ):
+        """Sets the academic group of the class"""
+
         self.acadGroup = json_obj[ "acadGroup" ]
 
     def set_acadCareer( self, json_obj ):
+        """Sets the class' affiliation"""
+
         self.acadGroup = json_obj[ "acadCareer" ]
 
     def set_is_FWS( self, json_obj ):
-        if( "FWS: " in json_obj[ "titleLong" ] ):
+        """Sets whether the class is an FWS or not"""
+
+        if "FWS: " in json_obj[ "titleLong" ]:
             self.is_FWS = True
             return
-        
+
         if( ( "ENGL 2880" in self.all_names ) or ( "ENGL 2890" in self.all_names ) ):
             self.is_FWS = True # Counts for FWS credit
             return
-        
+
         self.is_FWS = False
 
     def set_credits( self, json_obj ):
+        """Sets the number of credits the class was taken for"""
+
         max_cred = json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMaximum" ]
         min_cred = json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMinimum" ]
-        if( max_cred == min_cred ):
+        if max_cred == min_cred:
             self.credits = max_cred
             return
+
         # If we got here, variable number of credits - prompt user
-        prompt_msg = f"Looks like {self.course_name} has variable numbers of credits - how many did you take?"
+        prompt_msg = f"Looks like {self.primary_name} has variable numbers of credits" + \
+                      " - how many did you take?"
         options = [ str( i ) for i in range( min_cred, max_cred + 1 ) ]
         self.credits = int( ui.user.prompt_usr_list( prompt_msg, options, 0 ) )
-    
+
     #---------------------------------------------------------------------
     # Dynamic Properties
     #---------------------------------------------------------------------
 
     @property
     def department( self ):
+        """Returns the class' department"""
+
         return ui.parser.get_dept_from_name( self.primary_name )
-    
+
     @property
     def course_number( self ):
+        """Returns the class' course number"""
+
         return ui.parser.get_nbr_from_name( self.primary_name )
-    
+
     @property
     def all_departments( self ):
+        """Returns all of the class' crosslisted departments"""
+
         return { ui.parser.get_dept_from_name( i ) for i in self.all_names }
-    
+
     @property
     def other_names( self ):
+        """Returns all other names the class goes by (not including primary)"""
+
         cpy_to_return = self.all_names.copy()
         cpy_to_return.remove( self.primary_name )
         return cpy_to_return
-    
+
     @property
     def other_departments( self ):
+        """Returns all other departments the class is crosslisted in (not including primary)"""
         return { ui.parser.get_dept_from_name( i ) for i in self.other_names }
-    
+
     #---------------------------------------------------------------------
     # Member Functions
     #---------------------------------------------------------------------
@@ -202,17 +237,16 @@ class Class:
     def __str__( self ):
         str_repr  = self.primary_name + ": " + self.title
         str_repr += f" ({self.term_taken})"
-        
+
         return str_repr
 
     def __eq__( self, other ):
         if not isinstance( other, Class ):
             return False
         return ( ( self.all_names == other.all_names ) and ( self.term_taken == other.term_taken ) )
-    
+
     def __ne__( self, other ):
-        return not ( self == other )
-    
+        return not self == other
+
     def __len__( self ): # We'll use this for the number of credits
         return self.credits
-       

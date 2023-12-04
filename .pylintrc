@@ -1,7 +1,10 @@
 [MAIN]
 
 # User disables
-disable = global-statement
+disable = global-statement,
+          too-many-instance-attributes,
+          too-many-arguments,
+          too-few-public-methods
 
 # Analyse import fallback blocks. This can be used to support both Python 2 and
 # 3 compatible code, which means that the block might have code that exists
@@ -188,12 +191,28 @@ function-naming-style=snake_case
 #function-rgx=
 
 # Good variable names which should always be accepted, separated by a comma.
+# For our project, we include terms used by the classes.cornell.edu API
 good-names=i,
            j,
            k,
            ex,
            Run,
-           _
+           _,
+           enrollGroups,
+           simpleCombinations,
+           titleShort,
+           titleLong,
+           catalogDistr,
+           acadGroup,
+           acadCareer,
+           unitsMaximum,
+           unitsMinimum,
+           is_FWS,
+           set_titleLong,
+           set_catalogDistr,
+           set_acadGroup,
+           set_acadCareer,
+           set_is_FWS
 
 # Good variable names regexes, separated by a comma. If names match any regex,
 # they will always be accepted

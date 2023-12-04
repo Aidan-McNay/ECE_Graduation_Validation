@@ -1,0 +1,26 @@
+************* Module ui/ui_exceptions.py
+ui/ui_exceptions.py:1:0: F0001: No module named ui/ui_exceptions.py (fatal)
+************* Module ui.user
+ui/user.py:24:0: C0303: Trailing whitespace (trailing-whitespace)
+ui/user.py:27:0: C0303: Trailing whitespace (trailing-whitespace)
+ui/user.py:62:0: C0301: Line too long (116/100) (line-too-long)
+ui/user.py:70:0: C0325: Unnecessary parens after 'not' keyword (superfluous-parens)
+ui/user.py:75:0: C0303: Trailing whitespace (trailing-whitespace)
+ui/user.py:77:0: C0325: Unnecessary parens after 'if' keyword (superfluous-parens)
+ui/user.py:79:0: C0303: Trailing whitespace (trailing-whitespace)
+ui/user.py:81:0: C0325: Unnecessary parens after 'if' keyword (superfluous-parens)
+ui/user.py:82:0: C0325: Unnecessary parens after 'if' keyword (superfluous-parens)
+ui/user.py:103:0: C0325: Unnecessary parens after 'while' keyword (superfluous-parens)
+ui/user.py:106:0: C0303: Trailing whitespace (trailing-whitespace)
+ui/user.py:111:0: C0325: Unnecessary parens after 'if' keyword (superfluous-parens)
+ui/user.py:114:0: C0304: Final newline missing (missing-final-newline)
+ui/user.py:11:0: C0410: Multiple imports on one line (ui, api) (multiple-imports)
+ui/user.py:17:13: W0622: Redefining built-in 'str' (redefined-builtin)
+ui/user.py:25:4: W0702: No exception type(s) specified (bare-except)
+ui/user.py:11:0: W0611: Unused import api (unused-import)
+ui/user.py:1:0: R0401: Cyclic import (api -> api.class_api -> ui -> ui.user) (cyclic-import)
+ui/user.py:1:0: R0401: Cyclic import (ui -> ui.user) (cyclic-import)
+
+------------------------------------------------------------------
+Your code has been rated at 0.00/10 (previous run: 0.00/10, +0.00)
+

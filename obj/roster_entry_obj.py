@@ -1,7 +1,8 @@
+"""
 #=====================================================================
 # roster_entry_obj.py
 #=====================================================================
-# An object representation of a class entry in a ECE Graduation 
+# An object representation of a class entry in a ECE Graduation
 # Roster
 #
 # This should contain all of the necessary information that, given a
@@ -10,6 +11,7 @@
 #
 # Author: Aidan McNay
 # Date: December 2nd, 2023
+"""
 
 #---------------------------------------------------------------------
 # Requirement/Checkoff Types
@@ -92,7 +94,7 @@ class RosterEntry:
 
         assert ( ( self.req.upper() in req_types ) or (self.req.upper() in checkoff_types ) ), \
                f"Error: Listed requirement {self.req} not recognized"
-        
+
     def __str__( self ):
         """
         String representation (for debugging)

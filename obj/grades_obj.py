@@ -1,3 +1,4 @@
+"""
 #=====================================================================
 # grades_obj.py
 #=====================================================================
@@ -5,6 +6,7 @@
 #
 # Author: Aidan McNay
 # Date: November 10th, 2023
+"""
 
 import csv
 import exceptions as excp
@@ -30,6 +32,7 @@ GRADE_MAPPING = {
 }
 
 def grd_to_val( grd_str ):
+    """Maps grades to values"""
     return GRADE_MAPPING[ grd_str ]
 
 #---------------------------------------------------------------------
@@ -44,8 +47,11 @@ TERM_MAPPING = {
 }
 
 def term_str_convert( term_str ):
-    # Converts a verbose term string to the simplified version
-    # Ex. 'Spring 2023' => 'SP23'
+    """
+    Converts a verbose term string to the simplified version
+    Ex. 'Spring 2023' => 'SP23'
+    """
+
     term_str = term_str.strip()
 
     letters = "".join( [ x for x in term_str if x.isalpha() ] )
@@ -54,7 +60,7 @@ def term_str_convert( term_str ):
     season = TERM_MAPPING[ letters.lower() ]
     year   = digits[-2:] # Last two
 
-    return ( season + year )
+    return season + year
 
 #---------------------------------------------------------------------
 # Grades Object
@@ -100,25 +106,31 @@ class Grades:
 
     def __init__( self, src_file = None ):
         self._grades = {}
+        self._fields = None
 
-        if( src_file != None ): # Load data
-            data     = open( src_file, "r" )
-            contents = csv.reader( data )
+        if src_file is not None: # Load data
+            with open( src_file, "r", encoding = "utf-8" ) as data:
+                contents = csv.reader( data )
+
             self.set_fields( next( contents ) ) # First line
 
             for line in contents:
                 self.add_grade( line )
 
     def set_fields( self, line ):
+        """Sets the fields, for later slicing into the CSV"""
+
         self._fields = line
-    
+
     def get_field( self, line, field ):
-        # Returns the item from the column specified by the given field
+        """Returns the item from the column specified by the given field"""
+
         index = self._fields.index( field )
         return line[ index ]
 
     def add_grade( self, line ):
-        # Adds the grade from the given line
+        """Adds the grade from the given line"""
+
         netid      = self.get_field( line, "Netid"                )
         term_str   = self.get_field( line, "Academic Term Ldescr" )
         class_subj = self.get_field( line, "Subject"              )
@@ -130,10 +142,10 @@ class Grades:
         class_str = f"{class_subj} {class_num}"
         num_cred = int( num_cred )
 
-        if( not( netid in self._grades.keys() ) ):
+        if not netid in self._grades:
             self._grades[ netid ] = {}
 
-        if( not( term in self._grades[ netid ].keys() ) ):
+        if not term in self._grades[ netid ]:
             self._grades[ netid ][ term ] = {}
 
         self._grades[ netid ][ term ][ class_str ] = {
@@ -142,14 +154,16 @@ class Grades:
         }
 
     def add_grade_manual( self, netid, term, class_str, num_cred, grade ):
-        # Adds the grade data manually, using all the necessary values
-        #
-        # Used when copying data
+        """
+        Adds the grade data manually, using all the necessary values
 
-        if( not( netid in self._grades.keys() ) ):
+        Used when copying data
+        """
+
+        if not netid in self._grades:
             self._grades[ netid ] = {}
 
-        if( not( term in self._grades[ netid ].keys() ) ):
+        if not term in self._grades[ netid ]:
             self._grades[ netid ][ term ] = {}
 
         self._grades[ netid ][ term ][ class_str ] = {
@@ -164,49 +178,55 @@ class Grades:
     # used from other modules
 
     def get_data( self, netid, term, class_str ):
-        # Returns data from when the student took the class
-        #
-        # Arguments:
-        #  - netid:     (str)
-        #  - term:      (str) Ex. 'SP23'
-        #  - class_str: (str) Ex. 'ECE 2720'
-        #
-        # Returns a dictionary with the attributes "num_credits" and
-        # "grade", both storing ints as defined above
+        """
+        Returns data from when the student took the class
 
-        if( not( netid in self._grades.keys() ) ):
+        Arguments:
+         - netid:     (str)
+         - term:      (str) Ex. 'SP23'
+         - class_str: (str) Ex. 'ECE 2720'
+
+        Returns a dictionary with the attributes "num_credits" and
+        "grade", both storing ints as defined above
+        """
+
+        if not netid in self._grades:
             raise excp.grade_exceptions.StudentNotFoundError( netid )
 
-        if( not( term in self._grades[ netid ].keys() ) ):
+        if not term in self._grades[ netid ]:
             raise excp.grade_exceptions.TermNotFoundError( netid, term )
 
-        if( not( class_str in self._grades[ netid ][ term ].keys() ) ):
+        if not class_str in self._grades[ netid ][ term ]:
             raise excp.grade_exceptions.ClassNotFoundError( netid, term, class_str )
 
         return self._grades[ netid ][ term ][ class_str ]
 
     def get_credits( self, netid, term, class_str ):
-        # Returns the number of credits a student took a class for
+        """Returns the number of credits a student took a class for"""
+
         return self.get_data( netid, term, class_str )[ "num_credits" ]
 
     def get_grade( self, netid, term, class_str ):
-        # Returns the grade a student got in a class
+        """Returns the grade a student got in a class"""
+
         return self.get_data( netid, term, class_str )[ "grade" ]
 
     def when_taken( self, netid, class_str ):
-        # Determines when a student took a class (returning multiple terms
-        # if taken multiple times)
-        #
-        # Returns a list of term strings (ex. 'FA23') of when the student
-        # took the class
+        """
+        Determines when a student took a class (returning multiple terms
+        if taken multiple times)
 
-        if( not( netid in self._grades.keys() ) ):
+        Returns a list of term strings (ex. 'FA23') of when the student
+        took the class
+        """
+
+        if not netid in self._grades:
             raise excp.grade_exceptions.StudentNotFoundError( netid )
 
         terms_taken = []
 
-        for term in self._grades[ netid ].keys():
-            if( class_str in self._grades[ netid ][ term ].keys() ):
+        for term in self._grades[ netid ]:
+            if class_str in self._grades[ netid ][ term ].keys():
                 terms_taken.append( term )
 
         return terms_taken
@@ -233,19 +253,19 @@ class Grades:
                                                      class_str, \
                                                      num_cred,  \
                                                      grade )
-        
+
         return new_grades
 
     def __str__( self ):
         # Returns a string representation of the Grades, for debugging
         str_repr = ""
 
-        for netid in self._grades.keys():
+        for netid, terms in self._grades.items():
             str_repr += f"{netid}:\n"
-            for term in self._grades[ netid ].keys():
-                    for class_str in self._grades[ netid ][ term ].keys():
-                        grade = self.get_grade( netid, term, class_str )
+            for term, classes in terms:
+                for class_str in classes:
+                    grade = self.get_grade( netid, term, class_str )
 
-                        str_repr += f" - {class_str} ({term}): {grade}\n"
+                    str_repr += f" - {class_str} ({term}): {grade}\n"
 
         return str_repr[:-1] # Exclude last newline
