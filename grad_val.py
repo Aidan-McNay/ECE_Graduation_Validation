@@ -1,28 +1,34 @@
 #!/usr/bin/env python3
-
+"""
 #=====================================================================
 # grad_val.py
 #=====================================================================
 # The main code for validating checklists
-#
+
 # Author: Aidan McNay
 # Date: December 3rd, 2023
+"""
 
-import argparse, os
-import obj, checks
-from ui.logger import printl as printl
+import argparse
+import os
+
+import obj
+import checks
+from ui.logger import printl
 
 #---------------------------------------------------------------------
 # Argument Parsing
 #---------------------------------------------------------------------
 
-parser = argparse.ArgumentParser( description = "Validates an ECE student's checklist for graduation" )
+parser = argparse.ArgumentParser( description =
+                                  "Validates an ECE student's checklist for graduation" )
 
 # Mandatory arguments
-parser.add_argument( "checklists", help = "The checklist(s) to validate", metavar = "<checklists>", action = "append" )
+parser.add_argument( "checklists", help = "The checklist(s) to validate",
+                     metavar = "<checklists>", action = "append" )
 
 # Optional arguments
-parser.add_argument( "-g", "--grades", 
+parser.add_argument( "-g", "--grades",
                      help = "Verify the checklist against the given grades/credits",
                      action = "append",
                      metavar = "<grades-csv>" )
@@ -41,9 +47,9 @@ def makelogdir():
     """
 
     cwd = os.getcwd()
-    log_dir = os.path.join( cwd, "logs" )
-    os.makedirs( log_dir, exist_ok = True )
-    return log_dir
+    logging_dir = os.path.join( cwd, "logs" )
+    os.makedirs( logging_dir, exist_ok = True )
+    return logging_dir
 
 #---------------------------------------------------------------------
 # Main Code
@@ -78,19 +84,19 @@ if __name__ == "__main__":
     # Grade/Credits Validation
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if( args.grades ):
+    if args.grades :
         # Form grades
         grades = obj.grades_obj.Grades()
 
         for grade_file in args.grades:
             grades += obj.grades_obj.Grades( grade_file )
 
-        checks_to_run[ "grade-validation" ] = lambda x, y : checks.grade_check.grade_check( x, 
+        checks_to_run[ "grade-validation" ] = lambda x, y : checks.grade_check.grade_check( x,
                                                                                      grades,
                                                                                      y,
                                                                                      args.verbose )
 
-        checks_to_run[ "credits-validation" ] = lambda x, y : checks.credits_check.credits_check( x, 
+        checks_to_run[ "credits-validation" ] = lambda x, y : checks.credits_check.credits_check( x,
                                                                                      grades,
                                                                                      y,
                                                                                      args.verbose )
@@ -99,7 +105,7 @@ if __name__ == "__main__":
     # Run Checks
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if( len( checks_to_run ) > 0 ):
+    if len( checks_to_run ) > 0:
         log_dir = makelogdir()
 
         for check_name, check_func in checks_to_run.items():
@@ -115,10 +121,10 @@ if __name__ == "__main__":
                 errors[ check_name ][ netid ] = check_func( roster, log_file )
 
             print( f" - Log in { os.path.relpath( log_file ) }\n")
-        
+
         summary_file = os.path.join( log_dir, "summary.log" )
-        with open( summary_file, 'w') as file:
-        
+        with open( summary_file, 'w', encoding = "utf-8" ) as file:
+
             printl( "Summary:", file )
 
             for check_name, error_logs in errors.items():
