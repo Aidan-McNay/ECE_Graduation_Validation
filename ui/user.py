@@ -8,23 +8,23 @@
 # Date: October 2nd, 2023
 """
 
-import ui, api
+import ui.parser
 
 #---------------------------------------------------------------------
 # General prompting functions
 #---------------------------------------------------------------------
 
-def get_idx( str ):
+def get_idx( str_to_convert ):
     '''
     Attempts to convert a string into a number
     Returns -1 if not possible
     '''
     try:
-        return int( str )
-    
-    except:
+        return int( str_to_convert )
+
+    except ValueError:
         return -1
-    
+
 def prompt_usr( msg ):
     '''
     Prompts the user for input, using the given message
@@ -59,7 +59,8 @@ def prompt_usr_list( msg, options, default_idx ):
     print( msg )
 
     option_string = "Options: "
-    option_string += "".join( [ ( "\n " + str( idx+1 ) + ". " + option ) for idx, option in enumerate( options ) ] )
+    option_string += "".join( [ ( "\n " + str( idx+1 ) + ". " + option )
+                                for idx, option in enumerate( options ) ] )
     option_string += f"\nDefault: [{options[ default_idx ]}]"
     option_string += "\nSelection: "
 
@@ -67,19 +68,19 @@ def prompt_usr_list( msg, options, default_idx ):
 
     while(     not ( response.lower() in options_lowercase )          \
            and not ( response == "" )                                \
-           and not ( 0 < get_idx( response ) <= len( options ) ) ):
+           and not   0 < get_idx( response ) <= len( options ) ):
         print( "\nOops - that's not an option! Try again" )
         response = input( option_string )
 
     print("") # New line for spacing
-    
+
     # Default response
-    if( response == "" ):
+    if response == "":
         return options[ default_idx ]
-    
+
     # Enumerated response
-    if( get_idx( response ) != -1 ):
-        if( 0 < get_idx( response ) <= len( options ) ):
+    if get_idx( response ) != -1:
+        if 0 < get_idx( response ) <= len( options ):
             return options[ get_idx( response ) - 1 ]
 
     # Verbose response
@@ -100,15 +101,15 @@ def prompt_term( course_name ):
 
     valid_response = False
 
-    while( not valid_response ):
+    while not valid_response:
         prompt_msg = f"Looks like {course_name} doesn't have an associated term. " + \
                       "What term did/will you take this course?"
-    
+
         response = prompt_usr( prompt_msg )
         response = ui.parser.parse_class_term( response )
         valid_response = ui.parser.validate_class_term( response )
 
-        if( not valid_response ):
+        if not valid_response:
             print( "Oops! That doesn't look like a valid term - please try again" )
 
     return response
