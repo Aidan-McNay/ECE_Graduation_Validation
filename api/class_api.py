@@ -12,6 +12,8 @@
 
 import json
 import copy
+from typing import List, Optional, Tuple
+
 import requests
 
 import exceptions as excp
@@ -24,7 +26,7 @@ import ui
 # Cache get_rosters response in an external variable
 _CACHED_ROSTERS = None
 
-def get_rosters():
+def get_rosters() -> List[str]:
     """
     Gets all of the rosters that the API has information for
 
@@ -49,7 +51,7 @@ def get_rosters():
 # Cache get_class responses in an external variable
 _cached_classes = {}
 
-def populate_data( term, dept ):
+def populate_data( term: str, dept: str ) -> None:
     """
     Populates the cached classes with the requested data
     """
@@ -65,7 +67,8 @@ def populate_data( term, dept ):
     # Store the data for that department and term
     _cached_classes[ ( dept, term ) ] = json_object[ "data" ][ "classes" ]
 
-def get_class( course_name, term, dump = False, file_name = None ):
+def get_class( course_name: str, term: str,
+               dump: bool = False, file_name: str = "" ) -> dict:
     """
     Gets the information on a course for the given term
     Returns the information in a dictionary format (derived from JSON), or
@@ -119,7 +122,7 @@ def get_class( course_name, term, dump = False, file_name = None ):
 # Derived Functions
 #---------------------------------------------------------------------
 
-def in_future( term ):
+def in_future( term: str ) -> bool:
     """
     Determines if a term is offered in the future (based on our available rosters)
     Returns the corresponding bool
@@ -133,7 +136,7 @@ def in_future( term ):
             return False
     return True
 
-def most_recent_term( course_name, future_term ):
+def most_recent_term( course_name: str, future_term: str ) -> Optional[Tuple[dict, str]]:
     """
     Assumes that the user is trying to take the course in the future, and grabs
     data from the most recent offering, returning the JSON data and term sourced
