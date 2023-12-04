@@ -9,7 +9,7 @@
 """
 
 import csv
-from typing import Optional, List, Dict, Union
+from typing import Optional, List, Dict, Union, cast
 
 import exceptions as excp
 
@@ -206,14 +206,14 @@ class Grades:
     def get_credits( self, netid: str, term: str, class_str: str ) -> int:
         """Returns the number of credits a student took a class for"""
 
-        # Ensure that we return an int for type safety
-        return int( self.get_data( netid, term, class_str )[ "num_credits" ] )
+        # Indicate that we return an int for type safety
+        return cast( int, self.get_data( netid, term, class_str )[ "num_credits" ] )
 
     def get_grade( self, netid: str, term: str, class_str: str ) -> str:
         """Returns the grade a student got in a class"""
 
-        # Ensure that we return a string for type safety
-        return str( self.get_data( netid, term, class_str )[ "grade" ] )
+        # Indicate that we return an str for type safety
+        return cast( str, self.get_data( netid, term, class_str )[ "grade" ] )
 
     def when_taken( self, netid: str, class_str: str ) -> List[str]:
         """
@@ -249,9 +249,9 @@ class Grades:
                 for term in old_grades._grades[ netid ].keys():
                     for class_str in old_grades._grades[ netid ][ term ].keys():
                         data = old_grades.get_data( netid, term, class_str )
-                        # Redundant casting to ensure type safety
-                        num_cred = int( data[ "num_credits" ] )
-                        grade    = str( data[ "grade" ] )
+                        # Indicate types for type safety
+                        num_cred = cast( int, data[ "num_credits" ] )
+                        grade    = cast( str, data[ "grade" ]       )
 
                         new_grades.add_grade_manual( netid,     \
                                                      term,      \
