@@ -3,7 +3,7 @@ This code validates a course schedule and ensures it follows Cornell ECE's requi
 
 ## Dependencies
 
-- `Python3.5`
+- `Python 3.5+`
    - `pandas`
    - `openpyxl`
    - `requests`
