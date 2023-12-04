@@ -1,4 +1,4 @@
-# ECE_Graduation_Validation
+# ECE Graduation Validation
 This code validates a course schedule and ensures it follows Cornell ECE's requirements for graduation
 
 ## Dependencies
