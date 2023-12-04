@@ -8,6 +8,16 @@ This code validates a course schedule and ensures it follows Cornell ECE's requi
    - `openpyxl`
    - `requests`
 
+These can be installed using `pip` and the requirements list:
+```
+pip install -r requirements.txt
+```
+
+If you wish to do local linting, Mypy additionally requires type stubs for each of these modules, which can be installed with the separate requirements list
+```
+pip install -r mypy_requirements.txt
+```
+
 ## Usage
 
 To use, simply run
