@@ -14,11 +14,23 @@ import sys
 
 from io import TextIOWrapper
 
+# Disable root logging except for critical messages
+logging.getLogger().setLevel( level = logging.CRITICAL )
+
+#---------------------------------------------------------------------
+# Custom Log Level: Success
+#---------------------------------------------------------------------
+# Here, we define a custom log level to indicate success
+
+SUCCESS = 25 # between WARNING and INFO
+logging.addLevelName( SUCCESS, 'SUCCESS' )
+
 #---------------------------------------------------------------------
 # Define Formatters
 #---------------------------------------------------------------------
 
-file_formatter  = logging.Formatter( fmt = "%(asctime)s [%(levelname)s] %(message)s" )
+file_formatter  = logging.Formatter( fmt = "%(asctime)s [%(levelname)s] %(message)s",
+                                     datefmt = "%m/%d/%Y %I:%M:%S" )
 print_formatter = logging.Formatter( fmt = "[%(levelname)s] %(message)s" )
 
 #---------------------------------------------------------------------
@@ -96,17 +108,23 @@ def get_file_handler( file_path: str ) -> logging.FileHandler:
 
 logger = logging.getLogger( "always_log" )
 logger.addHandler( always_print )
-
-#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# vlogger
-#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# A logger to print based on verbosity
-
-vlogger = logging.getLogger( "verbose_logger" )
-logger.addHandler( verbose_print )
+logger.setLevel( logging.DEBUG )
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # gen_file_logger
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Create a logger to log to a specific file, as well as print
+
+def gen_file_logger( file_path: str ) -> logging.Logger:
+    """Generates a file logger with printing"""
+    file_logger = logging.getLogger( f"{os.path.basename( file_path )} logger" )
+    file_logger.addHandler( always_print )
+    file_logger.addHandler( get_file_handler( file_path ) )
+    file_logger.setLevel( logging.DEBUG )
+    return file_logger
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# gen_v_file_logger
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Create a logger to log to a specific file, as well as print based
 # on verbosity
@@ -116,6 +134,7 @@ def gen_v_file_logger( file_path: str ) -> logging.Logger:
     v_file_logger = logging.getLogger( f"{os.path.basename( file_path )} logger" )
     v_file_logger.addHandler( verbose_print )
     v_file_logger.addHandler( get_file_handler( file_path ) )
+    v_file_logger.setLevel( logging.DEBUG )
     return v_file_logger
 
 
