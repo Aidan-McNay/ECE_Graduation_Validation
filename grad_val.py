@@ -135,18 +135,18 @@ if __name__ == "__main__":
         summary_logger = gen_file_logger( summary_file )
         summary_logger.info( "Summary:" )
 
-        total_errors = 0
+        TOTAL_ERRORS = 0
 
         for check_name, error_logs in errors.items():
             check_errors = sum( error_logs.values() )
-            total_errors += check_errors
+            TOTAL_ERRORS += check_errors
             summary_logger.info( " - %s: %d errors", check_name, check_errors )
 
             for netid, netid_errors in error_logs.items():
                 summary_logger.info( "    - %s: %d errors", netid, netid_errors )
 
-        if total_errors > 0:
-            summary_logger.error( "Overall: %d errors", total_errors )
+        if TOTAL_ERRORS > 0:
+            summary_logger.error( "Overall: %d errors", TOTAL_ERRORS )
         else:
             summary_logger.log( SUCCESS, "All checks passed!" )
 
