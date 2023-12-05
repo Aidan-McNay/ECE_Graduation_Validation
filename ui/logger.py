@@ -131,7 +131,7 @@ def gen_file_logger( file_path: str ) -> logging.Logger:
 
 def gen_v_file_logger( file_path: str ) -> logging.Logger:
     """Generates a file logger with verbose printing"""
-    v_file_logger = logging.getLogger( f"{os.path.basename( file_path )} logger" )
+    v_file_logger = logging.getLogger( f"{file_path} logger" )
     v_file_logger.addHandler( verbose_print )
     v_file_logger.addHandler( get_file_handler( file_path ) )
     v_file_logger.setLevel( logging.DEBUG )

@@ -15,7 +15,7 @@ import shutil
 
 import obj
 import checks
-from ui.logger import logger, gen_file_logger, gen_v_file_logger, set_verbosity
+from ui.logger import logger, gen_file_logger, gen_v_file_logger, set_verbosity, SUCCESS
 
 #---------------------------------------------------------------------
 # Argument Parsing
@@ -129,15 +129,25 @@ if __name__ == "__main__":
                 logger.info( "Running %s for %s...", check_name, netid )
                 errors[ check_name ][ netid ] = check_func( roster, check_logger )
 
-            logger.info( " - Log in %s\n", os.path.relpath( log_file ) )
+            logger.info( " - Log in %s", os.path.relpath( log_file ) )
 
         summary_file = os.path.join( log_dir, "summary.log" )
         summary_logger = gen_file_logger( summary_file )
         summary_logger.info( "Summary:" )
 
-        for check_name, error_logs in errors.items():
-            total_errors = sum( error_logs.values() )
-            summary_logger.info( " - %s: %d errors", check_name, total_errors )
+        total_errors = 0
 
-            for netid, num_errors in error_logs.items():
-                summary_logger.info( "    - %s: %d errors", netid, num_errors )
+        for check_name, error_logs in errors.items():
+            check_errors = sum( error_logs.values() )
+            total_errors += check_errors
+            summary_logger.info( " - %s: %d errors", check_name, check_errors )
+
+            for netid, netid_errors in error_logs.items():
+                summary_logger.info( "    - %s: %d errors", netid, netid_errors )
+
+        if total_errors > 0:
+            summary_logger.error( "Overall: %d errors", total_errors )
+        else:
+            summary_logger.log( SUCCESS, "All checks passed!" )
+
+        summary_logger.info( "Run logs in the logs directory" )
