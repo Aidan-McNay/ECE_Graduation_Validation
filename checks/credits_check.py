@@ -42,7 +42,7 @@ def credits_check( roster: Roster, grades: Grades, log_path: str, verbose: bool 
                 real_credits = -1
 
             if real_credits != proposed_credits: #The student lied :(
-                message = f" - [ERROR] Proposed credits for {course} ({proposed_credits}) + "\
+                message = f" - [ERROR] Proposed credits for {course} ({proposed_credits})" + \
                                     f" doesn't match our records ({real_credits})"
                 errors += 1
             else:

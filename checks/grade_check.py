@@ -41,7 +41,7 @@ def grade_check( roster: Roster, grades: Grades, log_path: str, verbose: bool = 
                 real_grade = "No Entry"
 
             if real_grade != proposed_grade: #The student lied :(
-                message = f" - [ERROR] Proposed grade for {course} ({proposed_grade}) + "\
+                message = f" - [ERROR] Proposed grade for {course} ({proposed_grade})" + \
                                     f" doesn't match our records ({real_grade})"
                 errors += 1
             else:
