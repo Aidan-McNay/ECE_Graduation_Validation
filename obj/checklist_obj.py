@@ -167,7 +167,7 @@ class Checklist:
 
         val_label = self.find_cell( val, case_insensitive )
         if len( val_label ) != 1:
-            raise excp.checklist_exceptions.MultipleAttributeError( val )
+            raise excp.checklist_exceptions.MultipleAttributeError( val, len( val_label ) )
 
         coordinates = val_label[ 0 ]
         for _ in range( num_right ):
