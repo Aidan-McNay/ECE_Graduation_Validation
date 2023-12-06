@@ -12,8 +12,6 @@ import logging
 import os
 import sys
 
-from io import TextIOWrapper
-
 # Disable root logging except for critical messages
 logging.getLogger().setLevel( level = logging.CRITICAL )
 
@@ -136,15 +134,3 @@ def gen_v_file_logger( file_path: str ) -> logging.Logger:
     v_file_logger.addHandler( get_file_handler( file_path ) )
     v_file_logger.setLevel( logging.DEBUG )
     return v_file_logger
-
-
-def printl( string_to_log: str, file: TextIOWrapper, verbose: bool = True ) -> None:
-    """
-    Logs a given statement to the file
-
-    We also print the statement if we're verbose
-    """
-
-    if verbose:
-        print( string_to_log )
-    file.write( string_to_log + "\n" )
