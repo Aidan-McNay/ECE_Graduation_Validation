@@ -49,7 +49,7 @@ class ClassRecord:
         """Indicate that credits for the class have been applied"""
 
         if self.cred_applied + num_cred > self.cred_taken:
-            raise InsufficientCreditsError( self.netid, self.class_name, self.term, 
+            raise InsufficientCreditsError( self.netid, self.class_name, self.term,
                                             num_cred, self.cred_taken, self.cred_applied )
-        else:
-            self.cred_applied += num_cred
+
+        self.cred_applied += num_cred
