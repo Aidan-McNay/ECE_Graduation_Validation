@@ -149,8 +149,6 @@ if __name__ == "__main__":
                 logger.info( "Running %s for %s...", check_name, netid )
                 errors[ netid ][ check_name ] = check_func( roster, check_logger )
 
-            logger.info( " - Log in %s", os.path.relpath( log_file ) )
-
         summary_file = os.path.join( log_dir, "summary.log" )
         summary_logger = gen_file_logger( summary_file )
         summary_logger.info( "Summary:" )
