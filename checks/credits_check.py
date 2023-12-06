@@ -11,8 +11,8 @@
 
 from logging import Logger
 
-import exceptions.class_records_exceptions.RecordNotFoundError      as RecordNotFoundError
-import exceptions.class_records_exceptions.InsufficientCreditsError as InsufficientCreditsError
+from exceptions.class_records_exceptions import RecordNotFoundError
+from exceptions.class_records_exceptions import InsufficientCreditsError
 
 from obj.roster_obj import Roster
 from obj.grades_obj import Grades

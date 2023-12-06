@@ -28,7 +28,7 @@ logging.addLevelName( SUCCESS, 'SUCCESS' )
 #---------------------------------------------------------------------
 
 file_formatter  = logging.Formatter( fmt = "%(asctime)s [%(levelname)s] %(message)s",
-                                     datefmt = "%m/%d/%Y %I:%M:%S" )
+                                     datefmt = "%m/%d/%Y %H:%M:%S" )
 print_formatter = logging.Formatter( fmt = "[%(levelname)s] %(message)s" )
 
 #---------------------------------------------------------------------

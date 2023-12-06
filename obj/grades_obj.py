@@ -12,7 +12,7 @@ import csv
 from typing import Optional, List, Dict, Union, cast
 
 import exceptions as excp
-from obj.class_records_obj import ClassRecord
+from obj.class_record_obj import ClassRecord
 import ui.parser
 
 #---------------------------------------------------------------------
@@ -255,7 +255,7 @@ class Grades:
                 num_cred = cast( int, data[ "num_credits" ] )
                 grade    = cast( str, data[ "grade" ]       )
 
-                record = ClassRecord( self.netid, class_str, term, num_cred, grade )
+                record = ClassRecord( netid, class_str, term, num_cred, grade )
                 class_records.append( record )
 
         return class_records

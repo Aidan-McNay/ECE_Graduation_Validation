@@ -36,12 +36,21 @@ class InsufficientCreditsError( Exception ):
      - netid: NetID of the student (str)
      - class_str: Class that wasn't found (str)
      - term: Term that wasn't found (term)
+     - num_cred: Number of credits attempted to apply
+     - num_taken: Number of credits the class was taken for
+     - num_applied: Number of credits already applied
     """
 
-    def __init__( self, netid: str, class_str: str, term: str ):
-        self.netid     = netid
-        self.class_str = class_str
-        self.term      = term
+    def __init__( self, netid: str, class_str: str, term: str,
+                        num_cred: int, num_taken: int, num_applied: int ):
+        self.netid       = netid
+        self.class_str   = class_str
+        self.term        = term
+        self.num_cred    = num_cred
+        self.num_taken   = num_taken
+        self.num_applied = num_applied
 
-        self.err_msg = f"Too many credits applied towards {class_str} in {term} for {netid}"
+        self.err_msg = f"Too many credits applied towards {class_str} in {term} for {netid} " + \
+                       f"(Took the class for {num_taken}, attempted to apply {num_cred} with " + \
+                       f"{num_applied} already applied)"
         super().__init__( self.err_msg )
