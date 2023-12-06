@@ -1,4 +1,4 @@
-name: Type check code with Mypy
+name: Type Check (Mypy)
 
 on: [push]
 
