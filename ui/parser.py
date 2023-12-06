@@ -56,10 +56,15 @@ def parse_class_term( ugly_term: str ) -> str:
     """
     stripped_term = ugly_term.strip()
 
-    letters = [x for x in stripped_term if x.isalpha() ]
-    digits  = [x for x in stripped_term if x.isdigit() ]
+    letters = [ x for x in stripped_term if x.isalpha() ]
+    digits  = [ x for x in stripped_term if x.isdigit() ]
 
-    return ( "".join(letters) ).upper() + "".join(digits)
+    term = ( "".join(letters) ).upper() + "".join(digits)
+
+    if not validate_class_term( term ): # Still not a valid term
+        raise excp.ui_exceptions.InvalidTermError( ugly_term )
+
+    return term
 
 def validate_class_term( term: str ) -> bool:
     """
@@ -109,3 +114,54 @@ def term_is_later( term1: str, term2: str ) -> bool:
     """
 
     return term_index( term1 ) > term_index( term2 )
+
+#---------------------------------------------------------------------
+# Parsing for Grades
+#---------------------------------------------------------------------
+
+def parse_grade( ugly_grade: str ) -> str:
+    """
+    Parses non-optimal user input into a usable grade
+
+    Ex. " + a" -> "A+
+    """
+
+    stripped_grade = ugly_grade.strip()
+
+    letters = [ x for x in stripped_grade if x.isalpha() ]
+    mods    = [ x for x in stripped_grade if x in ( "+", "-" ) ]
+
+    grade = ( "".join(letters) ).upper() + "".join(mods)
+
+    if not validate_grade( grade ): # Still not a valid grade
+        raise excp.ui_exceptions.InvalidTermError( ugly_grade )
+
+    return grade
+
+VALID_GRADES = {
+    "A+",
+    "A",
+    "A-",
+    "B+",
+    "B",
+    "B-",
+    "C+",
+    "C",
+    "C-",
+    "D+",
+    "D",
+    "D-",
+    "F",
+    "S",
+    "U",
+    "SX",
+    "UX"
+}
+
+def validate_grade( grade: str ) -> bool:
+    """
+    Validates that a given string corresponds to an actual grade;
+    returns True if yes, False if no
+    """
+
+    return grade in VALID_GRADES

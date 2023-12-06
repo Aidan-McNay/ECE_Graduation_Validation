@@ -31,7 +31,8 @@ class ClassRecord:
      - grade: Grade achieved in the class (str)
     """
 
-    def __init__( self, cred_taken: int, grade: str ):
+    def __init__( self, class_name: str, cred_taken: int, grade: str ):
+        self.class_name   = class_name
         self.cred_taken   = cred_taken
         self.cred_applied = 0
         self.grade        = grade

@@ -138,6 +138,8 @@ if __name__ == "__main__":
             result_dir = os.path.join( log_dir, check_name )
             os.makedirs( result_dir, exist_ok = True )
 
+            logger.info( "Running %s...", check_name )
+
             for roster in rosters:
                 netid = roster.netid
                 log_file = os.path.join( result_dir, f"{netid}.log" )
@@ -146,7 +148,6 @@ if __name__ == "__main__":
                 if netid not in errors:
                     errors[ netid ] = {}
 
-                logger.info( "Running %s for %s...", check_name, netid )
                 errors[ netid ][ check_name ] = check_func( roster, check_logger )
 
         summary_file = os.path.join( log_dir, "summary.log" )

@@ -21,3 +21,17 @@ class InvalidTermError( Exception ):
 
         err_msg = f"{term} is not a valid term"
         super().__init__( err_msg )
+
+class InvalidGradeError( Exception ):
+    """
+    Indicates that the provided grade isn't a valid grade
+
+    Attributes:
+     - grade: Grade that isn't valid (str)
+    """
+
+    def __init__( self, grade: str ):
+        self.term = grade
+
+        err_msg = f"{grade} is not a valid grade"
+        super().__init__( err_msg )

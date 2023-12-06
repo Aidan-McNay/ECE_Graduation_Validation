@@ -18,8 +18,9 @@ import pandas as pd
 from dateutil import parser
 
 from obj.roster_entry_obj import RosterEntry, ReqEntry, CheckoffEntry
-from ui.parser import parse_class_name as pclass
-from ui.parser import parse_class_term as pterm
+from ui.parser import parse_class_name as pclass, \
+                      parse_class_term as pterm,  \
+                      parse_grade      as pgrade
 import exceptions as excp
 
 #---------------------------------------------------------------------
@@ -243,9 +244,12 @@ class Checklist:
             term   = self.get_cell( coord.right().right().right() )
             grade  = self.get_cell( coord.right().right().right().right() )
 
+            # Parsing of user formatting
+            req      = req.upper()
             course   = pclass( course )
-            term     = pterm( term )
             cred_num = int( cred )
+            term     = pterm( term )
+            grade    = pgrade( grade )
 
             if req.lower() == "REQ-LS".lower():
                 cat = self.get_cell( coord.right().right().right().right().right() )

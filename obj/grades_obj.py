@@ -12,6 +12,8 @@ import csv
 from typing import Optional, List, Dict, Union, cast
 
 import exceptions as excp
+from obj.class_record_obj import ClassRecord
+import ui.parser
 
 #---------------------------------------------------------------------
 # Grade Mapping
@@ -143,6 +145,10 @@ class Grades:
         class_str = f"{class_subj} {class_num}"
         num_cred = int( cred )
 
+        # Run through the parser, just to make sure :)
+        class_str = ui.parser.parse_class_name( class_str )
+        term      = ui.parser.parse_class_term( term      )
+
         if not netid in self._grades:
             self._grades[ netid ] = {}
 
@@ -235,6 +241,26 @@ class Grades:
 
         return terms_taken
 
+    def gen_records( self, netid: str ) -> List[ ClassRecord ]:
+        """Generates ClassRecords for all the classes that the given NetID took"""
+
+        if not netid in self._grades:
+            raise excp.grade_exceptions.StudentNotFoundError( netid )
+
+        class_records: List[ ClassRecord ] = []
+
+        for term in self._grades[ netid ]:
+            for class_str in self._grades[ netid ][ term ]:
+                data     = self._grades[ netid ][ term ][ class_str ]
+                num_cred = cast( int, data[ "num_credits" ] )
+                grade    = cast( str, data[ "grade" ]       )
+
+                record = ClassRecord( class_str, num_cred, grade )
+                class_records.append( record )
+
+        return class_records
+
+
     #---------------------------------------------------------------------
     # Operator Overloading
     #---------------------------------------------------------------------
@@ -245,10 +271,10 @@ class Grades:
 
         new_grades = Grades()
         for old_grades in [ self, other ]:
-            for netid in old_grades._grades.keys():
-                for term in old_grades._grades[ netid ].keys():
-                    for class_str in old_grades._grades[ netid ][ term ].keys():
-                        data = old_grades.get_data( netid, term, class_str )
+            for netid in old_grades._grades:
+                for term in old_grades._grades[ netid ]:
+                    for class_str in old_grades._grades[ netid ][ term ]:
+                        data = old_grades._grades[ netid ][ term ][ class_str ]
                         # Indicate types for type safety
                         num_cred = cast( int, data[ "num_credits" ] )
                         grade    = cast( str, data[ "grade" ]       )
