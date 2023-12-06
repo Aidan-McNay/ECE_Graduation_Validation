@@ -255,7 +255,7 @@ class Grades:
                 num_cred = cast( int, data[ "num_credits" ] )
                 grade    = cast( str, data[ "grade" ]       )
 
-                record = ClassRecord( class_str, term, num_cred, grade )
+                record = ClassRecord( self.netid, class_str, term, num_cred, grade )
                 class_records.append( record )
 
         return class_records

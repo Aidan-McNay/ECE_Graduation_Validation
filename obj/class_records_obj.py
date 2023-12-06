@@ -26,6 +26,8 @@ class ClassRecord:
 
     Attributes:
 
+     - netid: Name of the student who took the class
+
      - class_name: Name of the class (str)
 
      - term: Term the class was taken (str)
@@ -37,7 +39,8 @@ class ClassRecord:
      - grade: Grade achieved in the class (str)
     """
 
-    def __init__( self, class_name: str, term: str, cred_taken: int, grade: str ):
+    def __init__( self, netid: str, class_name: str, term: str, cred_taken: int, grade: str ):
+        self.netid        = netid
         self.class_name   = class_name
         self.term         = term
         self.cred_taken   = cred_taken

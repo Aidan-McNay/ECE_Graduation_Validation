@@ -11,9 +11,12 @@
 
 from logging import Logger
 
-import exceptions as excp
+import exceptions.class_records_exceptions.RecordNotFoundError      as RecordNotFoundError
+import exceptions.class_records_exceptions.InsufficientCreditsError as InsufficientCreditsError
+
 from obj.roster_obj import Roster
 from obj.grades_obj import Grades
+from obj.class_records_obj import ClassRecords
 from ui.logger import SUCCESS
 
 def credits_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
@@ -29,25 +32,21 @@ def credits_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
 
     logger.info( "Credits Check for %s:", netid )
 
+    records = ClassRecords( netid, grades )
+
     for entry in roster.req_entries:
 
         term             = entry.term
         course           = entry.course_used
         proposed_credits = entry.cred_applied
-        cred_applied     = False
 
         try:
-            real_credits = grades.get_credits( netid, term, course )
-        except (excp.grade_exceptions.TermNotFoundError,
-                excp.grade_exceptions.ClassNotFoundError):
-            real_credits = -1
-
-        if real_credits != proposed_credits: #The student lied :(
-            logger.error( "Proposed credits for %s (%d) doesn't match our records (%d)",
-                          course, proposed_credits, real_credits )
-            errors += 1
-        else:
+            records.use_cred( course, term, proposed_credits )
             logger.info( " - Credits match for %s", course )
+
+        except ( RecordNotFoundError, InsufficientCreditsError ) as e:
+            logger.error( e.err_msg )
+            errors += 1
 
     if errors == 0:
         logger.log( SUCCESS, "All credits match" )
