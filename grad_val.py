@@ -135,7 +135,6 @@ if __name__ == "__main__":
         log_dir = makelogdir()
 
         for check_name, check_func in checks_to_run.items():
-            errors[ check_name ] = {}
             result_dir = os.path.join( log_dir, check_name )
             os.makedirs( result_dir, exist_ok = True )
 
@@ -144,8 +143,11 @@ if __name__ == "__main__":
                 log_file = os.path.join( result_dir, f"{netid}.log" )
                 check_logger = gen_v_file_logger( log_file )
 
+                if netid not in errors:
+                    errors[ netid ] = {}
+
                 logger.info( "Running %s for %s...", check_name, netid )
-                errors[ check_name ][ netid ] = check_func( roster, check_logger )
+                errors[ netid ][ check_name ] = check_func( roster, check_logger )
 
             logger.info( " - Log in %s", os.path.relpath( log_file ) )
 
@@ -155,13 +157,13 @@ if __name__ == "__main__":
 
         TOTAL_ERRORS = 0
 
-        for check_name, error_logs in errors.items():
-            check_errors = sum( error_logs.values() )
-            TOTAL_ERRORS += check_errors
-            summary_logger.info( " - %s: %d errors", check_name, check_errors )
+        for netid, error_logs in errors.items():
+            netid_errors = sum( error_logs.values() )
+            TOTAL_ERRORS += netid_errors
+            summary_logger.info( " - %s: %d errors", netid, netid_errors )
 
-            for netid, netid_errors in error_logs.items():
-                summary_logger.info( "    - %s: %d errors", netid, netid_errors )
+            for check_name, check_errors in error_logs.items():
+                summary_logger.info( "    - %s: %d errors", check_name, check_errors )
 
         if TOTAL_ERRORS > 0:
             summary_logger.error( "Overall: %d errors", TOTAL_ERRORS )
