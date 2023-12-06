@@ -30,8 +30,9 @@ or more simply,
 ```
 
 Here, `<checklists>` are the checklists that we want to validate. We also have a number of optional flags:
- - `-v`, `--verbose`: Enables verbose output
+ - `-l LOGS_DIR`: Specifies the log directory (Default: `logs`)
  - `-g <grades-csv>`, `--grades <grades-csv>`: Validates the schedule against the given grades
+ - `-v`, `--verbose`: Enables verbose output
 
 For more information, use the `-h` or `--help` flag
 
