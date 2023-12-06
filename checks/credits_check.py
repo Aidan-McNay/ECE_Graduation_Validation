@@ -34,6 +34,7 @@ def credits_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
         term             = entry.term
         course           = entry.course_used
         proposed_credits = entry.cred_applied
+        cred_applied     = False
 
         try:
             real_credits = grades.get_credits( netid, term, course )
