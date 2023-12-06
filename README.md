@@ -40,3 +40,11 @@ To see an example of how the code is used on test data, run
 ```
 ./grad_val.py test_data/ec1_checklist.xlsx -g test_data/ec1_grades.csv
 ```
+
+## Linting
+ECE Graduation Validation is linted both for formatting and correctness (with PyLint), but also with static type checking (with Mypy). To lint locally and verify your changes, you can use `lint.sh` to lint all files tracked by Git:
+```
+pip install pylint mypy
+./lint.sh
+```
+Linting is also performed on push by GitHub Actions
