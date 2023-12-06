@@ -11,7 +11,9 @@
 
 import argparse
 import os
+from typing import NoReturn
 import shutil
+import sys
 
 import obj
 import checks
@@ -21,17 +23,25 @@ from ui.logger import logger, gen_file_logger, gen_v_file_logger, set_verbosity,
 # Argument Parsing
 #---------------------------------------------------------------------
 
-def uline( text: str ) -> str:
-    """Underlines the given text"""
-    return '\033[4m' + text + '\033[0m'
+# Define custom parser to print help message on an error
+class DefaultHelpParser( argparse.ArgumentParser ):
+    """
+    A thin wrapper around argparse.ArgumentParser to print the help message
+    on an error
+    """
 
-parser = argparse.ArgumentParser( description =
-                                  "Validates an ECE student's checklist for graduation",
-                                  usage = "%(prog)s CHECKLISTS" )
+    def error( self, message: str ) -> NoReturn:
+        """Displays the error and help message on an error"""
+        sys.stderr.write( f'error: {message}\n' )
+        self.print_help()
+        sys.exit( 2 )
+
+parser = DefaultHelpParser( description = "Validates an ECE student's checklist for graduation",
+                            usage = "%(prog)s CHECKLIST(S)" )
 
 # Mandatory arguments
 parser.add_argument( "checklists", help = "The checklist(s) to validate",
-                     metavar = "CHECKLISTS", action = "append" )
+                     metavar = "CHECKLIST(S)", action = "append" )
 
 # Optional arguments
 parser.add_argument( "-l", default = "logs", help = "Set the location of the logs directory",

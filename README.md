@@ -25,14 +25,14 @@ pip install -r mypy_requirements.txt
 
 To use, simply run
 ```
-python grad_val.py CHECKLISTS
+python grad_val.py CHECKLIST(S)
 ```
 or more simply,
 ```
-./grad_val.py CHECKLISTS
+./grad_val.py CHECKLIST(S)
 ```
 
-Here, `CHECKLISTS` are the checklist(s) that we want to validate. We also have a number of optional flags:
+Here, `CHECKLIST(S)` are the checklist(s) that we want to validate. We also have a number of optional flags:
  - `-l LOGS_DIR`: Specifies the log directory (Default: `logs`)
  - `-g GRADES-CSV`, `--grades GRADES-CSV`: Validates the schedule against the given grades
  - `-v`, `--verbose`: Enables verbose output
