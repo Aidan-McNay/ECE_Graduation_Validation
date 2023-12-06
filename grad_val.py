@@ -11,10 +11,11 @@
 
 import argparse
 import os
+import shutil
 
 import obj
 import checks
-from ui.logger import printl
+from ui.logger import logger, gen_file_logger, gen_v_file_logger, set_verbosity, SUCCESS
 
 #---------------------------------------------------------------------
 # Argument Parsing
@@ -51,14 +52,21 @@ def makelogdir() -> str:
     os.makedirs( logging_dir, exist_ok = True )
     return logging_dir
 
+def removelogdir() -> None:
+    """Removes the logging directory, if it's there"""
+    cwd = os.getcwd()
+    logging_dir = os.path.join( cwd, "logs" )
+    if os.path.exists( logging_dir ) and os.path.isdir( logging_dir ):
+        shutil.rmtree( logging_dir )
+
 #---------------------------------------------------------------------
 # Main Code
 #---------------------------------------------------------------------
 
 # Name and function of checks to run
 #  - functions should take in 2 arguments; the roster to operate on,
-#    and where to store the logs. The output should be the number of
-#    errors encountered
+#    and a Logger to log information. The output should be the number
+#    of errors encountered
 checks_to_run: dict = {}
 
 # Errors for each check run
@@ -66,6 +74,8 @@ errors: dict = {}
 
 if __name__ == "__main__":
     args = parser.parse_args()
+    set_verbosity( args.verbose )
+    removelogdir()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Obtain the rosters from the checklists
@@ -93,13 +103,11 @@ if __name__ == "__main__":
 
         checks_to_run[ "grade-validation" ] = lambda x, y : checks.grade_check.grade_check( x,
                                                                                      grades,
-                                                                                     y,
-                                                                                     args.verbose )
+                                                                                     y )
 
         checks_to_run[ "credits-validation" ] = lambda x, y : checks.credits_check.credits_check( x,
                                                                                      grades,
-                                                                                     y,
-                                                                                     args.verbose )
+                                                                                     y )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Run Checks
@@ -116,20 +124,30 @@ if __name__ == "__main__":
             for roster in rosters:
                 netid = roster.netid
                 log_file = os.path.join( result_dir, f"{netid}.log" )
+                check_logger = gen_v_file_logger( log_file )
 
-                print( f"Running {check_name} for {netid}..." )
-                errors[ check_name ][ netid ] = check_func( roster, log_file )
+                logger.info( "Running %s for %s...", check_name, netid )
+                errors[ check_name ][ netid ] = check_func( roster, check_logger )
 
-            print( f" - Log in { os.path.relpath( log_file ) }\n")
+            logger.info( " - Log in %s", os.path.relpath( log_file ) )
 
         summary_file = os.path.join( log_dir, "summary.log" )
-        with open( summary_file, 'w', encoding = "utf-8" ) as file:
+        summary_logger = gen_file_logger( summary_file )
+        summary_logger.info( "Summary:" )
 
-            printl( "Summary:", file )
+        TOTAL_ERRORS = 0
 
-            for check_name, error_logs in errors.items():
-                total_errors = sum( error_logs.values() )
-                printl( f" - {check_name}: {total_errors} errors", file )
+        for check_name, error_logs in errors.items():
+            check_errors = sum( error_logs.values() )
+            TOTAL_ERRORS += check_errors
+            summary_logger.info( " - %s: %d errors", check_name, check_errors )
 
-                for netid, num_errors in error_logs.items():
-                    printl( f"    - {netid}: {num_errors} errors", file )
+            for netid, netid_errors in error_logs.items():
+                summary_logger.info( "    - %s: %d errors", netid, netid_errors )
+
+        if TOTAL_ERRORS > 0:
+            summary_logger.error( "Overall: %d errors", TOTAL_ERRORS )
+        else:
+            summary_logger.log( SUCCESS, "All checks passed!" )
+
+        summary_logger.info( "Run logs in the logs directory" )
