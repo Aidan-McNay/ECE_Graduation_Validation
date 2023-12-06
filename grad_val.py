@@ -21,18 +21,26 @@ from ui.logger import logger, gen_file_logger, gen_v_file_logger, set_verbosity,
 # Argument Parsing
 #---------------------------------------------------------------------
 
+def uline( text: str ) -> str:
+    """Underlines the given text"""
+    return '\033[4m' + text + '\033[0m'
+
 parser = argparse.ArgumentParser( description =
-                                  "Validates an ECE student's checklist for graduation" )
+                                  "Validates an ECE student's checklist for graduation",
+                                  usage = "%(prog)s CHECKLISTS" )
 
 # Mandatory arguments
 parser.add_argument( "checklists", help = "The checklist(s) to validate",
-                     metavar = "<checklists>", action = "append" )
+                     metavar = "CHECKLISTS", action = "append" )
 
 # Optional arguments
+parser.add_argument( "-l", default = "logs", help = "Set the location of the logs directory",
+                     metavar = "LOGS_DIR", dest = "logs" )
+
 parser.add_argument( "-g", "--grades",
                      help = "Verify the checklist against the given grades/credits",
                      action = "append",
-                     metavar = "<grades-csv>" )
+                     metavar = "GRADES-CSV" )
 
 parser.add_argument( "-v", "--verbose", action="store_true",
                      help = "Provide verbose output" )
@@ -41,23 +49,32 @@ parser.add_argument( "-v", "--verbose", action="store_true",
 # Logging
 #---------------------------------------------------------------------
 
+LOG_DIR = "logs"
+
+def setlogdir( directory: str ) -> None:
+    """Sets the logging dir"""
+
+    global LOG_DIR
+    if os.path.isabs( directory ):
+        LOG_DIR = directory
+    else:
+        cwd = os.getcwd()
+        LOG_DIR = os.path.join( cwd, directory )
+
 def makelogdir() -> str:
     """
     Creates a logs directory if one doesn't exist, returning the
     logging directory
     """
 
-    cwd = os.getcwd()
-    logging_dir = os.path.join( cwd, "logs" )
-    os.makedirs( logging_dir, exist_ok = True )
-    return logging_dir
+    os.makedirs( LOG_DIR, exist_ok = True )
+    return LOG_DIR
 
 def removelogdir() -> None:
     """Removes the logging directory, if it's there"""
-    cwd = os.getcwd()
-    logging_dir = os.path.join( cwd, "logs" )
-    if os.path.exists( logging_dir ) and os.path.isdir( logging_dir ):
-        shutil.rmtree( logging_dir )
+
+    if os.path.exists( LOG_DIR ) and os.path.isdir( LOG_DIR ):
+        shutil.rmtree( LOG_DIR )
 
 #---------------------------------------------------------------------
 # Main Code
@@ -75,6 +92,7 @@ errors: dict = {}
 if __name__ == "__main__":
     args = parser.parse_args()
     set_verbosity( args.verbose )
+    setlogdir( args.logs )
     removelogdir()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -150,4 +168,4 @@ if __name__ == "__main__":
         else:
             summary_logger.log( SUCCESS, "All checks passed!" )
 
-        summary_logger.info( "Run logs in the logs directory" )
+        summary_logger.info( "Run logs in the %s directory", args.logs )
