@@ -11,7 +11,7 @@
 
 import argparse
 import os
-from typing import NoReturn
+from typing import NoReturn, Dict
 import shutil
 import sys
 
@@ -106,10 +106,21 @@ if __name__ == "__main__":
     removelogdir()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Instantiate maing logger
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    log_dir = makelogdir()
+    summary_file = os.path.join( log_dir, "summary.log" )
+    summary_logger = gen_file_logger( summary_file )
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Obtain the rosters from the checklists
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     rosters = []
+    netids_found: Dict[str, str] = {}
+
+    summary_logger.info( "Checking NetID uniqueness across checklists..." )
 
     for checklist_path in args.checklists:
         checklist = obj.checklist_obj.Checklist( checklist_path )
@@ -117,6 +128,17 @@ if __name__ == "__main__":
         roster.populate_entries( checklist.req_entries, checklist.checkoff_entries )
 
         rosters.append( roster )
+
+        if roster.netid in netids_found:
+            summary_logger.error( "NetID %s (in %s) is a duplicate (previously found in %s)",
+                                  roster.netid, os.path.relpath( checklist_path ),
+                                                os.path.relpath( netids_found[ roster.netid ] ) )
+            sys.exit( 1 )
+
+        else:
+            netids_found[ roster.netid ] = checklist_path
+
+    summary_logger.log( SUCCESS, "No duplicate NetIDs detected" )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Grade/Credits Validation
@@ -160,8 +182,6 @@ if __name__ == "__main__":
 
                 errors[ netid ][ check_name ] = check_func( roster, check_logger )
 
-        summary_file = os.path.join( log_dir, "summary.log" )
-        summary_logger = gen_file_logger( summary_file )
         summary_logger.info( "Summary:" )
 
         TOTAL_ERRORS = 0
@@ -179,4 +199,4 @@ if __name__ == "__main__":
         else:
             summary_logger.log( SUCCESS, "All checks passed!" )
 
-        summary_logger.info( "Run logs in the %s directory", args.logs )
+    summary_logger.info( "Run logs in the %s directory", args.logs )
