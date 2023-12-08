@@ -106,7 +106,7 @@ if __name__ == "__main__":
     removelogdir()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Instantiate maing logger
+    # Instantiate main logger
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     log_dir = makelogdir()
