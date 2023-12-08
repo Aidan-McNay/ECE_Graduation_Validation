@@ -15,6 +15,7 @@ from typing import NoReturn, Dict
 import shutil
 import sys
 
+from api.bulk_api import bulk_populate_roster_data
 import obj
 import checks
 from ui.logger import gen_file_logger, set_verbosity, SUCCESS
@@ -135,6 +136,15 @@ if __name__ == "__main__":
             netids_found[ roster.netid ] = checklist_path
 
     summary_logger.log( SUCCESS, "No duplicate NetIDs detected" )
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Populate API Information
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    summary_logger.info( "Adding class data from API..." )
+
+    for roster in rosters:
+        bulk_populate_roster_data( roster.req_entries )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Grade/Credits Validation

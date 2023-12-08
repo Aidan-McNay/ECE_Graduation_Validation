@@ -83,7 +83,7 @@ class Class:
         if term_opt is None:
             term = ui.user.prompt_term( course_name )
         else:
-            term = ui.parser.parse_class_term( term )
+            term = ui.parser.parse_class_term( term_opt )
 
         self.primary_name = course_name
         self.term_taken   = term

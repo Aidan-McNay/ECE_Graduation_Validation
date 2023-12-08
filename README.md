@@ -7,9 +7,11 @@ This code validates a course schedule and ensures it follows Cornell ECE's requi
 ## Dependencies
 
 - `Python 3.5+`
-   - `pandas`
    - `openpyxl`
+   - `pandas`
+   - `python-dateutil`
    - `requests`
+   - `grequests`
 
 These can be installed using `pip` and the requirements list:
 ```

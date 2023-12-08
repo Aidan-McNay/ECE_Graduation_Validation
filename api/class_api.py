@@ -26,6 +26,12 @@ import ui
 # Cache get_rosters response in an external variable
 _CACHED_ROSTERS = None
 
+def api_url( term: str, dept: str ) -> str:
+    """Returns the appropriate HTTP request URL"""
+    req_url = "https://classes.cornell.edu/api/2.0/search/classes.json?" + \
+             f"roster={ term }&subject={ dept }"
+    return req_url
+
 def get_rosters() -> List[str]:
     """
     Gets all of the rosters that the API has information for
@@ -51,12 +57,17 @@ def get_rosters() -> List[str]:
 # Cache get_class responses in an external variable
 _cached_classes = {}
 
+def cache_data( dept: str, term: str, json_object: dict ) -> None:
+    """Caches data to be stored and used later"""
+
+    _cached_classes[ ( dept, term ) ] = json_object[ "data" ][ "classes" ]
+
+
 def populate_data( term: str, dept: str ) -> None:
     """
     Populates the cached classes with the requested data
     """
-    req_url =  "https://classes.cornell.edu/api/2.0/search/classes.json?" + \
-              f"roster={ term }&subject={ dept }"
+    req_url = api_url( term, dept )
 
     json_data   = requests.get( req_url, timeout = 10 ).text
     json_object = json.loads( json_data )
@@ -65,7 +76,7 @@ def populate_data( term: str, dept: str ) -> None:
         raise excp.api_exceptions.DeptNotFoundError( dept, term )
 
     # Store the data for that department and term
-    _cached_classes[ ( dept, term ) ] = json_object[ "data" ][ "classes" ]
+    cache_data( dept, term, json_object )
 
 def get_class( course_name: str, term: str,
                dump: bool = False, file_name: str = "" ) -> dict:
