@@ -56,9 +56,9 @@ class ChecksManager:
                 }
     """
 
-    def __init__( self ):
+    def __init__( self ) -> None:
         self.checks:  Dict[str, Callable[[Roster, Logger], int]] = {}
-        self.results: Dict[str, int] = {}
+        self.results: Dict[str, Dict[str,int]] = {}
 
     def add_check( self, check_name: str, check_func: Callable[[Roster, Logger], int] ) -> None:
         """Adds a check to the set of checks to run"""
@@ -108,4 +108,3 @@ class ChecksManager:
                 logger.error( "Overall: %d errors", total_errors )
             else:
                 logger.log( SUCCESS, "All checks passed!" )
-

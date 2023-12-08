@@ -17,7 +17,7 @@ import sys
 
 import obj
 import checks
-from ui.logger import logger, gen_file_logger, gen_v_file_logger, set_verbosity, SUCCESS
+from ui.logger import gen_file_logger, set_verbosity, SUCCESS
 
 #---------------------------------------------------------------------
 # Argument Parsing
@@ -147,10 +147,10 @@ if __name__ == "__main__":
         for grade_file in args.grades:
             grades += obj.grades_obj.Grades( grade_file )
 
-        checks_mngr.add_check( "grade-validation", 
+        checks_mngr.add_check( "grade-validation",
                                lambda x, y : checks.grade_check.grade_check( x, grades, y ) )
-        
-        checks_mngr.add_check( "credits-validation", 
+
+        checks_mngr.add_check( "credits-validation",
                                lambda x, y : checks.credits_check.credits_check( x, grades, y ) )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
