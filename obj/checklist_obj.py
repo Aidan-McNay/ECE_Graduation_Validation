@@ -83,6 +83,8 @@ class Checklist:
 
     Attributes:
 
+     - filepath: The filepath that the data was sourced from (str)
+
      - _data: The 2D array taken from the checklist spreadsheet
               (list of lists of str)
 
@@ -123,6 +125,7 @@ class Checklist:
         """
         Initializes the Checklist data, based off of the given file path
         """
+        self.filepath = file_path
 
         if file_path.endswith( ".xlsx" ):
             dataframe = pd.read_excel( file_path )

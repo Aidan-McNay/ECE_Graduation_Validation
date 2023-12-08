@@ -60,17 +60,21 @@ parser.add_argument( "-v", "--verbose", action="store_true",
 # Logging
 #---------------------------------------------------------------------
 
+def get_abs_path( path: str ) -> str:
+    """Makes a file path absolute, if it isn't already"""
+    if os.path.isabs( path ):
+        return path
+    # Otherwise, need to add to current working directory
+    cwd = os.getcwd()
+    return os.path.join( cwd, path )
+
 LOG_DIR = "logs"
 
 def setlogdir( directory: str ) -> None:
     """Sets the logging dir"""
 
     global LOG_DIR
-    if os.path.isabs( directory ):
-        LOG_DIR = directory
-    else:
-        cwd = os.getcwd()
-        LOG_DIR = os.path.join( cwd, directory )
+    LOG_DIR = get_abs_path( directory )
 
 def makelogdir() -> str:
     """
@@ -120,9 +124,9 @@ if __name__ == "__main__":
     summary_logger.info( "Checking NetID uniqueness across checklists..." )
 
     for checklist_path in args.checklists:
-        checklist = obj.checklist_obj.Checklist( checklist_path )
-        roster = obj.roster_obj.Roster( checklist.netid )
-        roster.populate_entries( checklist.req_entries, checklist.checkoff_entries )
+        # Use the absolute path, for clarity
+        checklist = obj.checklist_obj.Checklist( get_abs_path( checklist_path ) )
+        roster = obj.roster_obj.Roster( checklist )
 
         rosters.append( roster )
 

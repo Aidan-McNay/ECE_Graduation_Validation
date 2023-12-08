@@ -11,7 +11,7 @@
 
 from typing import List
 
-from obj.roster_entry_obj import ReqEntry, CheckoffEntry
+from obj.checklist_obj import Checklist
 from obj.class_obj import Class
 
 class Roster():
@@ -20,6 +20,8 @@ class Roster():
     have taken, according to their checklist
 
     Attributes:
+
+     - filepath: The filepath that the data was sourced from (str)
 
      - netid: The student's NetID (str)
 
@@ -32,17 +34,9 @@ class Roster():
     initialized to None
     """
 
-    def __init__( self, netid: str ):
-        self.netid                                 = netid
-        self.req_entries:      List[ReqEntry]      = []
-        self.checkoff_entries: List[CheckoffEntry] = []
-        self.classes:          List[Class]         = []
-
-    def populate_entries( self, req_entries: List[ReqEntry],
-                                checkoff_entries: List[CheckoffEntry] ) -> None:
-        """
-        Populates the checklist entries from a given list of 
-        RosterEntrys
-        """
-        self.req_entries      = req_entries
-        self.checkoff_entries = checkoff_entries
+    def __init__( self, checklist: Checklist ):
+        self.filepath             = checklist.filepath
+        self.netid                = checklist.netid
+        self.req_entries          = checklist.req_entries
+        self.checkoff_entries     = checklist.checkoff_entries
+        self.classes: List[Class] = []
