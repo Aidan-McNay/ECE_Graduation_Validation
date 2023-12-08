@@ -90,12 +90,6 @@ def removelogdir() -> None:
 # Main Code
 #---------------------------------------------------------------------
 
-# Name and function of checks to run
-#  - functions should take in 2 arguments; the roster to operate on,
-#    and a Logger to log information. The output should be the number
-#    of errors encountered
-checks_to_run: dict = {}
-
 # Errors for each check run
 errors: dict = {}
 
@@ -106,12 +100,14 @@ if __name__ == "__main__":
     removelogdir()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Instantiate main logger
+    # Instantiate main logger and CheckManager
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     log_dir = makelogdir()
     summary_file = os.path.join( log_dir, "summary.log" )
     summary_logger = gen_file_logger( summary_file )
+
+    checks_mngr = checks.checks_manager.ChecksManager()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Obtain the rosters from the checklists
@@ -151,52 +147,21 @@ if __name__ == "__main__":
         for grade_file in args.grades:
             grades += obj.grades_obj.Grades( grade_file )
 
-        checks_to_run[ "grade-validation" ] = lambda x, y : checks.grade_check.grade_check( x,
-                                                                                     grades,
-                                                                                     y )
-
-        checks_to_run[ "credits-validation" ] = lambda x, y : checks.credits_check.credits_check( x,
-                                                                                     grades,
-                                                                                     y )
+        checks_mngr.add_check( "grade-validation", 
+                               lambda x, y : checks.grade_check.grade_check( x, grades, y ) )
+        
+        checks_mngr.add_check( "credits-validation", 
+                               lambda x, y : checks.credits_check.credits_check( x, grades, y ) )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Run Checks
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    if len( checks_to_run ) > 0:
-        log_dir = makelogdir()
+    checks_mngr.run_checks( rosters, log_dir, summary_logger )
 
-        for check_name, check_func in checks_to_run.items():
-            result_dir = os.path.join( log_dir, check_name )
-            os.makedirs( result_dir, exist_ok = True )
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Summary
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-            logger.info( "Running %s...", check_name )
-
-            for roster in rosters:
-                netid = roster.netid
-                log_file = os.path.join( result_dir, f"{netid}.log" )
-                check_logger = gen_v_file_logger( log_file )
-
-                if netid not in errors:
-                    errors[ netid ] = {}
-
-                errors[ netid ][ check_name ] = check_func( roster, check_logger )
-
-        summary_logger.info( "Summary:" )
-
-        TOTAL_ERRORS = 0
-
-        for netid, error_logs in errors.items():
-            netid_errors = sum( error_logs.values() )
-            TOTAL_ERRORS += netid_errors
-            summary_logger.info( " - %s: %d errors", netid, netid_errors )
-
-            for check_name, check_errors in error_logs.items():
-                summary_logger.info( "    - %s: %d errors", check_name, check_errors )
-
-        if TOTAL_ERRORS > 0:
-            summary_logger.error( "Overall: %d errors", TOTAL_ERRORS )
-        else:
-            summary_logger.log( SUCCESS, "All checks passed!" )
-
+    checks_mngr.summary( summary_logger )
     summary_logger.info( "Run logs in the %s directory", args.logs )
