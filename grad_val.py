@@ -19,6 +19,7 @@ from api.bulk_api import bulk_populate_roster_data
 import obj
 import checks
 from ui.logger import gen_file_logger, set_verbosity, SUCCESS
+from ui.annotate import make_annotated_checklist
 
 #---------------------------------------------------------------------
 # Argument Parsing
@@ -179,3 +180,13 @@ if __name__ == "__main__":
 
     checks_mngr.summary( summary_logger )
     summary_logger.info( "Run logs in the %s directory", args.logs )
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Output Annotated Checklists
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    annotated_checklists_dir = os.path.join( log_dir, "annotated-checklists" )
+    os.makedirs( annotated_checklists_dir, exist_ok = True )
+
+    for roster in rosters:
+        make_annotated_checklist( roster, annotated_checklists_dir )

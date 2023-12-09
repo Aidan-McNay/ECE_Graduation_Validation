@@ -1,3 +1,4 @@
+types-openpyxl
 pandas-stubs
 types-python-dateutil
 types-requests

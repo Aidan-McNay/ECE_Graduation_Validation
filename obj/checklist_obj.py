@@ -18,55 +18,11 @@ import pandas as pd
 from dateutil import parser
 
 from obj.roster_entry_obj import RosterEntry, ReqEntry, CheckoffEntry
+from obj.coordinates_obj import Coordinates
 from ui.parser import parse_class_name as pclass, \
                       parse_class_term as pterm,  \
                       parse_grade      as pgrade
 import exceptions as excp
-
-#---------------------------------------------------------------------
-# Coordinates Object
-#---------------------------------------------------------------------
-# Thin wrapper around 2D indeces, for improved readability (internal)
-
-class Coordinates:
-    """
-    Attributes:
-
-     - y: Row coordinate ( int )
-     - x: Column coordinate ( int )
-
-     0    1    2    3     
-       ------------------> x
-     1 |
-       |
-     2 |
-       |
-     3 |
-       |
-       v
-       y
-    """
-
-    def __init__( self, y: int, x: int ):
-        """Initializes the values"""
-        self.y = y
-        self.x = x
-
-    def up( self ) -> 'Coordinates':
-        """Returns the coordinates of the cell above"""
-        return Coordinates( self.y - 1, self.x )
-
-    def down( self ) -> 'Coordinates':
-        """Returns the coordinates of the cell below"""
-        return Coordinates( self.y + 1, self.x )
-
-    def left( self ) -> 'Coordinates':
-        """Returns the coordinates of the cell to the left"""
-        return Coordinates( self.y, self.x - 1 )
-
-    def right( self ) -> 'Coordinates':
-        """Returns the coordinates of the cell to the right"""
-        return Coordinates( self.y, self.x + 1 )
 
 #---------------------------------------------------------------------
 # Checklist Object
@@ -128,10 +84,12 @@ class Checklist:
         self.filepath = file_path
 
         if file_path.endswith( ".xlsx" ):
-            dataframe = pd.read_excel( file_path )
+            dataframe = pd.read_excel( file_path, skiprows = None, header = None )
 
-        elif file_path.endswith( ".csv" ):
-            dataframe = pd.read_csv( file_path )
+        # Don't currently support CSVs - we want to have annotated versions at the end
+
+        # elif file_path.endswith( ".csv" ):
+        #     dataframe = pd.read_csv( file_path )
 
         else:
             raise excp.checklist_exceptions.UnsupportedFileTypeError( file_path )
@@ -259,7 +217,7 @@ class Checklist:
             else:
                 cat = None
 
-            req_entries.append( ReqEntry( req, course, cred_num, term, grade, cat ) )
+            req_entries.append( ReqEntry( req, course, coord, cred_num, term, grade, cat ) )
 
         return req_entries
 
@@ -270,11 +228,17 @@ class Checklist:
         checkoff_entries: List[CheckoffEntry] = []
 
         # Get checkoffs
+
+        advprog_coord  = self.find_cell( "Adv. Programming" )[ 0 ]
+        techwrit_coord = self.find_cell( "Tech. Writing" )[ 0 ]
+
         checkoff_entries.append( CheckoffEntry( "CKOFF-ADVPROG",
-                                                self.get_student_attr( "Adv. Programming", 1 ) ) )
+                                                self.get_student_attr( "Adv. Programming", 1 ),
+                                                advprog_coord ) )
 
         checkoff_entries.append( CheckoffEntry( "CKOFF-TECHWRIT",
-                                                self.get_student_attr( "Tech. Writing"   , 1 ) ) )
+                                                self.get_student_attr( "Tech. Writing"   , 1 ),
+                                                techwrit_coord ) )
 
         return checkoff_entries
 

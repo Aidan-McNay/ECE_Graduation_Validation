@@ -43,6 +43,7 @@ def grade_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
         if real_grade != proposed_grade: #The student lied :(
             logger.error( "Proposed grade for %s (%s) doesn't match our records (%s)",
                           course, proposed_grade, real_grade )
+            roster.error( entry )
             errors += 1
         else:
             logger.info( " - Grade match for %s", course )

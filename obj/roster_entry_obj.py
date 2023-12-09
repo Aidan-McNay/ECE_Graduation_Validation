@@ -14,6 +14,7 @@
 """
 
 from typing import Set, Optional
+from obj.coordinates_obj import Coordinates
 
 #---------------------------------------------------------------------
 # Requirement/Checkoff Types
@@ -72,12 +73,15 @@ class RosterEntry:
      - course_used: Name of the course used to satisfy the requirement
                     or checkoff (str)
 
+     - coord: Coordinates used to indicate the requirement index (Coordinates)
+
     This is to be used for both requirement and checkoff entries           
     """
 
-    def __init__( self, req: str, course: str ):
+    def __init__( self, req: str, course: str, coord: Coordinates ):
         self.req          = req
         self.course_used  = course
+        self.coord        = coord
 
         assert ( ( self.req.upper() in req_types ) or (self.req.upper() in checkoff_types ) ), \
                f"Error: Listed requirement {self.req} not recognized"
@@ -118,10 +122,10 @@ class ReqEntry( RosterEntry ):
            
     """
 
-    def __init__( self, req: str, course: str, cred: int, term: str, grade: str,
+    def __init__( self, req: str, course: str, coord: Coordinates, cred: int, term: str, grade: str,
                   cat: Optional[str] = None ):
 
-        super().__init__( req, course )
+        super().__init__( req, course, coord )
         self.cred_applied = cred
         self.term         = term
         self.grade        = grade
@@ -153,9 +157,9 @@ class CheckoffEntry( RosterEntry ):
                     (str)           
     """
 
-    def __init__( self, req: str, course: str ):
+    def __init__( self, req: str, course: str, coord: Coordinates ):
 
-        super().__init__( req, course )
+        super().__init__( req, course, coord )
 
         assert ( self.req.upper() in checkoff_types ), \
                f"Error: Listed requirement {self.req} not recognized"

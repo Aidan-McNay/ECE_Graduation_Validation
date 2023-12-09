@@ -46,6 +46,7 @@ def credits_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
 
         except ( RecordNotFoundError, InsufficientCreditsError ) as e:
             logger.error( e.err_msg )
+            roster.error( entry )
             errors += 1
 
     if errors == 0:
