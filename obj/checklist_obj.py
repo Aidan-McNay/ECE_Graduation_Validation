@@ -243,11 +243,11 @@ class Checklist:
         advprog_coord  = self.find_cell( "Adv. Programming" )[ 0 ]
         techwrit_coord = self.find_cell( "Tech. Writing" )[ 0 ]
 
-        checkoff_entries.append( CheckoffEntry( "Adv. Programming",
+        checkoff_entries.append( CheckoffEntry( "ADV. PROGRAMMING",
                                                 self.get_student_attr( "Adv. Programming", 2 ),
                                                 advprog_coord.right().right() ) )
 
-        checkoff_entries.append( CheckoffEntry( "Tech. Writing",
+        checkoff_entries.append( CheckoffEntry( "TECH. WRITING",
                                                 self.get_student_attr( "Tech. Writing"   , 2 ),
                                                 techwrit_coord.right().right() ) )
 

@@ -49,12 +49,12 @@ req_types: Set[str] = {
     "AAE",
     "ENGR. DIST.",
     "ENGR. INTEREST",
-    "EXTRA"
+    "EXTRA-C"
 }
 
 checkoff_types: Set[str] = {
-    "Adv. Programming",
-    "Tech. Writing"
+    "ADV. PROGRAMMING",
+    "TECH. WRITING"
 }
 
 #---------------------------------------------------------------------
