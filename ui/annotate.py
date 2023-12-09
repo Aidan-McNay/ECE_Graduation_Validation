@@ -12,14 +12,12 @@
 import os
 import shutil
 from typing import Tuple, Set, List, cast
-import warnings
 
 import openpyxl
 from openpyxl.styles import PatternFill
 from openpyxl.worksheet.worksheet import Worksheet
 
 from obj.roster_obj import Roster, ERROR, WARNING, VALID
-from obj.roster_entry_obj import req_types
 from obj.coordinates_obj import Coordinates
 import exceptions as excp
 
@@ -45,10 +43,10 @@ def coord_to_tuple( coordinate: str ) -> Tuple[int, int]:
     """Turns a coordinate ('A5') into a tuple ( 5, 1 )"""
     return openpyxl.utils.cell.coordinate_to_tuple( coordinate )
 
-def tuple_to_coord( tuple: Tuple[ int, int ] ) -> str:
+def tuple_to_coord( idx_tuple: Tuple[ int, int ] ) -> str:
     """Turns a tuple ( 5, 1 ) into a coordinate ('A5')"""
-    row = tuple[0]
-    col = tuple[1]
+    row = idx_tuple[0]
+    col = idx_tuple[1]
 
     row_str = str( row )
     col_str = openpyxl.utils.cell.get_column_letter( col )
@@ -64,26 +62,26 @@ def cl( coordinate: str ) -> str:
 
 def cr( coordinate: str ) -> str:
     """Gets the coordinates to the left"""
-    
+
     row, column = coord_to_tuple( coordinate )
     new_coord_tuple = ( row, column + 1 )
     return tuple_to_coord( new_coord_tuple )
 
 def cu( coordinate: str ) -> str:
     """Gets the coordinates to the left"""
-    
+
     row, column = coord_to_tuple( coordinate )
     new_coord_tuple = ( row - 1, column )
     return tuple_to_coord( new_coord_tuple )
 
 def cd( coordinate: str ) -> str:
     """Gets the coordinates to the left"""
-    
+
     row, column = coord_to_tuple( coordinate )
     new_coord_tuple = ( row + 1, column )
     return tuple_to_coord( new_coord_tuple )
 
-def coord_to_Coordinates( coordinate: str ) -> Coordinates:
+def coord_to_coordinates( coordinate: str ) -> Coordinates:
     """Turns a coordinate ('A5') into a Coordinates object"""
     row, column = coord_to_tuple( coordinate )
 
@@ -108,7 +106,9 @@ def find_cell( ws: Worksheet, val: str, case_insensitive: bool = True ) -> List[
     return result
 
 def find_cell_multival( ws: Worksheet, vals: Set[str], case_insensitive: bool = True ) -> List[str]:
-    """Returns a list of OpenPyXL coordinates (ex. 'A5') for all matching cells with any value in vals"""
+    """
+    Returns a list of OpenPyXL coordinates (ex. 'A5') for all matching cells with any value in vals
+    """
 
     result = []
     for val in vals:
@@ -162,7 +162,7 @@ def make_annotated_checklist( roster: Roster, dest_dir: str ) -> None:
     req_coords = find_cell( ws, "REQ-" )
     for coord in req_coords:
         req = get_val( ws, coord ).upper()
-        val_level = roster.get_validity( coord_to_Coordinates( coord ) )
+        val_level = roster.get_validity( coord_to_coordinates( coord ) )
 
         color_cell( ws, coord,                         val_level ) # Requirement
         color_cell( ws, cr( coord ),                   val_level ) # Course
@@ -170,7 +170,7 @@ def make_annotated_checklist( roster: Roster, dest_dir: str ) -> None:
         color_cell( ws, cr( cr( cr( coord ) ) ),       val_level ) # Term
         color_cell( ws, cr( cr( cr( cr( coord ) ) ) ), val_level ) # Grade
 
-        if( req == "REQ-LS" ): # Also need to color the category
+        if req == "REQ-LS": # Also need to color the category
             color_cell( ws, cr( cr( cr( cr( cr( coord ) ) ) ) ), val_level )
 
     # Color the checkoffs
@@ -179,15 +179,20 @@ def make_annotated_checklist( roster: Roster, dest_dir: str ) -> None:
     tech_writ_coord_list = find_cell( ws, "Tech. Writing"    )
 
     if len( adv_prog_coord_list ) != 1:
-        excp.checklist_exceptions.MultipleAttributeError( "Adv. Programming", len( adv_prog_coord_list ) )
+        raise excp.checklist_exceptions.MultipleAttributeError( "Adv. Programming",
+                                                                len( adv_prog_coord_list ) )
+
     if len( tech_writ_coord_list ) != 1:
-        excp.checklist_exceptions.MultipleAttributeError( "Tech. Writing", len( tech_writ_coord_list ) )
+        raise excp.checklist_exceptions.MultipleAttributeError( "Tech. Writing",
+                                                                len( tech_writ_coord_list ) )
 
     adv_prog_coord  = adv_prog_coord_list [ 0 ]
     tech_writ_coord = tech_writ_coord_list[ 0 ]
 
-    color_cell( ws, cr( adv_prog_coord  ),  roster.get_validity( coord_to_Coordinates( adv_prog_coord  ) ) )
-    color_cell( ws, cr( tech_writ_coord ), roster.get_validity( coord_to_Coordinates( tech_writ_coord ) ) )
+    color_cell( ws, cr( adv_prog_coord  ),
+                roster.get_validity( coord_to_coordinates( adv_prog_coord  ) ) )
+    color_cell( ws, cr( tech_writ_coord ),
+                roster.get_validity( coord_to_coordinates( tech_writ_coord ) ) )
 
     # Save the file
     wb.save( dest_file )
