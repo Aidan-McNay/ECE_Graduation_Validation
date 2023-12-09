@@ -18,6 +18,7 @@ from openpyxl.styles import PatternFill
 from openpyxl.worksheet.worksheet import Worksheet
 
 from obj.roster_obj import Roster, ERROR, WARNING, VALID
+from obj.roster_entry_obj import req_types
 from obj.coordinates_obj import Coordinates
 import exceptions as excp
 
@@ -159,7 +160,7 @@ def make_annotated_checklist( roster: Roster, dest_dir: str ) -> None:
 
     # Color the requirements
 
-    req_coords = find_cell( ws, "REQ-" )
+    req_coords = find_cell_multival( ws, req_types )
     for coord in req_coords:
         req = get_val( ws, coord ).upper()
         val_level = roster.get_validity( coord_to_coordinates( coord ) )
@@ -170,7 +171,7 @@ def make_annotated_checklist( roster: Roster, dest_dir: str ) -> None:
         color_cell( ws, cr( cr( cr( coord ) ) ),       val_level ) # Term
         color_cell( ws, cr( cr( cr( cr( coord ) ) ) ), val_level ) # Grade
 
-        if req == "REQ-LS": # Also need to color the category
+        if req == "LS": # Also need to color the category
             color_cell( ws, cr( cr( cr( cr( cr( coord ) ) ) ) ), val_level )
 
     # Color the checkoffs

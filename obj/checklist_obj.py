@@ -11,13 +11,13 @@
 # Date: December 2nd, 2023
 """
 
-from typing import List
+from typing import List, Set
 import datetime
 
 import pandas as pd
 from dateutil import parser
 
-from obj.roster_entry_obj import RosterEntry, ReqEntry, CheckoffEntry
+from obj.roster_entry_obj import RosterEntry, ReqEntry, CheckoffEntry, req_types
 from obj.coordinates_obj import Coordinates
 from ui.parser import parse_class_name as pclass, \
                       parse_class_term as pterm,  \
@@ -113,6 +113,17 @@ class Checklist:
 
         return result
 
+    def find_cell_multival( self, vals: Set[str],
+                            case_insensitive: bool = True ) -> List[Coordinates]:
+        """
+        Returns a list of Coordinates of cells with any string in vals as a substring
+        """
+        result = []
+        for val in vals:
+            result += self.find_cell( val, case_insensitive )
+        return result
+
+
     def get_cell( self, coord: Coordinates ) -> str:
         """
         Returns the value of the cell (str) at the given coordinates
@@ -171,13 +182,13 @@ class Checklist:
     def agreement_initials( self ) -> str:
         """Gets the agreement initials of the student"""
 
-        return self.get_student_attr( "Student Initials", 2 )
+        return self.get_student_attr( "Student Initials", 3 )
 
     @property
     def agreement_date( self ) -> datetime.datetime:
         """Gets the agreement date of the student"""
 
-        return parser.parse( self.get_student_attr( "Student Initials", 4 ) )
+        return parser.parse( self.get_student_attr( "Student Initials", 3 ) )
 
     @property
     def exp_grad_term( self ) -> str:
@@ -196,7 +207,7 @@ class Checklist:
         req_entries: List[ReqEntry] = []
 
         # Get requirements
-        entry_coords = self.find_cell( "REQ-" )
+        entry_coords = self.find_cell_multival( req_types )
 
         for coord in entry_coords:
             req    = self.get_cell( coord )
@@ -212,7 +223,7 @@ class Checklist:
             term     = pterm( term )
             grade    = pgrade( grade )
 
-            if req.lower() == "REQ-LS".lower():
+            if req == "LS":
                 cat = self.get_cell( coord.right().right().right().right().right() )
             else:
                 cat = None
@@ -232,13 +243,13 @@ class Checklist:
         advprog_coord  = self.find_cell( "Adv. Programming" )[ 0 ]
         techwrit_coord = self.find_cell( "Tech. Writing" )[ 0 ]
 
-        checkoff_entries.append( CheckoffEntry( "CKOFF-ADVPROG",
-                                                self.get_student_attr( "Adv. Programming", 1 ),
-                                                advprog_coord ) )
+        checkoff_entries.append( CheckoffEntry( "Adv. Programming",
+                                                self.get_student_attr( "Adv. Programming", 2 ),
+                                                advprog_coord.right().right() ) )
 
-        checkoff_entries.append( CheckoffEntry( "CKOFF-TECHWRIT",
-                                                self.get_student_attr( "Tech. Writing"   , 1 ),
-                                                techwrit_coord ) )
+        checkoff_entries.append( CheckoffEntry( "Tech. Writing",
+                                                self.get_student_attr( "Tech. Writing"   , 2 ),
+                                                techwrit_coord.right().right() ) )
 
         return checkoff_entries
 
