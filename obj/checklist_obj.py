@@ -245,11 +245,11 @@ class Checklist:
 
         checkoff_entries.append( CheckoffEntry( "ADV. PROGRAMMING",
                                                 self.get_student_attr( "Adv. Programming", 2 ),
-                                                advprog_coord.right().right() ) )
+                                                advprog_coord ) )
 
         checkoff_entries.append( CheckoffEntry( "TECH. WRITING",
                                                 self.get_student_attr( "Tech. Writing"   , 2 ),
-                                                techwrit_coord.right().right() ) )
+                                                techwrit_coord ) )
 
         return checkoff_entries
 

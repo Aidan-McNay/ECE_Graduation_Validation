@@ -190,9 +190,9 @@ def make_annotated_checklist( roster: Roster, dest_dir: str ) -> None:
     adv_prog_coord  = adv_prog_coord_list [ 0 ]
     tech_writ_coord = tech_writ_coord_list[ 0 ]
 
-    color_cell( ws, cr( adv_prog_coord  ),
+    color_cell( ws, cr( cr( adv_prog_coord ) ),
                 roster.get_validity( coord_to_coordinates( adv_prog_coord  ) ) )
-    color_cell( ws, cr( tech_writ_coord ),
+    color_cell( ws, cr( cr( tech_writ_coord ) ),
                 roster.get_validity( coord_to_coordinates( tech_writ_coord ) ) )
 
     # Save the file
