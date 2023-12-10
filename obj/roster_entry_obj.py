@@ -17,6 +17,15 @@ from typing import Set, Optional
 from obj.coordinates_obj import Coordinates
 
 #---------------------------------------------------------------------
+# Define Validity Levels
+#---------------------------------------------------------------------
+
+ERROR     = 10
+WARNING   = 5
+VALID     = 0
+UNCHECKED = -1
+
+#---------------------------------------------------------------------
 # Requirement/Checkoff Types
 #---------------------------------------------------------------------
 
@@ -75,6 +84,8 @@ class RosterEntry:
 
      - coord: Coordinates used to indicate the requirement index (Coordinates)
 
+     - validity: The validity of the entry (int)
+
     This is to be used for both requirement and checkoff entries           
     """
 
@@ -82,6 +93,7 @@ class RosterEntry:
         self.req          = req
         self.course_used  = course
         self.coord        = coord
+        self.validity     = UNCHECKED
 
         assert ( ( self.req.upper() in req_types ) or (self.req.upper() in checkoff_types ) ), \
                f"Error: Listed requirement {self.req} not recognized"
@@ -90,7 +102,31 @@ class RosterEntry:
         """
         String representation (for debugging)
         """
-        return f"{self.req} satisfied by {self.course_used}"
+        return f"({self.val_str()}) {self.req} satisfied by {self.course_used}"
+
+    def valid( self ) -> None:
+        """Indicates that the entry is valid"""
+        self.validity = max( self.validity, VALID )
+
+    def warn( self ) -> None:
+        """Indicates that the entry has a warning"""
+        self.validity = max( self.validity, WARNING )
+
+    def error( self ) -> None:
+        """Indicates that the entry has an error"""
+        self.validity = max( self.validity, ERROR )
+
+    def val_str( self ) -> str:
+        """Returns a string representing the validity"""
+        if self.validity == UNCHECKED:
+            return "-"
+        if self.validity == VALID:
+            return "V"
+        if self.validity == WARNING:
+            return "W"
+        if self.validity == ERROR:
+            return "X"
+        return " "
 
 #---------------------------------------------------------------------
 # ReqEntry Object
@@ -107,6 +143,8 @@ class ReqEntry( RosterEntry ):
      
      - course_used: Name of the course used to satisfy the requirement
                     (str)
+
+     - validity: The validity of the requirement (Validity)
 
      - cred_applied: Credits applied to satisfy the requirement (int or None)
 
@@ -138,7 +176,7 @@ class ReqEntry( RosterEntry ):
         """
         String representation (for debugging)
         """
-        return f"{self.req} satisfied by {self.course_used} ({self.term})"
+        return f"({self.val_str()}) {self.req} satisfied by {self.course_used} ({self.term})"
 
 #---------------------------------------------------------------------
 # CheckoffEntry Object
@@ -154,7 +192,9 @@ class CheckoffEntry( RosterEntry ):
             above for options) (str)
      
      - course_used: Name of the course used to satisfy the checkoff
-                    (str)           
+                    (str)   
+
+     - validity: The validity of the checkoff (Validity)        
     """
 
     def __init__( self, req: str, course: str, coord: Coordinates ):
@@ -168,4 +208,4 @@ class CheckoffEntry( RosterEntry ):
         """
         String representation (for debugging)
         """
-        return f"{self.req} satisfied by {self.course_used}"
+        return f"({self.val_str()}) {self.req} satisfied by {self.course_used}"

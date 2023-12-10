@@ -17,7 +17,8 @@ import openpyxl
 from openpyxl.styles import PatternFill
 from openpyxl.worksheet.worksheet import Worksheet
 
-from obj.roster_obj import Roster, ERROR, WARNING, VALID
+from obj.roster_obj import Roster
+from obj.roster_entry_obj import ERROR, WARNING, VALID
 from obj.roster_entry_obj import req_types
 from obj.coordinates_obj import Coordinates
 import exceptions as excp
