@@ -9,11 +9,11 @@
 # Date: December 3rd, 2023
 """
 
-from typing import Optional
+from typing import Optional, List
 
 from obj.checklist_obj import Checklist
 from obj.coordinates_obj import Coordinates
-from obj.roster_entry_obj import RosterEntry
+from obj.roster_entry_obj import RosterEntry, ReqEntry, CheckoffEntry
 
 #---------------------------------------------------------------------
 # Roster Object
@@ -54,3 +54,23 @@ class Roster():
 
         # Should never get here
         return None
+
+    def get_req( self, req: str ) -> List[ReqEntry]:
+        """Gets all of the requirements matching the given req string"""
+        entries = []
+
+        for entry in self.req_entries:
+            if entry.req == req:
+                entries.append( entry )
+
+        return entries
+
+    def get_checkoff( self, req: str ) -> List[CheckoffEntry]:
+        """Gets all of the checkoffs matching the given req string"""
+        entries = []
+
+        for entry in self.checkoff_entries:
+            if entry.req == req:
+                entries.append( entry )
+
+        return entries

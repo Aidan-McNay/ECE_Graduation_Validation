@@ -46,13 +46,16 @@ parser.add_argument( "checklists", help = "The checklist(s) to validate",
                      metavar = "CHECKLIST(S)", action = "append" )
 
 # Optional arguments
-parser.add_argument( "-l", default = "logs", help = "Set the location of the logs directory",
-                     metavar = "LOGS_DIR", dest = "logs" )
-
 parser.add_argument( "-g", "--grades",
                      help = "Verify the checklist against the given grades/credits",
                      action = "append",
                      metavar = "GRADES-CSV" )
+
+parser.add_argument( "-l", default = "logs", help = "Set the location of the logs directory",
+                     metavar = "LOGS_DIR", dest = "logs" )
+
+parser.add_argument( "-s", action="store_true", dest="semantics",
+                     help = "Run semantics checks (the requirement is satisfied by the class)" )
 
 parser.add_argument( "-v", "--verbose", action="store_true",
                      help = "Provide verbose output" )
@@ -146,10 +149,12 @@ if __name__ == "__main__":
     # Populate API Information
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    summary_logger.info( "Adding class data from API..." )
+    if args.semantics:
 
-    for roster in rosters:
-        bulk_populate_roster_data( roster.req_entries )
+        summary_logger.info( "Adding class data from API..." )
+
+        for roster in rosters:
+            bulk_populate_roster_data( roster.req_entries )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Grade/Credits Validation
