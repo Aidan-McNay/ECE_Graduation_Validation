@@ -43,11 +43,11 @@ def credits_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
         try:
             records.use_cred( course, term, proposed_credits )
             logger.info( " - Credits match for %s", course )
-            entry.valid()
+            entry.valid( "cred" )
 
         except ( RecordNotFoundError, InsufficientCreditsError ) as e:
             logger.error( e.err_msg )
-            entry.error()
+            entry.error( "cred" )
             errors += 1
 
     if errors == 0:

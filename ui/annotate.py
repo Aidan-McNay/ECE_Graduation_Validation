@@ -18,7 +18,7 @@ from openpyxl.styles import PatternFill
 from openpyxl.worksheet.worksheet import Worksheet
 
 from obj.roster_obj import Roster
-from obj.roster_entry_obj import ERROR, WARNING, VALID
+from obj.roster_entry_obj import RosterEntry, ERROR, WARNING, VALID
 from obj.roster_entry_obj import req_types
 from obj.coordinates_obj import Coordinates
 import exceptions as excp
@@ -164,16 +164,16 @@ def make_annotated_checklist( roster: Roster, dest_dir: str ) -> None:
     req_coords = find_cell_multival( ws, req_types )
     for coord in req_coords:
         req = get_val( ws, coord ).upper()
-        val_level = roster.get_validity( coord_to_coordinates( coord ) )
+        entry = cast( RosterEntry, roster.get_entry( coord_to_coordinates( coord ) ) )
 
-        color_cell( ws, coord,                         val_level ) # Requirement
-        color_cell( ws, cr( coord ),                   val_level ) # Course
-        color_cell( ws, cr( cr( coord ) ),             val_level ) # Credits
-        color_cell( ws, cr( cr( cr( coord ) ) ),       val_level ) # Term
-        color_cell( ws, cr( cr( cr( cr( coord ) ) ) ), val_level ) # Grade
+        color_cell( ws, coord,                         entry.get_val( "req"    ) ) # Requirement
+        color_cell( ws, cr( coord ),                   entry.get_val( "course" ) ) # Course
+        color_cell( ws, cr( cr( coord ) ),             entry.get_val( "cred"   ) ) # Credits
+        color_cell( ws, cr( cr( cr( coord ) ) ),       entry.get_val( "term"   ) ) # Term
+        color_cell( ws, cr( cr( cr( cr( coord ) ) ) ), entry.get_val( "grade"  ) ) # Grade
 
         if req == "LS": # Also need to color the category
-            color_cell( ws, cr( cr( cr( cr( cr( coord ) ) ) ) ), val_level )
+            color_cell( ws, cr( cr( cr( cr( cr( coord ) ) ) ) ), entry.get_val( "cat" ) )
 
     # Color the checkoffs
 
@@ -191,10 +191,17 @@ def make_annotated_checklist( roster: Roster, dest_dir: str ) -> None:
     adv_prog_coord  = adv_prog_coord_list [ 0 ]
     tech_writ_coord = tech_writ_coord_list[ 0 ]
 
-    color_cell( ws, cr( cr( adv_prog_coord ) ),
-                roster.get_validity( coord_to_coordinates( adv_prog_coord  ) ) )
-    color_cell( ws, cr( cr( tech_writ_coord ) ),
-                roster.get_validity( coord_to_coordinates( tech_writ_coord ) ) )
+    adv_prog_entry  = cast( RosterEntry,
+                            roster.get_entry( coord_to_coordinates( adv_prog_coord   ) ) )
+    tech_writ_entry = cast( RosterEntry,
+                            roster.get_entry( coord_to_coordinates( tech_writ_coord  ) ) )
+
+
+    color_cell( ws, adv_prog_coord,              adv_prog_entry.get_val( "req"    ) )
+    color_cell( ws, cr( cr( adv_prog_coord ) ),  adv_prog_entry.get_val( "course" ) )
+
+    color_cell( ws, tech_writ_coord,             tech_writ_entry.get_val( "req"    ) )
+    color_cell( ws, cr( cr( tech_writ_coord ) ), tech_writ_entry.get_val( "course" ) )
 
     # Save the file
     wb.save( dest_file )

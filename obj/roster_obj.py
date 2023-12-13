@@ -9,8 +9,11 @@
 # Date: December 3rd, 2023
 """
 
+from typing import Optional
+
 from obj.checklist_obj import Checklist
 from obj.coordinates_obj import Coordinates
+from obj.roster_entry_obj import RosterEntry
 
 #---------------------------------------------------------------------
 # Roster Object
@@ -38,16 +41,16 @@ class Roster():
         self.req_entries      = checklist.req_entries
         self.checkoff_entries = checklist.checkoff_entries
 
-    def get_validity( self, coord: Coordinates ) -> int:
-        """Gets the validity based off of the coordinate of the entry"""
+    def get_entry( self, coord: Coordinates ) -> Optional[ RosterEntry ]:
+        """Gets the entry based off of the coordinate of the entry"""
 
         for req_entry in self.req_entries:
             if coord == req_entry.coord:
-                return req_entry.validity
+                return req_entry
 
         for checkoff_entry in self.checkoff_entries:
             if coord == checkoff_entry.coord:
-                return checkoff_entry.validity
+                return checkoff_entry
 
         # Should never get here
-        return -1
+        return None

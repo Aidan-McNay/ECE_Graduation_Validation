@@ -13,7 +13,7 @@
 # Date: December 2nd, 2023
 """
 
-from typing import Set, Optional
+from typing import Set, Optional, Dict
 from obj.coordinates_obj import Coordinates
 
 #---------------------------------------------------------------------
@@ -84,16 +84,17 @@ class RosterEntry:
 
      - coord: Coordinates used to indicate the requirement index (Coordinates)
 
-     - validity: The validity of the entry (int)
+     - validity: The validity of the components of the entry 
+                 (dict mapping str (component names) to int (validity))
 
     This is to be used for both requirement and checkoff entries           
     """
 
     def __init__( self, req: str, course: str, coord: Coordinates ):
-        self.req          = req
-        self.course_used  = course
-        self.coord        = coord
-        self.validity     = UNCHECKED
+        self.req                     = req
+        self.course_used             = course
+        self.coord                   = coord
+        self.validity: Dict[str,int] = {}
 
         assert ( ( self.req.upper() in req_types ) or (self.req.upper() in checkoff_types ) ), \
                f"Error: Listed requirement {self.req} not recognized"
@@ -104,29 +105,32 @@ class RosterEntry:
         """
         return f"({self.val_str()}) {self.req} satisfied by {self.course_used}"
 
-    def valid( self ) -> None:
+    def valid( self, component: str ) -> None:
         """Indicates that the entry is valid"""
-        self.validity = max( self.validity, VALID )
+        self.validity[ component ] = max( self.validity[ component ], VALID )
 
-    def warn( self ) -> None:
+    def warn( self, component: str ) -> None:
         """Indicates that the entry has a warning"""
-        self.validity = max( self.validity, WARNING )
+        self.validity[ component ] = max( self.validity[ component ], WARNING )
 
-    def error( self ) -> None:
+    def error( self, component: str ) -> None:
         """Indicates that the entry has an error"""
-        self.validity = max( self.validity, ERROR )
+        self.validity[ component ] = max( self.validity[ component ], ERROR )
 
     def val_str( self ) -> str:
-        """Returns a string representing the validity"""
-        if self.validity == UNCHECKED:
-            return "-"
-        if self.validity == VALID:
-            return "V"
-        if self.validity == WARNING:
-            return "W"
-        if self.validity == ERROR:
+        """Returns a string representing the overall validity"""
+
+        if any( x == ERROR   for x in self.validity.values() ): # ERROR
             return "X"
+        if any( x == WARNING for x in self.validity.values() ): # WARNING
+            return "W"
+        if any( x == VALID   for x in self.validity.values() ): # VALID
+            return "V"
         return " "
+
+    def get_val( self, component: str ) -> int:
+        """Returns the validity of the given component"""
+        return self.validity[ component ]
 
 #---------------------------------------------------------------------
 # ReqEntry Object
@@ -169,6 +173,15 @@ class ReqEntry( RosterEntry ):
         self.grade        = grade
         self.cat          = cat
 
+        self.validity = {
+            "req"    : UNCHECKED,
+            "course" : UNCHECKED,
+            "cred"   : UNCHECKED,
+            "term"   : UNCHECKED,
+            "grade"  : UNCHECKED,
+            "cat"    : UNCHECKED
+        }
+
         assert ( self.req.upper() in req_types ), \
                f"Error: Listed requirement {self.req} not recognized"
 
@@ -200,6 +213,11 @@ class CheckoffEntry( RosterEntry ):
     def __init__( self, req: str, course: str, coord: Coordinates ):
 
         super().__init__( req, course, coord )
+
+        self.validity = {
+            "req"    : UNCHECKED,
+            "course" : UNCHECKED
+        }
 
         assert ( self.req.upper() in checkoff_types ), \
                f"Error: Listed requirement {self.req} not recognized"
