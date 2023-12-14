@@ -42,7 +42,7 @@ def validate_class_name( class_name: str ) -> bool:
 
     result = stripped_name != ""
     result = result and ( len( digits ) == 4 )
-    result = result and ( len( letters ) >= 3 )
+    result = result and ( len( letters ) >= 2 )
     return result
 
 def get_dept_from_name( class_name: str ) -> str:
