@@ -191,6 +191,10 @@ class ReqEntry( RosterEntry ):
         """
         return f"({self.val_str()}) {self.req} satisfied by {self.course_used} ({self.term})"
 
+    def short_str( self ) -> str:
+        """Short string representation"""
+        return f"{self.course_used} ({self.term})"
+
 #---------------------------------------------------------------------
 # CheckoffEntry Object
 #---------------------------------------------------------------------

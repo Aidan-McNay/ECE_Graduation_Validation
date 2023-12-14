@@ -21,6 +21,8 @@ import checks
 from ui.logger import gen_file_logger, set_verbosity, SUCCESS
 from ui.annotate import make_annotated_checklist
 
+from checks.common_core.common_core_check import common_core_check
+
 #---------------------------------------------------------------------
 # Argument Parsing
 #---------------------------------------------------------------------
@@ -146,17 +148,6 @@ if __name__ == "__main__":
     summary_logger.log( SUCCESS, "No duplicate NetIDs detected" )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Populate API Information
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    if args.semantics:
-
-        summary_logger.info( "Adding class data from API..." )
-
-        for roster in rosters:
-            bulk_populate_roster_data( roster.req_entries )
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Grade/Credits Validation
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -172,6 +163,21 @@ if __name__ == "__main__":
 
         checks_mngr.add_check( "credits-validation",
                                lambda x, y : checks.credits_check.credits_check( x, grades, y ) )
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Populate API Information
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if args.semantics:
+
+        summary_logger.info( "Adding class data from API..." )
+
+        for roster in rosters:
+            bulk_populate_roster_data( roster.req_entries )
+
+        # Add semantics checks
+
+        checks_mngr.add_check( "common-core", common_core_check )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Run Checks
