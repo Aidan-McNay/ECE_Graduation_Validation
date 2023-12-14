@@ -61,3 +61,6 @@ These different validity levels have different semantics when applying to differ
     - `VALID`: The class was found in the requirement entries
     - `WARNING`: No course supplied
     - `ERROR`: The class wasn't found in the requirement entries
+
+Running the code with the `-g` floag and supplying grades will validate `cred` and `term` components, whereas running with the
+`-s` flag will validate `req`, `course`, `term`, and `cat` components
