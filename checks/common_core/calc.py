@@ -18,4 +18,4 @@ def calc_check( roster: Roster, logger: Logger ) -> Tuple[int, int]:
     """
     Checks that the student satisfies the CALC. requirement with MATH 1910
     """
-    return basic_check( roster, logger, "CALC.", ["MATH 1910"] )
+    return basic_check( roster, logger, "CALC.", ["MATH 1910"] )[:2]

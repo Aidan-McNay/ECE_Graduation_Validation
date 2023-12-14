@@ -18,4 +18,4 @@ def lin_alg_check( roster: Roster, logger: Logger ) -> Tuple[int, int]:
     """
     Checks that the student satisfies the LIN. ALG. requirement with MATH 2940
     """
-    return basic_check( roster, logger, "LIN. ALG.", ["MATH 2940"] )
+    return basic_check( roster, logger, "LIN. ALG.", ["MATH 2940"] )[:2]

@@ -18,4 +18,4 @@ def multi_check( roster: Roster, logger: Logger ) -> Tuple[int, int]:
     """
     Checks that the student satisfies the MULTI. requirement with MATH 1920
     """
-    return basic_check( roster, logger, "MULTI.", ["MATH 1920"] )
+    return basic_check( roster, logger, "MULTI.", ["MATH 1920"] )[:2]

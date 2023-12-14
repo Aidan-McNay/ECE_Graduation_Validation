@@ -18,4 +18,4 @@ def diff_eq_check( roster: Roster, logger: Logger ) -> Tuple[int, int]:
     """
     Checks that the student satisfies the DIFF. EQ. requirement with MATH 2930
     """
-    return basic_check( roster, logger, "DIFF. EQ.", ["MATH 2930"] )
+    return basic_check( roster, logger, "DIFF. EQ.", ["MATH 2930"] )[:2]
