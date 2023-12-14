@@ -14,6 +14,7 @@
 """
 
 from typing import Set, Optional, Dict
+
 from obj.coordinates_obj import Coordinates
 
 #---------------------------------------------------------------------
@@ -146,9 +147,7 @@ class ReqEntry( RosterEntry ):
             above for options) (str)
      
      - course_used: Name of the course used to satisfy the requirement
-                    (str)
-
-     - validity: The validity of the requirement (Validity)
+                    (str or None)
 
      - cred_applied: Credits applied to satisfy the requirement (int or None)
 
@@ -158,6 +157,8 @@ class ReqEntry( RosterEntry ):
 
      - cat: Category for liberal study; if the entry isn't "REQ-LS", this 
             should be set to None (str or None)
+
+     - validity: The validity of the requirement (dict mapping str to int)
 
     Note that the primary attributes are meant for requirements; checkoffs will
     have only `req` and `course_used`, with the rest set to None
@@ -211,7 +212,7 @@ class CheckoffEntry( RosterEntry ):
      - course_used: Name of the course used to satisfy the checkoff
                     (str)   
 
-     - validity: The validity of the checkoff (Validity)        
+     - validity: The validity of the checkoff (dict mapping str to int)    
     """
 
     def __init__( self, req: str, course: str, coord: Coordinates ):

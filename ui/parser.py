@@ -26,7 +26,24 @@ def parse_class_name( ugly_name: str ) -> str:
     letters = [ x for x in stripped_name if x.isalpha() ]
     digits  = [ x for x in stripped_name if x.isdigit() ]
 
-    return ( "".join(letters) ).upper() + " " + "".join(digits)
+    class_name = ( "".join(letters) ).upper() + " " + "".join(digits)
+
+    if not validate_class_name( class_name ): # Still not a valid class name
+        raise excp.ui_exceptions.InvalidClassNameError( ugly_name )
+
+    return class_name
+
+def validate_class_name( class_name: str ) -> bool:
+    """Validates that the given class name represents a class name"""
+    stripped_name = class_name.strip()
+
+    letters = [ x for x in stripped_name if x.isalpha() ]
+    digits  = [ x for x in stripped_name if x.isdigit() ]
+
+    result = stripped_name != ""
+    result = result and ( len( digits ) == 4 )
+    result = result and ( len( letters ) >= 3 )
+    return result
 
 def get_dept_from_name( class_name: str ) -> str:
     """
