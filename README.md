@@ -22,6 +22,7 @@ If you wish to do local linting, Mypy additionally requires type stubs for each 
 ```
 pip install -r mypy_requirements.txt
 ```
+(Note that `grequests` does not include type stubs, and is therefore ignored during linting. The results from using this module are annotated to avoid `Any` propagation)
 
 ## Usage
 
@@ -35,8 +36,9 @@ or more simply,
 ```
 
 Here, `CHECKLIST(S)` are the checklist(s) that we want to validate. We also have a number of optional flags:
- - `-l LOGS_DIR`: Specifies the log directory (Default: `logs`)
  - `-g GRADES-CSV`, `--grades GRADES-CSV`: Validates the schedule against the given grades
+ - `-l LOGS_DIR`: Specifies the log directory (Default: `logs`)
+ - `-s`: Enables semantics checks (whether the requirement is satisfied by the given class)
  - `-v`, `--verbose`: Enables verbose output
 
 For more information, use the `-h` or `--help` flag
