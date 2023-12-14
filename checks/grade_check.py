@@ -36,6 +36,23 @@ def grade_check( roster: Roster, grades: Grades, logger: Logger ) -> Tuple[int, 
         course         = entry.course_used
         proposed_grade = entry.grade
 
+        if ( term == "" ) or ( course == "" ):
+            logger.warning( " - Not enough information provided for %s to locate grade record", 
+                            entry.req )
+            warnings += 1
+            if term == "":
+                entry.warn( "term" )
+            if course == "":
+                entry.warn( "course" )
+            entry.warn( "grade" )
+            continue
+        
+        if( proposed_grade == "" ):
+            logger.warning( " - No grade supplied for %s", course )
+            warnings += 1
+            entry.warn( "grade" )
+            continue
+
         try:
             real_grade = grades.get_grade( netid, term, course )
         except (excp.grade_exceptions.TermNotFoundError,

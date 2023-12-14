@@ -151,7 +151,7 @@ def parse_grade( ugly_grade: str ) -> str:
     grade = ( "".join(letters) ).upper() + "".join(mods)
 
     if not validate_grade( grade ): # Still not a valid grade
-        raise excp.ui_exceptions.InvalidTermError( ugly_grade )
+        raise excp.ui_exceptions.InvalidGradeError( ugly_grade )
 
     return grade
 

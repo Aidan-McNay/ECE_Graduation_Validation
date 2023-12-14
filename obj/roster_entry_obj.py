@@ -13,9 +13,13 @@
 # Date: December 2nd, 2023
 """
 
-from typing import Set, Optional, Dict
+from typing import Set, Dict
 
 from obj.coordinates_obj import Coordinates
+from ui.parser import parse_class_name as pclass, \
+                      parse_class_term as pterm,  \
+                      parse_grade      as pgrade
+import exceptions as excp
 
 #---------------------------------------------------------------------
 # Define Validity Levels
@@ -88,16 +92,21 @@ class RosterEntry:
      - validity: The validity of the components of the entry 
                  (dict mapping str (component names) to int (validity))
 
-    This is to be used for both requirement and checkoff entries           
+    This is to be used for both requirement and checkoff entries.
+    If a course is found to be invalid, it will be stored as an empty string.
     """
 
     def __init__( self, req: str, course: str, coord: Coordinates ):
-        self.req                     = req
-        self.course_used             = course
+        self.req                     = req.upper()
         self.coord                   = coord
         self.validity: Dict[str,int] = {}
 
-        assert ( ( self.req.upper() in req_types ) or (self.req.upper() in checkoff_types ) ), \
+        try:
+            self.course_used = pclass( course )
+        except excp.ui_exceptions.InvalidClassNameError: # Not a real class name
+            self.course_used = ""
+
+        assert ( ( self.req in req_types ) or (self.req in checkoff_types ) ), \
                f"Error: Listed requirement {self.req} not recognized"
 
     def __str__( self ) -> str:
@@ -147,31 +156,43 @@ class ReqEntry( RosterEntry ):
             above for options) (str)
      
      - course_used: Name of the course used to satisfy the requirement
-                    (str or None)
+                    (str)
 
-     - cred_applied: Credits applied to satisfy the requirement (int or None)
+     - cred_applied: Credits applied to satisfy the requirement (int)
 
-     - term: Term that the class was taken (str or None)
+     - term: Term that the class was taken (str)
 
-     - grade: Grade reported for the class (str or None)
+     - grade: Grade reported for the class (str)
 
      - cat: Category for liberal study; if the entry isn't "REQ-LS", this 
-            should be set to None (str or None)
+            should be set to None (str)
 
-     - validity: The validity of the requirement (dict mapping str to int)
+     - validity: The validity of the requirement (dict mapping str to int)   
 
-    Note that the primary attributes are meant for requirements; checkoffs will
-    have only `req` and `course_used`, with the rest set to None
-           
+    If a field is found to be invalid, it will be stored as an empty string (str)
+    or -1 (int)        
     """
 
-    def __init__( self, req: str, course: str, coord: Coordinates, cred: int, term: str, grade: str,
-                  cat: Optional[str] = None ):
+    def __init__( self, req: str, course: str, coord: Coordinates, cred: str, term: str, grade: str,
+                  cat: str ):
 
         super().__init__( req, course, coord )
-        self.cred_applied = cred
-        self.term         = term
-        self.grade        = grade
+
+        try:
+            self.cred_applied = int( cred )
+        except ValueError:
+            self.cred_applied = -1
+
+        try:
+            self.term = pterm( term )
+        except excp.ui_exceptions.InvalidTermError:
+            self.term = ""
+
+        try:
+            self.grade = pgrade( grade )
+        except excp.ui_exceptions.InvalidGradeError:
+            self.grade = ""
+
         self.cat          = cat
 
         self.validity = {
@@ -183,7 +204,7 @@ class ReqEntry( RosterEntry ):
             "cat"    : UNCHECKED
         }
 
-        assert ( self.req.upper() in req_types ), \
+        assert ( self.req in req_types ), \
                f"Error: Listed requirement {self.req} not recognized"
 
     def __str__( self ) -> str:
@@ -212,7 +233,9 @@ class CheckoffEntry( RosterEntry ):
      - course_used: Name of the course used to satisfy the checkoff
                     (str)   
 
-     - validity: The validity of the checkoff (dict mapping str to int)    
+     - validity: The validity of the checkoff (dict mapping str to int)  
+
+    If a course is found to be invalid, it will be stored as an empty string.  
     """
 
     def __init__( self, req: str, course: str, coord: Coordinates ):
@@ -224,7 +247,7 @@ class CheckoffEntry( RosterEntry ):
             "course" : UNCHECKED
         }
 
-        assert ( self.req.upper() in checkoff_types ), \
+        assert ( self.req in checkoff_types ), \
                f"Error: Listed requirement {self.req} not recognized"
 
     def __str__( self ) -> str:

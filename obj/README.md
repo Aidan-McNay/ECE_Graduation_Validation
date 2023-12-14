@@ -33,7 +33,7 @@ These different validity levels have different semantics when applying to differ
     - `ERROR`: The requirement isn't satisfied by the given course
  - `course`
     - `VALID`: A course was supplied
-    - `WARNING`: No course was supplied
+    - `ERROR`: No course was supplied
  - `cred` (Credits)
     - `VALID`: The course was taken for the given number of credits
     - `WARNING`: The course (across this and any other listings) was taken for more credits than reported

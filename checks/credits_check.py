@@ -42,6 +42,23 @@ def credits_check( roster: Roster, grades: Grades, logger: Logger ) -> Tuple[int
         course           = entry.course_used
         proposed_credits = entry.cred_applied
 
+        if ( term == "" ) or ( course == "" ):
+            logger.warning( " - Not enough information provided for %s to locate credit record", 
+                            entry.req )
+            warnings += 1
+            if term == "":
+                entry.warn( "term" )
+            if course == "":
+                entry.warn( "course" )
+            entry.warn( "cred" )
+            continue
+        
+        if( proposed_credits == -1 ):
+            logger.warning( " - No credits supplied for %s", course )
+            warnings += 1
+            entry.warn( "cred" )
+            continue
+
         try:
             records.use_cred( course, term, proposed_credits )
             logger.info( " - Credits match for %s", course )
