@@ -1,33 +1,39 @@
 """
 #=====================================================================
-# basic_check.py
+# phys_1.py
 #=====================================================================
-# A simple check that a requirement was satisfied by a given class,
-# intended for re-use across many checks
-#
+# A check to see that the PHYS. 1 requirement is satisfied (as well as
+# EXP. PHYS., if necessary)
+
 # Author: Aidan McNay
-# Date: December 14th, 2023
+# Date: December 13th, 2023
 """
 
 from logging import Logger
-from typing import Tuple, List
+from typing import Tuple
 
 from obj.roster_obj import Roster
 from obj.class_obj import Class
+from checks.utils.basic_check import basic_check
+from ui.parser import term_is_later
 
 import exceptions as excp
 
-def basic_check( roster: Roster, logger: Logger,
-                 req: str, valid_class_names: List[str] ) -> Tuple[int, int]:
+def exp_phys_check( roster: Roster, logger: Logger ) -> Tuple[int, int]:
     """
-    Checks that the student satisfies a requirement with a valid class.
+    Checks that the student satisfies the EXP. PHYS. requirement with PHYS 1110
+    """
+    return basic_check( roster, logger, "EXP. PHYS.", ["PHYS 1110"] )
 
-    Specifically, we verify that:
-     - The requirement only appears once
-     - The entry notes a course that satisfies the requirement
-     - The course was actually offered during the reported term
-     - All of the credits for the course were applied towards the requirement
+def phys_1_check( roster: Roster, logger: Logger ) -> Tuple[int, int]:
     """
+    Checks that the student satisfied the PHYS. 1 requirement, as well as the
+    PHYS 1110 requirement if needed.
+
+    This looks very similar to basic_check, but also calls exp_phys_check if needed
+    """
+    req = "PHYS. 1"
+    valid_class_names = ["PHYS 1112", "PHYS 1116"]
     errors   = 0
     warnings = 0
 
@@ -87,5 +93,11 @@ def basic_check( roster: Roster, logger: Logger,
         else:
             logger.info( "%s requirement fully satisfied by %s", req, entry.course_used )
             entry.valid( "req" )
+
+        if ( entry.course_used == "PHYS 1112" ) and term_is_later( entry.term, "SU23" ):
+            # If so, they also need to take PHYS 1110
+            phys_1110_result = exp_phys_check( roster, logger )
+            errors   += phys_1110_result[0]
+            warnings += phys_1110_result[1]
 
     return errors, warnings
