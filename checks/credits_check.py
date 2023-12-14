@@ -10,6 +10,7 @@
 """
 
 from logging import Logger
+from typing import Tuple
 
 from exceptions.class_records_exceptions import RecordNotFoundError
 from exceptions.class_records_exceptions import InsufficientCreditsError
@@ -19,7 +20,7 @@ from obj.grades_obj import Grades
 from obj.class_records_obj import ClassRecords
 from ui.logger import SUCCESS
 
-def credits_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
+def credits_check( roster: Roster, grades: Grades, logger: Logger ) -> Tuple[int, int]:
     """
     Validates all of the credits reported in a Roster, verifying
     against the given Grades. The results are outputted to the given
@@ -29,6 +30,7 @@ def credits_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
 
     netid  = roster.netid
     errors = 0
+    warnings = 0
 
     logger.info( "Credits Check for %s:", netid )
 
@@ -53,4 +55,4 @@ def credits_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
     if errors == 0:
         logger.log( SUCCESS, "All credits match" )
 
-    return errors
+    return errors, warnings

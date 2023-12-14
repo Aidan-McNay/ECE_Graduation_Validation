@@ -8,6 +8,7 @@
 # Date: December 13th, 2023
 """
 from logging import Logger
+from typing import Tuple
 
 from obj.roster_obj import Roster
 
@@ -17,13 +18,17 @@ CHECKS_TO_RUN = [
     math_1910_check
 ]
 
-def common_core_check( roster: Roster, logger: Logger ) -> int:
+def common_core_check( roster: Roster, logger: Logger ) -> Tuple[int, int]:
     """
     Runs all of the checks on the Common Core requirements
     """
     errors = 0
+    warnings = 0
 
     for check in CHECKS_TO_RUN:
-        errors += check( roster, logger )
+        result = check( roster, logger )
 
-    return errors
+        errors   += result[0]
+        warnings += result[1]
+
+    return errors, warnings

@@ -9,13 +9,14 @@
 """
 
 from logging import Logger
+from typing import Tuple
 
 import exceptions as excp
 from obj.roster_obj import Roster
 from obj.grades_obj import Grades
 from ui.logger import SUCCESS
 
-def grade_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
+def grade_check( roster: Roster, grades: Grades, logger: Logger ) -> Tuple[int, int]:
     """
     Validates all of the grades reported in a Roster, verifying
     against the given Grades. The results are outputted to the given
@@ -25,6 +26,7 @@ def grade_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
 
     netid  = roster.netid
     errors = 0
+    warnings = 0
 
     logger.info( "Grade Check for %s:", netid )
 
@@ -52,4 +54,4 @@ def grade_check( roster: Roster, grades: Grades, logger: Logger ) -> int:
     if errors == 0:
         logger.log( SUCCESS, "All grades match" )
 
-    return errors
+    return errors, warnings

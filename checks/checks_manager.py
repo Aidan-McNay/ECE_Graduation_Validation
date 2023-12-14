@@ -10,7 +10,7 @@
 
 from logging import Logger
 import os
-from typing import Dict, List, Callable
+from typing import Dict, List, Callable, Tuple
 
 from obj.roster_obj import Roster
 from ui.logger import gen_v_file_logger, SUCCESS
@@ -27,10 +27,10 @@ class ChecksManager:
     For the purposes of this manager, a "check" is defined as any
     function of the following signature:
 
-        check( roster: Roster, logger: logging.Logger ) -> int
+        check( roster: Roster, logger: logging.Logger ) -> Tuple[ int, int ]
 
     The check should take in a Roster and logger, and return the
-    number of errors that the check generated
+    number of errors and warnings (respectively) that the check generated
 
     Attributes:
 
@@ -57,10 +57,11 @@ class ChecksManager:
     """
 
     def __init__( self ) -> None:
-        self.checks:  Dict[str, Callable[[Roster, Logger], int]] = {}
-        self.results: Dict[str, Dict[str,int]] = {}
+        self.checks:  Dict[str, Callable[[Roster, Logger], Tuple[int, int]]] = {}
+        self.results: Dict[str, Dict[str,Tuple[int, int]]] = {}
 
-    def add_check( self, check_name: str, check_func: Callable[[Roster, Logger], int] ) -> None:
+    def add_check( self, check_name: str,
+                   check_func: Callable[[Roster, Logger], Tuple[int, int]] ) -> None:
         """Adds a check to the set of checks to run"""
         self.checks[ check_name ] = check_func
 
@@ -94,17 +95,24 @@ class ChecksManager:
 
             logger.info( "Summary:" )
 
-            total_errors = 0
+            total_errors   = 0
+            total_warnings = 0
 
             for netid, error_logs in self.results.items():
-                netid_errors = sum( error_logs.values() )
+                netid_errors   = sum( x[0] for x in error_logs.values() )
+                netid_warnings = sum( x[1] for x in error_logs.values() )
                 total_errors += netid_errors
-                logger.info( " - %s: %d errors", netid, netid_errors )
+                total_warnings += netid_warnings
+                logger.info( " - %s: %d errors, %d warnings",
+                             netid, netid_errors, netid_warnings )
 
-                for check_name, check_errors in error_logs.items():
-                    logger.info( "    - %s: %d errors", check_name, check_errors )
+                for check_name, result in error_logs.items():
+                    logger.info( "    - %s: %d errors, %d warnings",
+                                 check_name, result[0], result[1] )
 
             if total_errors > 0:
-                logger.error( "Overall: %d errors", total_errors )
+                logger.error( "Overall: %d errors, %d warnings", total_errors, total_warnings )
+            elif total_warnings > 0:
+                logger.warning( "Overall: %d errors, %d warnings", total_errors, total_warnings )
             else:
                 logger.log( SUCCESS, "All checks passed!" )
