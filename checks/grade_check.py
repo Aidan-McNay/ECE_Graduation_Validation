@@ -37,7 +37,7 @@ def grade_check( roster: Roster, grades: Grades, logger: Logger ) -> Tuple[int, 
         proposed_grade = entry.grade
 
         if ( term == "" ) or ( course == "" ):
-            logger.warning( " - Not enough information provided for %s to locate grade record", 
+            logger.warning( " - Not enough information provided for %s to locate grade record",
                             entry.req )
             warnings += 1
             if term == "":
@@ -46,8 +46,8 @@ def grade_check( roster: Roster, grades: Grades, logger: Logger ) -> Tuple[int, 
                 entry.warn( "course" )
             entry.warn( "grade" )
             continue
-        
-        if( proposed_grade == "" ):
+
+        if proposed_grade == "":
             logger.warning( " - No grade supplied for %s", course )
             warnings += 1
             entry.warn( "grade" )
