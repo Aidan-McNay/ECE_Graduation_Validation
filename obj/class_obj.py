@@ -54,8 +54,9 @@ class Class:
      - acadCareer: The course's nominal program affiliation (str)
          ex. "UG" (for undergraduate)
 
-     - credits: The number of credits you can take the class for (int)
-       - Will prompt for input if number is variable
+     - min_credits: The minimum credits you can take the class for (float)
+
+     - max_credits: The minimum credits you can take the class for (float)
 
      - is_FWS: Whether the class is a FWS or not (bool)
 
@@ -90,7 +91,7 @@ class Class:
 
         # Grab the data for the course
         try:
-            json_object = api.class_api.get_class( course_name, term )
+            json_object = api.class_api.get_class( course_name, term, ping_source = False )
             self.term_sourced = term
 
         except excp.api_exceptions.TermNotFoundError as e:
@@ -181,17 +182,8 @@ class Class:
     def set_credits( self, json_obj: dict ) -> None:
         """Sets the number of credits the class was taken for"""
 
-        max_cred = int( json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMaximum" ] )
-        min_cred = int( json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMinimum" ] )
-        if max_cred == min_cred:
-            self.credits = max_cred
-            return
-
-        # If we got here, variable number of credits - prompt user
-        prompt_msg = f"Looks like {self.primary_name} has variable numbers of credits" + \
-                      " - how many did you take?"
-        options = [ str( i ) for i in range( min_cred, max_cred + 1 ) ]
-        self.credits = int( ui.user.prompt_usr_list( prompt_msg, options, 0 ) )
+        self.max_credits = float( json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMaximum" ] )
+        self.min_credits = float( json_obj[ "enrollGroups" ][ self._enrl_idx ][ "unitsMinimum" ] )
 
     #---------------------------------------------------------------------
     # Dynamic Properties
@@ -246,6 +238,3 @@ class Class:
 
     def __ne__( self, other: Any ) -> bool:
         return not self == other
-
-    def __len__( self ) -> int: # We'll use this for the number of credits
-        return self.credits

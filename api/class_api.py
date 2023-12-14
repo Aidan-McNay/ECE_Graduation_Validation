@@ -78,7 +78,7 @@ def populate_data( term: str, dept: str ) -> None:
     # Store the data for that department and term
     cache_data( dept, term, json_object )
 
-def get_class( course_name: str, term: str,
+def get_class( course_name: str, term: str, ping_source: bool = True,
                dump: bool = False, file_name: str = "" ) -> dict:
     """
     Gets the information on a course for the given term
@@ -110,7 +110,10 @@ def get_class( course_name: str, term: str,
         raise excp.api_exceptions.TermNotFoundError( term )
 
     if data_key not in _cached_classes: # Need to populate with the relevant information
-        populate_data( term, dept )
+        if ping_source: # Ping the central API
+            populate_data( term, dept )
+        else:
+            raise excp.api_exceptions.DeptNotFoundError( dept, term )
 
     # Find the data for our given class in the term
     class_entry_found = None

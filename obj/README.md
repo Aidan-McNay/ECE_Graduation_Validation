@@ -29,7 +29,7 @@ These different validity levels have different semantics when applying to differ
 
  - `req`
     - `VALID`: The requirement is satisfied by the given course
-    - `WARNING`: The requirement isn't satisfied by the overall course collection (ex. fewer than 3 OTE's supplied)
+    - `WARNING`: The requirement isn't satisfied by the overall course collection (ex. fewer than 3 OTE's supplied), **_OR_** the requirement couldn't be fully validated due to other missing information
     - `ERROR`: The requirement isn't satisfied by the given course
  - `course`
     - `VALID`: A course was supplied

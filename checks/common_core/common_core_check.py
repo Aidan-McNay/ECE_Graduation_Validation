@@ -12,10 +12,10 @@ from typing import Tuple
 
 from obj.roster_obj import Roster
 
-from checks.common_core.math_1910 import math_1910_check
+from checks.common_core.calc import calc_check
 
 CHECKS_TO_RUN = [
-    math_1910_check
+    calc_check
 ]
 
 def common_core_check( roster: Roster, logger: Logger ) -> Tuple[int, int]:
