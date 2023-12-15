@@ -17,7 +17,12 @@ from checks.common_core.multi      import multi_check
 from checks.common_core.diff_eq    import diff_eq_check
 from checks.common_core.lin_alg    import lin_alg_check
 from checks.common_core.intro_prog import intro_prog_check
+from checks.common_core.gen_chem   import gen_chem_check
 from checks.common_core.phys_1     import phys_1_check
+from checks.common_core.phys_2     import phys_2_check
+from checks.common_core.phys_3     import phys_3_check
+from checks.common_core.dig_logic  import dig_logic_check
+from checks.common_core.phys_ed    import phys_ed_check
 
 CHECKS_TO_RUN = [
     calc_check,
@@ -25,7 +30,12 @@ CHECKS_TO_RUN = [
     diff_eq_check,
     lin_alg_check,
     intro_prog_check,
-    phys_1_check
+    gen_chem_check,
+    phys_1_check,
+    phys_2_check,
+    phys_3_check,
+    dig_logic_check,
+    phys_ed_check
 ]
 
 def common_core_check( roster: Roster, logger: Logger ) -> Tuple[int, int]:
