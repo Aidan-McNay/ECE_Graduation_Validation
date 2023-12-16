@@ -68,7 +68,8 @@ class Class:
      - _enrl_idx: The index of the enrolled section (if only 1, set to 0)
     """
 
-    def __init__( self, course_name: str, term_opt: Optional[str] = None, ping_source: bool = False ):
+    def __init__( self, course_name: str, term_opt: Optional[str] = None,
+                  ping_source: bool = False ):
         """
         Sources the initial information for the class
 
