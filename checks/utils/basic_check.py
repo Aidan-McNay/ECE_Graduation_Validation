@@ -93,7 +93,7 @@ def basic_check( roster: Roster, logger: Logger, req: str, valid_prefixes: List[
 
         # Finally, verify that the reporting was for the full number of credits
         if class_obj.max_credits != entry.cred_applied:
-            logger.error( "Reported taking %s for fewer credits (%d) than the full " +
+            logger.error( "Reported taking %s for different credits (%d) than the full " +
                           "number of credits (%d) for the %s requirement", 
                           entry.course_used, entry.cred_applied, class_obj.max_credits, req )
             errors += 1
