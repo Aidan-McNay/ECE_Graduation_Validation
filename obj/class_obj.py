@@ -68,7 +68,7 @@ class Class:
      - _enrl_idx: The index of the enrolled section (if only 1, set to 0)
     """
 
-    def __init__( self, course_name: str, term_opt: Optional[str] = None ):
+    def __init__( self, course_name: str, term_opt: Optional[str] = None, ping_source: bool = False ):
         """
         Sources the initial information for the class
 
@@ -91,7 +91,7 @@ class Class:
 
         # Grab the data for the course
         try:
-            json_object = api.class_api.get_class( course_name, term, ping_source = False )
+            json_object = api.class_api.get_class( course_name, term, ping_source = ping_source )
             self.term_sourced = term
 
         except excp.api_exceptions.TermNotFoundError as e:
