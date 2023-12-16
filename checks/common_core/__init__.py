@@ -13,3 +13,5 @@ import checks.common_core.phys_2
 import checks.common_core.phys_3
 import checks.common_core.dig_logic
 import checks.common_core.phys_ed
+import checks.common_core.engr_dist
+import checks.common_core.engr_interest
