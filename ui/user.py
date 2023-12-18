@@ -16,6 +16,12 @@ import ui.parser
 # General prompting functions
 #---------------------------------------------------------------------
 
+def printp( msg: str ) -> None:
+    """Prints a prompt string"""
+
+    for string in msg.split( "\n" ):
+        print( "[PROMPT] " + string )
+
 def get_idx( str_to_convert: str ) -> int:
     '''
     Attempts to convert a string into a number
@@ -32,9 +38,9 @@ def prompt_usr( msg: str ) -> str:
     Prompts the user for input, using the given message
     '''
 
-    print( msg )
-    response = input( "Response: ")
-    print( "" ) # New line for further prompting
+    printp( msg )
+    response = input( "[PROMPT] Response: ")
+    printp( "" ) # New line for further prompting
     return response
 
 def prompt_usr_list( msg: str, options: List[str], default_idx: int ) -> str:
@@ -58,23 +64,22 @@ def prompt_usr_list( msg: str, options: List[str], default_idx: int ) -> str:
     '''
     options_lowercase = [ x.lower() for x in options ]
 
-    print( msg )
+    print( "" ) # New line for spacing
+    printp( msg )
 
     option_string = "Options: "
     option_string += "".join( [ ( "\n " + str( idx+1 ) + ". " + option )
                                 for idx, option in enumerate( options ) ] )
     option_string += f"\nDefault: [{options[ default_idx ]}]"
-    option_string += "\nSelection: "
+    printp( option_string )
 
-    response = input( option_string )
+    response = input( "[PROMPT] Selection: " )
 
     while(     not ( response.lower() in options_lowercase )          \
            and not ( response == "" )                                \
            and not   0 < get_idx( response ) <= len( options ) ):
-        print( "\nOops - that's not an option! Try again" )
-        response = input( option_string )
-
-    print("") # New line for spacing
+        printp( "\nOops - that's not an option! Try again" )
+        response = input( "[PROMPT] " + option_string )
 
     # Default response
     if response == "":
