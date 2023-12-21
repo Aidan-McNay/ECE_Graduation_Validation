@@ -2,7 +2,7 @@
 
 This is a folder for checking the majority of the Engineering Common Core Requirements (with the first ENGRD mandated to be ECE 2300)
 
-Liberal Studies, Advisor-Approved Electives, and all other Major classes are handled separately
+FWSs, Liberal Studies, Advisor-Approved Electives, and all other Major classes are handled separately
 
 ## Files
 
