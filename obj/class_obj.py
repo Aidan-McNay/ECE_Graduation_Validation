@@ -60,6 +60,8 @@ class Class:
 
      - is_FWS: Whether the class is a FWS or not (bool)
 
+     - is_CDE: Whether the class is a CDE (Culminating Design Experience) or not
+
      - term_taken: Term that the class was taken in
 
      - term_sourced: The term from which information was sourced (if
@@ -111,6 +113,7 @@ class Class:
         self.set_acadCareer  ( json_object )
         self.set_credits     ( json_object )
         self.set_is_FWS      ( json_object )
+        self.set_is_CDE      ( json_object )
 
     #---------------------------------------------------------------------
     # Attribute setters
@@ -179,6 +182,21 @@ class Class:
             return
 
         self.is_FWS = False
+
+    def set_is_CDE( self, json_obj: dict ) -> None:
+        """Sets whether the class is a CDE or not"""
+
+        string_to_search = "Culminating design experience (CDE)".upper()
+
+        if string_to_search in json_obj[ "catalogComments" ].upper():
+            self.is_CDE = True
+            return
+
+        if string_to_search in json_obj[ "catalogPrereqCoreq" ].upper():
+            self.is_CDE = True
+            return
+
+        self.is_CDE = False
 
     def set_credits( self, json_obj: dict ) -> None:
         """Sets the number of credits the class was taken for"""
