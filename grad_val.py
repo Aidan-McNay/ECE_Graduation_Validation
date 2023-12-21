@@ -23,6 +23,7 @@ from ui.annotate import make_annotated_checklist
 
 from checks.common_core.common_core_check import common_core_check
 from checks.ece_core.ece_core_check       import ece_core_check
+from checks.ece_found.ece_found_check     import ece_found_check
 
 #---------------------------------------------------------------------
 # Argument Parsing
@@ -180,6 +181,7 @@ if __name__ == "__main__":
 
         checks_mngr.add_check( "common-core", common_core_check )
         checks_mngr.add_check( "ece-core",    ece_core_check    )
+        checks_mngr.add_check( "ece-found",   ece_found_check    )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Run Checks
