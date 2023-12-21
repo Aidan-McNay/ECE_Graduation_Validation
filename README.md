@@ -45,7 +45,7 @@ For more information, use the `-h` or `--help` flag
 
 To see an example of how the code is used on test data, run
 ```
-./grad_val.py test_data/ec1_checklist.xlsx -g test_data/ec1_grades.csv
+./grad_val.py test_data/checklist.xlsx -sg test_data/grades.csv
 ```
 
 ## Linting
