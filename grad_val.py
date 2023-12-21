@@ -25,6 +25,7 @@ from checks.common_core.common_core_check import common_core_check
 from checks.ece_core.ece_core_check       import ece_core_check
 from checks.ece_found.ece_found_check     import ece_found_check
 from checks.ece_upper.ece_upper_check     import ece_upper_check
+from checks.extra.extra_check             import extra_check
 
 #---------------------------------------------------------------------
 # Argument Parsing
@@ -180,10 +181,11 @@ if __name__ == "__main__":
 
         # Add semantics checks
 
-        checks_mngr.add_check( "common-core", common_core_check )
-        checks_mngr.add_check( "ece-core",    ece_core_check    )
-        checks_mngr.add_check( "ece-found",   ece_found_check   )
-        checks_mngr.add_check( "ece-upper",   ece_upper_check   )
+        checks_mngr.add_check( "common-core",   common_core_check )
+        checks_mngr.add_check( "ece-core",      ece_core_check    )
+        checks_mngr.add_check( "ece-found",     ece_found_check   )
+        checks_mngr.add_check( "ece-upper",     ece_upper_check   )
+        checks_mngr.add_check( "extra-classes", extra_check       )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Run Checks
