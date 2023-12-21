@@ -1,6 +1,6 @@
 """
 #=====================================================================
-# common_core_checks.py
+# common_core_check.py
 #=====================================================================
 # A wrapper around all Engineering Common Core Checks
 

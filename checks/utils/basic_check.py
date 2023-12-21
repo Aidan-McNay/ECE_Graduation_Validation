@@ -30,7 +30,7 @@ def basic_check( roster: Roster, logger: Logger, req: str, uchecks: Dict[UcheckT
 
     Additional functionality includes:
      - Checking that we only encounter a given number or requirements (default is 1, modified by
-       req_num_expected)
+       req_num_expected; use -1 to disable)
      - Checking that all of the credits for the course were applied (set by full_creds)
 
     The function returns the number of errors and warnings encountered (respectively), as well as 
@@ -42,7 +42,7 @@ def basic_check( roster: Roster, logger: Logger, req: str, uchecks: Dict[UcheckT
     warnings = 0
 
     entry_list = roster.get_req( req )
-    if len( entry_list ) != req_num_expected:
+    if ( req_num_expected != -1 ) and ( len( entry_list ) != req_num_expected ):
         logger.error( "Expected %d entry for the %s requirement, found %d",
                       req_num_expected, req, len( entry_list ) )
         for entry in entry_list:
