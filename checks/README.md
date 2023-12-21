@@ -23,3 +23,19 @@ check_func( roster: obj.roster_obj.Roster, logger: logging.Logger ) -> Tuple[int
 The check must take in a student's Roster, as well as a Logger for logging the results. The check must return
 a tuple of two ints; the first is the number of errors generated, and the second is the number of warnings. This
 common interface allows checks to easily be managed by our ChecksManager.
+
+## μchecks
+
+Often, checks can be decomposed into smaller building blocks, such as checking the department, the level, etc.
+To facilitate code re-usability, we therefore employ microchecks, or μchecks (written in code as "uchecks").
+Stored in `utils/uchecks.py`, these functions return a lambda that takes in a Class entry, and returns a bool
+indicating whether it passed the μcheck. This type of lambda is defined to be a `UcheckType`:
+
+```
+ucheck1( ... ) -> Callable[ [Class], bool ]
+```
+
+μchecks can be customized, such that multiple requirements can use the
+same `is_name` μcheck, but specify different names that they expect. These are used later by other checking functions
+(such as `basic_check` in `utils/basic_check.py`), so that they can be used to verify a wide array of semantics by
+operating on the general signature of μchecks
