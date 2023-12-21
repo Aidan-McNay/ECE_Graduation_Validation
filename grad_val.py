@@ -22,6 +22,7 @@ from ui.logger import gen_file_logger, set_verbosity, SUCCESS
 from ui.annotate import make_annotated_checklist
 
 from checks.common_core.common_core_check import common_core_check
+from checks.ece_core.ece_core_check       import ece_core_check
 
 #---------------------------------------------------------------------
 # Argument Parsing
@@ -178,6 +179,7 @@ if __name__ == "__main__":
         # Add semantics checks
 
         checks_mngr.add_check( "common-core", common_core_check )
+        checks_mngr.add_check( "ece-core",    ece_core_check    )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Run Checks
