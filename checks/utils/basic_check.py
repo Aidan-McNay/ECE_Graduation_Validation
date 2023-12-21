@@ -10,24 +10,28 @@
 """
 
 from logging import Logger
-from typing import Tuple, List
+from typing import Tuple, Dict
 
 from obj.roster_obj import Roster
 from obj.roster_entry_obj import ReqEntry
 from obj.class_obj import Class
+from checks.utils.uchecks import UcheckType
 
 import exceptions as excp
 
-def basic_check( roster: Roster, logger: Logger, req: str, valid_prefixes: List[str],
-                 req_num_expected: int = 1 ) -> Tuple[int, int, ReqEntry]:
+def basic_check( roster: Roster, logger: Logger, req: str, uchecks: Dict[UcheckType, str],
+                 req_num_expected: int = 1, full_creds: bool = False ) -> Tuple[int, int, ReqEntry]:
     """
     Checks that the student satisfies a requirement with a valid class.
 
     Specifically, we verify that:
-     - The requirement only appears once
      - The course was actually offered during the reported term
      - The entry notes a course that begins with one of the given prefixes (often the course name)
-     - All of the credits for the course were applied towards the requirement
+
+    Additional functionality includes:
+     - Checking that we only encounter a given number or requirements (default is 1, modified by
+       req_num_expected)
+     - Checking that all of the credits for the course were applied (set by full_creds)
 
     The function returns the number of errors and warnings encountered (respectively), as well as 
     the first entry found for the given requirement (useful for some checks expecting only one 
@@ -78,28 +82,27 @@ def basic_check( roster: Roster, logger: Logger, req: str, valid_prefixes: List[
             entry.error( "req" )
             continue
 
-        # Check that a valid class was supplied
-        class_is_valid = False
+        # Finally, check that a valid class was supplied
+        class_is_valid = True
 
-        for prefix in valid_prefixes:
-            if any( name.startswith( prefix ) for name in class_obj.all_names ):
-                class_is_valid = True
+        for ucheck, error_msg in uchecks.items():
+            if not ucheck( class_obj ):
+                logger.error( "%s check failed by %s: " + error_msg, req, entry.course_used )
+                class_is_valid = False
+                errors += 1
 
-        if not class_is_valid:
-            logger.error( "%s requirement is not satisfied by %s", req, entry.course_used )
-            errors += 1
-            entry.error( "req" )
-            continue
-
-        # Finally, verify that the reporting was for the full number of credits
-        if class_obj.max_credits != entry.cred_applied:
+        # Conditionally verify that the reporting was for the full number of credits
+        if full_creds and class_obj.max_credits != entry.cred_applied:
             logger.error( "Reported taking %s for different credits (%d) than the full " +
                           "number of credits (%d) for the %s requirement", 
                           entry.course_used, entry.cred_applied, class_obj.max_credits, req )
             errors += 1
-            entry.error( "req" )
-        else:
+            class_is_valid = False
+
+        if class_is_valid:
             logger.info( "%s requirement fully satisfied by %s", req, entry.course_used )
             entry.valid( "req" )
+        else:
+            entry.error( "req" )
 
     return errors, warnings, entry_to_return
