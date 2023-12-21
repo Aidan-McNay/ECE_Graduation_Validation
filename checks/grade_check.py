@@ -59,11 +59,16 @@ def grade_check( roster: Roster, grades: Grades, logger: Logger ) -> Tuple[int, 
                     excp.grade_exceptions.ClassNotFoundError):
             real_grade = "No Entry"
 
-        if real_grade != proposed_grade: #The student lied :(
+        if real_grade != proposed_grade: # The student lied :(
             logger.error( "Proposed grade for %s (%s) doesn't match our records (%s)",
                           course, proposed_grade, real_grade )
             entry.error( "grade" )
             errors += 1
+
+            actually_taken = grades.when_taken( netid, course )
+            if ( real_grade == "No Entry" ) and ( len( actually_taken ) > 0 ):
+                logger.info( " - Reported taking in %s, but appears to have actually taken in %s",
+                             term, ", ".join( actually_taken ) )
         else:
             logger.info( " - Grade match for %s", course )
             entry.valid( "grade" )

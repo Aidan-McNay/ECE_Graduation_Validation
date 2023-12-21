@@ -66,6 +66,11 @@ def credits_check( roster: Roster, grades: Grades, logger: Logger ) -> Tuple[int
             entry.error( "cred" )
             errors += 1
 
+            actually_taken = grades.when_taken( netid, course )
+            if ( isinstance( e, RecordNotFoundError ) ) and ( len( actually_taken ) > 0 ):
+                logger.info( " - Reported taking in %s, but appears to have actually taken in %s",
+                             term, ", ".join( actually_taken ) )
+
     if errors == 0:
         logger.log( SUCCESS, "All credits match" )
 
