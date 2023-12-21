@@ -25,18 +25,8 @@ valid_ece_classes = [
     "ECE 4760"
 ]
 
-valid_cs_courses = [
-    "CS 4120",
-    "CS 4121",
-    "CS 4410",
-    "CS 4411"
-]
-
 def is_CDE( class_obj: Class ) -> bool:
     """Checks whether the given class is a valid CDE"""
-
-    if any( name in class_obj.all_names for name in valid_cs_courses ):
-        return True
 
     if ( "ECE" in class_obj.all_departments ) and \
        ( int( class_obj.course_number ) >= 4000 ) and \
@@ -46,7 +36,7 @@ def is_CDE( class_obj: Class ) -> bool:
     return False
 
 # Describe the uchecks to run, and the corresponding error messages
-# (we need to explicitly type this for CDEs, to avoid incorrect type inference
+# (we need to explicitly type this, to avoid incorrect type inference
 # of is_CDE with named parameters)
 
 uchecks_to_run: Dict[Callable[[Class], bool], str] = {

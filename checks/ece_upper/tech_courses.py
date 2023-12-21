@@ -8,7 +8,7 @@
 # Date: December 21st, 2023
 """
 
-from checks.utils.uchecks import UcheckType
+from obj.class_obj import Class
 
 nontech_courses = [
     "ECE 3600",
@@ -18,11 +18,11 @@ nontech_courses = [
     "ECE 5880"
 ]
 
-def is_technical() -> UcheckType:
+def is_technical( class_obj: Class ) -> bool:
     """
-    Returns a lambda checking whether the given Class object is a technical
+    Checks whether the given Class object is a technical
     ECE class
     """
 
-    return lambda x : ( "ECE" in x.all_departments ) and \
-                      not any( name in x.all_names for name in nontech_courses )
+    return ( "ECE" in class_obj.all_departments ) and \
+           not any( name in class_obj.all_names for name in nontech_courses )
