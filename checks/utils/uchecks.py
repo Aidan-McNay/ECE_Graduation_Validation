@@ -30,6 +30,18 @@ def is_dept( dept: str ) -> UcheckType:
     return lambda x : dept in x.all_departments
 
 #---------------------------------------------------------------------
+# is_FWS
+#---------------------------------------------------------------------
+
+def is_FWS() -> UcheckType:
+    """
+    Returns a lambda checking whether the given Class object
+    is a FWS (First-Year Writing Seminar)
+    """
+
+    return lambda x : x.is_FWS
+
+#---------------------------------------------------------------------
 # is_level
 #---------------------------------------------------------------------
 

@@ -11,6 +11,7 @@ This folder includes:
  - `ece_core`: Checks pertaining to the ECE Core Curriculum (run when the `-s` flag is supplied)
  - `ece_found`: Checks pertaining to the ECE Foundation Curriculum (run when the `-s` flag is supplied)
  - `extra`: Checks pertaining to the extra classes in the checklist (run when the `-s` flag is supplied)
+ - `fws`: Checks pertaining to First-Year Writing Seminars (run when the `-s` flag is supplied)
  - `grade_check.py`: A check to make sure that the grades reported for classes align with our records (run when the `-g` flag is supplied)
  - `utils/`: Utility functions useful across a variety of checks
 
