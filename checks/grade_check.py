@@ -55,8 +55,8 @@ def grade_check( roster: Roster, grades: Grades, logger: Logger ) -> Tuple[int, 
 
         try:
             real_grade = grades.get_grade( netid, term, course )
-        except (excp.grade_exceptions.TermNotFoundError,
-                    excp.grade_exceptions.ClassNotFoundError):
+        except ( excp.grade_exceptions.TermNotFoundError,
+                 excp.grade_exceptions.ClassNotFoundError ):
             real_grade = "No Entry"
 
         if real_grade != proposed_grade: # The student lied :(
