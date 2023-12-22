@@ -21,7 +21,7 @@ A variety of exceptions may be thrown, with the emphasis being on handling unexp
     - `ClassNotFoundError`: Indicates that the API couldn't find the given class for the specific department and term
     - `NoClassInfoError`: Indicates that the API couldn't find the given class in any term _(this involves searching all terms, and is avoided in the current script due to the time penalty, but left in the source code for completion)_
  - `checklist_exceptions.py`:
-    - `UnsupportedFileTypeError`: Indicates that an unsupported file type was provided (currently, only Excel spreadsheets with the `.xlsx` file extension)
+    - `UnsupportedFileTypeError`: Indicates that an unsupported file type was provided (currently, only Excel spreadsheets with the `.xlsx` file extension are supported)
     - `MultipleAttributeError`: Indicates that a given attribute (such as a name or NetID) was found multiple times on the checklist
  - `class_records_exceptions.py`:
     - `RecordNotFoundError`: Indicates that we didn't find a record of the student taking a class in a given term
