@@ -2,7 +2,7 @@
 ![Pylint](https://github.com/Aidan-McNay/ECE_Graduation_Validation/actions/workflows/pylint.yml/badge.svg)
 ![Mypy](https://github.com/Aidan-McNay/ECE_Graduation_Validation/actions/workflows/mypy.yml/badge.svg)
 
-This code validates a course schedule and ensures it follows Cornell ECE's requirements for graduation. Logs from the validation are stored in a generated `logs` file
+This code validates a course schedule and ensures it follows Cornell ECE's requirements for graduation. Logs from the validation are stored in a generated `logs` directory
 
 ## Dependencies
 
