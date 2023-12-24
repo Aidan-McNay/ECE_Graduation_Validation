@@ -70,8 +70,8 @@ Running the code with the `-g` flag and supplying grades will validate `cred` an
 Many classes go by different names, such as crosslistings across different departments, as well as different levels of offerings.
 We consider all of these different names to be "aliases" of one another. Note that different sections of the same classes are not
 considered aliases; aliases should represent the same base offering, whereas sections can differ by credit amount and topic.
-As a general principle, objects and checks that rely on class names should be alias-invariant, and handle any of the names that
-a class can appear under. 
+As a general principle, objects and checks that rely on class names should be *__alias-invariant__*, and handle any of the names that
+a class can appear under. Aliases can be determine by the `all_names` attribute of a `Class` object.
 
 A notable exception is checking whether a checkoff-satisfying class also appears in the checklist's requirements; since checkoffs
 aren't listed with terms, we cannot get the API data for the class, and therefore cannot determine its aliases. We therefore require
