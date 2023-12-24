@@ -15,7 +15,7 @@ from typing import NoReturn, Dict
 import shutil
 import sys
 
-from api.bulk_api import bulk_populate_roster_data
+from api.bulk_api import bulk_add_roster_data, bulk_add_grades_data, bulk_populate
 import obj
 import checks
 from ui.logger import gen_file_logger, set_verbosity, SUCCESS
@@ -164,6 +164,8 @@ if __name__ == "__main__":
         for grade_file in args.grades:
             grades += obj.grades_obj.Grades( grade_file )
 
+        bulk_add_grades_data( grades )
+
         checks_mngr.add_check( "grade-validation",
                                lambda x, y : checks.grade_check.grade_check( x, grades, y ) )
 
@@ -171,15 +173,13 @@ if __name__ == "__main__":
                                lambda x, y : checks.credits_check.credits_check( x, grades, y ) )
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Populate API Information
+    # Semantics Validation
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     if args.semantics:
 
-        summary_logger.info( "Adding class data from API..." )
-
         for roster in rosters:
-            bulk_populate_roster_data( roster.req_entries )
+            bulk_add_roster_data( roster.req_entries )
 
         # Add semantics checks
 
@@ -190,6 +190,13 @@ if __name__ == "__main__":
         checks_mngr.add_check( "ece-upper",     ece_upper_check   )
         checks_mngr.add_check( "extra-classes", extra_check       )
         checks_mngr.add_check( "checkoffs",     checkoffs_check   )
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Populate API Information
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    summary_logger.info( "Adding API data..." )
+    bulk_populate()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Run Checks

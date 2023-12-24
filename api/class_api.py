@@ -137,6 +137,14 @@ def get_class( course_name: str, term: str, ping_source: bool = True,
 # Derived Functions
 #---------------------------------------------------------------------
 
+def in_cache( term: str, dept: str ) -> bool:
+    """
+    Returns whether we already have data for the given department and
+    term in the API data
+    """
+
+    return ( dept, term ) in _cached_classes
+
 def in_future( term: str ) -> bool:
     """
     Determines if a term is offered in the future (based on our available rosters)

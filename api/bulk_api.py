@@ -19,6 +19,7 @@ import requests
 
 from api import class_api
 from obj.roster_entry_obj import ReqEntry
+from obj.grades_obj import Grades
 from ui.parser import get_dept_from_name
 
 #---------------------------------------------------------------------
@@ -26,6 +27,15 @@ from ui.parser import get_dept_from_name
 #---------------------------------------------------------------------
 # Populates the stored cached class data in *parallel* for speedup
 # <flashbacks to Operating Systems>
+
+_data_to_add: Set[ Tuple[ str, str ] ] = set()
+
+def bulk_populate() -> None:
+    """Bulk populates our data that we've yet to add"""
+
+    global _data_to_add
+    bulk_populate_data( list( _data_to_add ) )
+    _data_to_add = set()
 
 def bulk_populate_data( req_list: List[ Tuple[ str, str ] ] ) -> None:
     """
@@ -58,15 +68,24 @@ def bulk_populate_data( req_list: List[ Tuple[ str, str ] ] ) -> None:
         # Store the data for that department and term
         class_api.cache_data( dept, term, json_object )
 
-def bulk_populate_roster_data( req_entries: List[ ReqEntry ] ) -> None:
-    """Populates the class data for all the classes in the Rosters"""
+#---------------------------------------------------------------------
+# Add Data To Populate
+#---------------------------------------------------------------------
+# Here, we add data to our saved set, to populate all at once
 
-    term_dept_tuples: Set[ Tuple[ str, str ] ] = set()
+def bulk_add_roster_data( req_entries: List[ ReqEntry ] ) -> None:
+    """Populates the class data for all the classes in the Rosters"""
 
     for entry in req_entries:
         term = entry.term
         dept = get_dept_from_name( entry.course_used )
 
-        term_dept_tuples.add( (term, dept) )
+        _data_to_add.add( (term, dept) )
 
-    bulk_populate_data( list( term_dept_tuples ) )
+def bulk_add_grades_data( grades: Grades ) -> None:
+    """Populates the class data for all the classes in the Rosters"""
+
+    req_list = grades.gen_api_reqs()
+
+    for req in req_list:
+        _data_to_add.add( req )

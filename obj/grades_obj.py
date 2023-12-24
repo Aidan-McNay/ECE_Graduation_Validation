@@ -9,7 +9,7 @@
 """
 
 import csv
-from typing import Optional, List, Dict, Union, cast
+from typing import Optional, List, Dict, Union, Tuple, cast
 
 import exceptions as excp
 from obj.class_record_obj import ClassRecord
@@ -259,6 +259,19 @@ class Grades:
                 class_records.append( record )
 
         return class_records
+
+    def gen_api_reqs( self ) -> List[ Tuple[ str, str ] ]:
+        """Returns a list of ( term, data ) tuples, intended for API requests"""
+
+        req_list = []
+
+        for _, terms in self._grades.items():
+            for term, classes in terms.items():
+                for class_str in classes:
+                    dept = ui.parser.get_dept_from_name( class_str )
+                    req_list.append( (term, dept) )
+
+        return req_list
 
 
     #---------------------------------------------------------------------
