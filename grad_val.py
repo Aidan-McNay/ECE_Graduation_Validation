@@ -29,6 +29,18 @@ from checks.ece_upper.ece_upper_check     import ece_upper_check
 from checks.extra.extra_check             import extra_check
 from checks.checkoffs.checkoffs_check     import checkoffs_check
 
+__author__  = "Aidan McNay '24"
+__email__   = "acm289@cornell.edu"
+__license__ = "MIT"
+__status__  = "Prototype"
+__version__ = "0.1.0"
+
+description = f"""
+Validates an ECE student's checklist for graduation
+Version: {__version__}
+Author: {__author__}
+"""
+
 #---------------------------------------------------------------------
 # Argument Parsing
 #---------------------------------------------------------------------
@@ -46,8 +58,9 @@ class DefaultHelpParser( argparse.ArgumentParser ):
         self.print_help()
         sys.exit( 2 )
 
-parser = DefaultHelpParser( description = "Validates an ECE student's checklist for graduation",
-                            usage = "%(prog)s CHECKLIST(S)" )
+parser = DefaultHelpParser( description = description,
+                            usage = "%(prog)s CHECKLIST(S)",
+                            formatter_class = argparse.RawTextHelpFormatter )
 
 # Mandatory arguments
 parser.add_argument( "checklists", help = "The checklist(s) to validate",
