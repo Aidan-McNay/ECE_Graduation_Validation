@@ -64,3 +64,15 @@ These different validity levels have different semantics when applying to differ
 
 Running the code with the `-g` flag and supplying grades will validate `cred` and `term` components, whereas running with the
 `-s` flag will validate `req`, `course`, `term`, and `cat` components
+
+## Aliases
+
+Many classes go by different names, such as crosslistings across different departments, as well as different levels of offerings.
+We consider all of these different names to be "aliases" of one another. Note that different sections of the same classes are not
+considered aliases; aliases should represent the same base offering, whereas sections can differ by credit amount and topic.
+As a general principle, objects and checks that rely on class names should be alias-invariant, and handle any of the names that
+a class can appear under. 
+
+A notable exception is checking whether a checkoff-satisfying class also appears in the checklist's requirements; since checkoffs
+aren't listed with terms, we cannot get the API data for the class, and therefore cannot determine its aliases. We therefore require
+that students supply the checkoff in the same form that it appears elsewhere on the checklist, as is natural.
