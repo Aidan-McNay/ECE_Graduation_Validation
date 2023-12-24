@@ -13,6 +13,7 @@ from typing import Optional, List, Dict, Union, Tuple, cast
 
 import exceptions as excp
 from obj.class_record_obj import ClassRecord
+from obj.class_obj import Class
 import ui.parser
 
 #---------------------------------------------------------------------
@@ -77,6 +78,8 @@ class Grades:
     Attributes:
      - _fields (list of str): A list corresponding to 
          the titles/headers of the columns in the CSV, if any
+         Note: this attribute is not meant to be relied on beyond
+         initialization, and its presence should not be assumed
 
      - _grades (dict): A dictionary or the following format:
 
@@ -97,6 +100,10 @@ class Grades:
         - num_credits: The number of credits taken (int)
         - grade: The grade received (str)
 
+     - _aliases: A dictionary converting class strings and the
+                 corresponding term to the class name alias in
+                 _grades, if any (dict converting (term, class) to str)
+
     This main attritube is not meant to be accessed from the
     outside; rather, several member functions are provided to
     act as an interface
@@ -110,6 +117,7 @@ class Grades:
 
     def __init__( self, src_file: Optional[str] = None ):
         self._grades: Dict[str,Dict[str,Dict[str,Dict[str,Union[ str, int ]]]]] = {}
+        self._aliases: Dict[ Tuple[ str, str ], str ] = {}
 
         if src_file is not None: # Load data
             with open( src_file, "r", encoding = "utf-8" ) as data:
@@ -179,11 +187,30 @@ class Grades:
             "grade"       : grade
         }
 
+    def populate_aliases( self ) -> None:
+        """Populates class alias data based on API data"""
+
+        for _, terms in self._grades.items():
+            for term, classes in terms.items():
+                for class_str in classes:
+                    class_obj = Class( class_str, term )
+
+                    for name in class_obj.all_names:
+                        self._aliases[ ( term, name ) ] = class_str
+
     #---------------------------------------------------------------------
     # Access Functions
     #---------------------------------------------------------------------
     # These are meant to be used to access the stored data, and should be
     # used from other modules
+
+    def get_alias( self, term: str, class_str: str ) -> str:
+        """Gets the alias of a class in a given term, if it exists"""
+        if ( term, class_str ) in self._aliases:
+            return self._aliases[ ( term, class_str ) ]
+
+        # Alias isn't present
+        return class_str
 
     def get_data( self, netid: str, term: str, class_str: str ) -> Dict[ str, Union[ str, int ] ]:
         """
@@ -197,6 +224,8 @@ class Grades:
         Returns a dictionary with the attributes "num_credits" (int) 
         and "grade" (str)
         """
+
+        class_str = self.get_alias( term, class_str )
 
         if not netid in self._grades:
             raise excp.grade_exceptions.StudentNotFoundError( netid )
@@ -236,7 +265,8 @@ class Grades:
         terms_taken = []
 
         for term in self._grades[ netid ]:
-            if class_str in self._grades[ netid ][ term ].keys():
+            alias = self.get_alias( term, class_str )
+            if alias in self._grades[ netid ][ term ].keys():
                 terms_taken.append( term )
 
         return terms_taken
