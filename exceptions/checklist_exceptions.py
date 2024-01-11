@@ -22,7 +22,7 @@ class UnsupportedFileTypeError( Exception ):
         self.file = os.path.basename( file )
 
         err_msg = f"{self.file} isn't a supported checklist file format. "
-        err_msg += "Please use a file ending in .xlsx or .csv"
+        err_msg += "Please use a file ending in .xlsx"
         super().__init__( err_msg )
 
 class MultipleAttributeError( Exception ):
