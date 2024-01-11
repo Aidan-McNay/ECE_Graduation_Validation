@@ -1,6 +1,9 @@
-# ECE Graduation Validation
-![Pylint](https://github.com/Aidan-McNay/ECE_Graduation_Validation/actions/workflows/pylint.yml/badge.svg)
-![Mypy](https://github.com/Aidan-McNay/ECE_Graduation_Validation/actions/workflows/mypy.yml/badge.svg)
+<h1 align="center">ECE Graduation Validation</h1>
+
+<div align="center">
+   <img src="https://github.com/Aidan-McNay/ECE_Graduation_Validation/actions/workflows/pylint.yml/badge.svg">
+   <img src="https://github.com/Aidan-McNay/ECE_Graduation_Validation/actions/workflows/mypy.yml/badge.svg">
+</div>
 
 This code validates a course schedule and ensures it follows Cornell ECE's requirements for graduation. Logs from the validation are stored in a generated `logs` directory
 
