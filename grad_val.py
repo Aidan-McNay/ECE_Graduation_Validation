@@ -120,9 +120,6 @@ def removelogdir() -> None:
 # Main Code
 #---------------------------------------------------------------------
 
-# Errors for each check run
-errors: dict = {}
-
 if __name__ == "__main__":
     args = parser.parse_args()
     set_verbosity( args.verbose )
