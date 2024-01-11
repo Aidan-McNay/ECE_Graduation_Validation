@@ -13,7 +13,7 @@ This folder includes:
 
 ## Exceptions
 
-A variety of exceptions may be thrown, with the emphasis being on handling unexpected scenarios as close to the user source as possible. These exceptions include:
+A variety of exceptions may be thrown, with the emphasis being on handling unexpected scenarios as close to the data source as possible. These exceptions include:
 
  - `api_exceptions.py`:
     - `TermNotFoundError`: Indicates that the API doesn't have information on the given term
