@@ -209,6 +209,10 @@ if __name__ == "__main__":
     summary_logger.info( "Adding API data..." )
     bulk_populate()
 
+    if args.grades:
+        grades.populate_aliases()
+        obj.sections_obj.populate_aliases( grades.get_aliases() )
+
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Run Checks
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -11,6 +11,7 @@
 from typing import Optional, Set, Any
 
 from api import class_api
+from obj.sections_obj import get_section
 import ui
 import exceptions as excp
 
@@ -71,7 +72,7 @@ class Class:
     """
 
     def __init__( self, course_name: str, term_opt: Optional[str] = None,
-                  ping_source: bool = False ):
+                  ping_source: bool = False, netid: str = "" ):
         """
         Sources the initial information for the class
 
@@ -103,7 +104,7 @@ class Class:
             else: # Not in the future, we just don't have info on it
                 raise e
 
-        self.set__enrl_idx   ( json_object )
+        self.set__enrl_idx   ( json_object, netid )
 
         self.set_all_names   ( json_object )
         self.set_title       ( json_object )
@@ -119,12 +120,31 @@ class Class:
     # Attribute setters
     #---------------------------------------------------------------------
 
-    def set__enrl_idx( self, json_obj: dict ) -> None:
+    def set__enrl_idx( self, json_obj: dict, netid: str ) -> None:
         """Sets the section that we're looking at"""
 
         if len( json_obj[ "enrollGroups" ] ) == 1: # Only one option
             self._enrl_idx = 0
             return
+
+        if get_section( netid, self.term_taken, self.primary_name ) != "":
+            # Use the recorded section
+            enrl_idx = 0
+            sections_found = []
+            section_taken = get_section( netid, self.term_taken, self.primary_name )
+
+            for group in json_obj[ "enrollGroups" ]:
+                for section in group["classSections"]:
+                    sections_found.append( section["section"] )
+                    if section["section"] == section_taken:
+                        self._enrl_idx = enrl_idx
+                        return
+                enrl_idx += 1
+
+            # Have a non-null section, but couldn't find in records
+            raise excp.class_exceptions.SectionNotFoundError( self.primary_name, self.term_taken,
+                                                              section_taken, sections_found )
+
         # Otherwise, we need to prompt the user to choose
         prompt_msg = f"Looks like {self.primary_name} has multiple sections" + \
                       " - which one did you take?"

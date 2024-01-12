@@ -198,6 +198,13 @@ class Grades:
                     for name in class_obj.all_names:
                         self._aliases[ ( term, name ) ] = class_str
 
+    def get_aliases( self ) -> Dict[ Tuple[ str, str ], str ]:
+        """
+        Provides the aliases stored in the object, for debugging or
+        copying into a Sections object
+        """
+        return self._aliases
+
     #---------------------------------------------------------------------
     # Access Functions
     #---------------------------------------------------------------------

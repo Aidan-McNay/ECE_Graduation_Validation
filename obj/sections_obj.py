@@ -12,7 +12,6 @@
 import csv
 from typing import Optional, List, Dict, Tuple
 
-from obj.class_obj import Class
 import ui.parser
 
 #---------------------------------------------------------------------
@@ -150,16 +149,15 @@ class Sections:
 
         self._sections[ netid ][ term ][ class_str ] = section
 
-    def populate_aliases( self ) -> None:
-        """Populates class alias data based on API data"""
+    def populate_aliases( self, aliases: Dict[ Tuple[ str, str ], str ] ) -> None:
+        """
+        Populates class alias data based on API data
+        
+        To avoid cyclic dependencies, we simply copy pre-made aliases, usually
+        from a Grades object
+        """
 
-        for _, terms in self._sections.items():
-            for term, classes in terms.items():
-                for class_str in classes:
-                    class_obj = Class( class_str, term )
-
-                    for name in class_obj.all_names:
-                        self._aliases[ ( term, name ) ] = class_str
+        self._aliases = aliases
 
     #---------------------------------------------------------------------
     # Access Functions
@@ -247,6 +245,10 @@ def add_section_data( file_path: str ) -> None:
     """Adds Sections data from the given grade CSV"""
     global _SECTIONS
     _SECTIONS = _SECTIONS + Sections( file_path )
+
+def populate_aliases( aliases: Dict[ Tuple[ str, str ], str ] ) -> None:
+    """Populates the global class aliases"""
+    _SECTIONS.populate_aliases( aliases )
 
 def get_section( netid: str, term: str, class_str: str ) -> str:
     """Gets the section for the given class instance from the global data"""
