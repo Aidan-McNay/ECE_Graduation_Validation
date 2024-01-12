@@ -173,8 +173,9 @@ if __name__ == "__main__":
 
         for grade_file in args.grades:
             grades += obj.grades_obj.Grades( grade_file )
+            obj.sections_obj.add_section_data( grade_file )
 
-        bulk_add_grades_data( grades )
+        bulk_add_grades_data( grades.gen_api_reqs() )
 
         checks_mngr.add_check( "grade-validation",
                                lambda x, y : checks.grade_check.grade_check( x, grades, y ) )

@@ -122,7 +122,7 @@ class Class:
     def set__enrl_idx( self, json_obj: dict ) -> None:
         """Sets the section that we're looking at"""
 
-        if len( json_obj[ "enrollGroups" ] ) == 1:
+        if len( json_obj[ "enrollGroups" ] ) == 1: # Only one option
             self._enrl_idx = 0
             return
         # Otherwise, we need to prompt the user to choose

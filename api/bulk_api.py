@@ -19,7 +19,6 @@ import requests
 
 from api import class_api
 from obj.roster_entry_obj import ReqEntry
-from obj.grades_obj import Grades
 from ui.parser import get_dept_from_name
 
 #---------------------------------------------------------------------
@@ -82,10 +81,8 @@ def bulk_add_roster_data( req_entries: List[ ReqEntry ] ) -> None:
 
         _data_to_add.add( (term, dept) )
 
-def bulk_add_grades_data( grades: Grades ) -> None:
-    """Populates the class data for all the classes in the Rosters"""
+def bulk_add_grades_data( grade_api_reqs: List[ Tuple[ str, str ] ] ) -> None:
+    """Populates the class data for all the grades"""
 
-    req_list = grades.gen_api_reqs()
-
-    for req in req_list:
+    for req in grade_api_reqs:
         _data_to_add.add( req )
