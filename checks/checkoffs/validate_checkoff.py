@@ -58,7 +58,7 @@ def validate_checkoff( roster: Roster, logger: Logger, checkoff: str,
     req_entry = cast( ReqEntry, req_course( roster, entry.course_used ) )
 
     try:
-        class_obj = Class( req_entry.course_used, req_entry.term )
+        class_obj = Class( req_entry.course_used, req_entry.term, netid = roster.netid )
     except ( excp.api_exceptions.TermNotFoundError,
              excp.api_exceptions.DeptNotFoundError,
              excp.api_exceptions.ClassNotFoundError ):

@@ -125,6 +125,10 @@ class Sections:
         class_str = ui.parser.parse_class_name( class_str )
         term      = ui.parser.parse_class_term( term      )
 
+        # Attempt to make section three digits, if not:
+        if section.isnumeric():
+            section = f"{int( section ):03}"
+
         if not netid in self._sections:
             self._sections[ netid ] = {}
 

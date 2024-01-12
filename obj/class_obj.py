@@ -146,8 +146,8 @@ class Class:
                                                               section_taken, sections_found )
 
         # Otherwise, we need to prompt the user to choose
-        prompt_msg = f"Looks like {self.primary_name} has multiple sections" + \
-                      " - which one did you take?"
+        prompt_msg = f"Looks like {self.primary_name} ({self.term_taken}) has multiple " + \
+                      "sections - which one did you take?"
 
         # Use first section to identify enroll group
         options = [ x["classSections"][0]["section"] for x in json_obj[ "enrollGroups" ] ]

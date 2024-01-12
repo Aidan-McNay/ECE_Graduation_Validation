@@ -66,7 +66,7 @@ def basic_check( roster: Roster, logger: Logger, req: str, uchecks: Dict[UcheckT
 
         # Check that it was offered during the reported term
         try:
-            class_obj = Class( entry.course_used, entry.term )
+            class_obj = Class( entry.course_used, entry.term, netid = roster.netid )
             entry.valid( "term" )
         except excp.api_exceptions.TermNotFoundError:
             logger.warning( "No data for the term %s, so can't check %s",

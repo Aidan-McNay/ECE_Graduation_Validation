@@ -190,10 +190,10 @@ class Grades:
     def populate_aliases( self ) -> None:
         """Populates class alias data based on API data"""
 
-        for _, terms in self._grades.items():
+        for netid, terms in self._grades.items():
             for term, classes in terms.items():
                 for class_str in classes:
-                    class_obj = Class( class_str, term )
+                    class_obj = Class( class_str, term, netid = netid )
 
                     for name in class_obj.all_names:
                         self._aliases[ ( term, name ) ] = class_str
