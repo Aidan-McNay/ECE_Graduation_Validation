@@ -13,6 +13,7 @@ This folder includes:
  - `grades_obj.py`: A representation of grades for any number of users
  - `roster_entry_obj.py`: An entry in a student's Roster, such as a requirement (`ReqEntry`) or a checkoff (`CheckoffEntry`)
  - `roster_obj.py`: A student's Roster (similar to a checklist, but more abstract and less connected to the physical layout)
+ - `sections_obj.py`: A mapping of a student's class enrollment to the section they enrolled in (when supplied from grades data with the `-g` flag)
 
 ## Validity
 

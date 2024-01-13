@@ -7,6 +7,7 @@ This is a folder for all exceptions that may be thrown across all functionality
 This folder includes:
  - `api_exceptions.py`: Exceptions that may be thrown by our API functions, namely when interfacing with individual classes (in `api/class_api.py`)
  - `checklist_exceptions.py`: Exceptions that may be thrown by our Checklist object (in `obj/checklist_obj.py`)
+ - `class_exceptions.py`: Exceptions that may be thrown by our Class object (in `obj/class_obj.py`)
  - `class_records_exceptions.py`: Exceptions that may be thrown by our Class Records, either an individual (in `obj/class_record_obj.py`) or a collection (in `obj/class_records_obj.py`)
  - `grade_exceptions.py`: Exceptions that may be thrown by our Grades object (in `obj/grades_obj.py`)
  - `ui_exceptions.py`: Exceptions that may be thrown by our UI functions, namely when parsing input (in `ui/parser.py`)
@@ -23,6 +24,8 @@ A variety of exceptions may be thrown, with the emphasis being on handling unexp
  - `checklist_exceptions.py`:
     - `UnsupportedFileTypeError`: Indicates that an unsupported file type was provided (currently, only Excel spreadsheets with the `.xlsx` file extension are supported)
     - `MultipleAttributeError`: Indicates that a given attribute (such as a name or NetID) was found multiple times on the checklist
+ - `class_exceptions.py`:
+    - `SectionNotFoundError`: Indicates that the provided section (from grade data) wasn't found in the API-supplied data
  - `class_records_exceptions.py`:
     - `RecordNotFoundError`: Indicates that we didn't find a record of the student taking a class in a given term
     - `InsufficientCreditsError`: Indicates that the student listed more credits for a class than they took it for
